@@ -1,0 +1,27 @@
+{
+  "name": "panea-headless",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "framer-motion": "^12.23.24",
+    "next": "^16.0.8",
+    "nextjs-toploader": "^3.9.17",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "swiper": "^12.0.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "baseline-browser-mapping": "^2.10.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.3",
+    "tailwindcss": "^4"
+  }
+}
