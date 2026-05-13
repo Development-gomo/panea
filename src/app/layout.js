@@ -49,6 +49,9 @@ export default async function RootLayout({ children }) {
         />
         */}
 
+        {/* ── Adobe Fonts (TypeKit) ── */}
+        <link rel="stylesheet" href="https://use.typekit.net/wag1oow.css" />
+
         {/* ── Other tracking scripts go here ── */}
       </head>
       <body suppressHydrationWarning>

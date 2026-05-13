@@ -4,8 +4,8 @@
    BASE ROOT (optional future branding setup)
 ========================================== */
 :root {
-  --font-primary: "Instrument Sans", system-ui, sans-serif;
-  --font-serif: "Tinos", serif;
+  --font-larken: "larken", serif;
+  --font-early-sans: "early-sans-variable", sans-serif;
 
   --color-dark: #2b2b2b;
   --color-light: #ffffff;
@@ -23,7 +23,7 @@
 */
 
 body {
-  font-family: var(--font-primary);
+  font-family: var(--font-larken);
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
@@ -37,7 +37,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-primary);
+  font-family: var(--font-early-sans) !important;
   font-weight: 500;
 }
 
