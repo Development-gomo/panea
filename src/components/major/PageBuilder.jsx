@@ -22,6 +22,7 @@ const Connectform = dynamic(() => import("../sections/inner-pages/Cform"));
 const CaseStudyListing = dynamic(() => import("../sections/inner-pages/CaseStusyListing"));
 const ClientsLogoSlider = dynamic(() => import("../sections/clients/ClientsLogoSlider"));
 const ImageCtaBanner = dynamic(() => import("../sections/home/ImageCtaBanner"));
+const WhyChooseUs = dynamic(() => import("../sections/home/WhyChooseUs"));
 
 // Detect which data the page needs and fetch it all in parallel (server-side)
 async function prefetchSectionData(sections, lang) {
@@ -117,6 +118,9 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
 
           case "image_cta_banner":
             return <ImageCtaBanner key={i} data={block} lang={lang} />;
+
+          case "why_choose_us":
+            return <WhyChooseUs key={i} data={block} lang={lang} />;
 
           default:
             return null;
