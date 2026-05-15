@@ -56,7 +56,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
         <div className="flex flex-col items-center text-center mb-10 md:mb-16">
           {text_above_title && (
             <motion.p
-              className="text-sm text-(--color-grey) tracking-wide mb-3"
+              className="text-(--color-body) leading-normal mb-4 ff-larken text-[16px] font-light"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -68,7 +68,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
 
           {title && (
             <motion.div
-              className="section-heading text-(--color-dark) max-w-[820px]"
+              className="section-heading h2 text-(--color-body) max-w-[920px] text-2xl md:text-3xl lg:text-[36px] leading-[1.3] font-regular"
               dangerouslySetInnerHTML={{ __html: title }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -83,11 +83,11 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
-              className="mt-5"
+              className="mt-6"
             >
               <Link
                 href={cta_url}
-                className="group inline-flex items-center text-sm text-(--color-dark) transition-all"
+                className="group inline-flex items-center text-xs text-(--color-body) transition-all font-normal"
               >
                 {/* Text with underline that extends toward the arrow on hover */}
                 <span className="relative pb-[2px]">
@@ -95,7 +95,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
                   <span className="absolute bottom-0 left-0 h-[1px] bg-(--color-dark) w-full transition-all duration-300 ease-out group-hover:w-[calc(100%+22px)]" />
                 </span>
                 {/* Arrow — always visible, shifts right on hover */}
-                <span className="ml-2 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                <span className="ml-1 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
                   <Image src={RightArrow} alt="arrow" width={13} height={13} />
                 </span>
               </Link>
@@ -106,7 +106,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
         {/* MIDDLE — image + content */}
         {(image?.url || content) && (
           <motion.div
-            className={`flex flex-col md:flex-row ${imageLeft ? "md:flex-row" : "md:flex-row-reverse"} gap-8 md:gap-12 items-start mb-5 md:mb-10`}
+            className={`flex flex-col md:flex-row ${imageLeft ? "md:flex-row" : "md:flex-row-reverse"} gap-8 md:gap-12 lg:gap-[80px] items-start mb-5 md:mb-10`}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -126,7 +126,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
 
             {content && (
               <div
-                className="w-full md:w-1/2 body-text text-(--color-dark) space-y-4 [&_p]:mb-4"
+                className="w-full md:w-1/2 body-text text-(--color-body) space-y-4 [&_p]:mb-4"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             )}
@@ -135,12 +135,12 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
 
         {/* DIVIDER */}
         {counters.length > 0 && (
-          <hr className="border-t border-(--color-dark)/20 mb-10 md:mb-16" />
+          <hr className="border-t border-(--color-dark)/20 mb-6" />
         )}
 
         {/* BOTTOM — counters row */}
         {counters.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 ff-larken">
             {counters.map((item, i) => (
               <motion.div
                 key={i}
@@ -149,12 +149,12 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 viewport={{ once: true }}
               >
-                <p className="text-[56px] md:text-[72px] leading-none font-medium text-(--color-dark) tracking-tight">
+                <p className="text-[36px] md:text-[64px] leading-none font-medium text-(--color-body) font-normal">
                   <AnimatedNumber value={item.number} />
                   {item.suffix && <span>{item.suffix}</span>}
                 </p>
                 {item.short_text && (
-                  <p className="mt-2 text-sm text-(--color-grey)">{item.short_text}</p>
+                  <p className="mt-6 text-base text-(--color-body) font-light">{item.short_text}</p>
                 )}
               </motion.div>
             ))}

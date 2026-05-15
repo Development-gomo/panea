@@ -23,13 +23,13 @@ export default function ClientsLogoSlider({ clients = [], speed = 30, title }) {
     <section className="clients-slider-section pt-[60px] md:pt-[120px] pb-0 overflow-hidden">
       {title && (
         <motion.div
-          className="text-center mb-10"
+          className="text-center mb-10 text-(--color-body) leading-normal mb-4 ff-larken text-[16px] font-light"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h2 className="section-heading">{title}</h2>
+          <p className="section-heading">{title}</p>
         </motion.div>
       )}
       <motion.div
@@ -58,7 +58,7 @@ export default function ClientsLogoSlider({ clients = [], speed = 30, title }) {
                 alt={logo.alt || "Client logo"}
                 width={logo.width || 120}
                 height={logo.height || 50}
-                className="w-auto max-h-[50px] object-contain grayscale opacity-60 hover:opacity-100 hover:grayscale-0 transition-all duration-300"
+                className="w-auto max-h-[70px] object-contain "
               />
             </div>
           );

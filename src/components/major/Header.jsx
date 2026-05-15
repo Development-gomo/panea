@@ -57,8 +57,8 @@ export default function Header({
 
   // Sticky header classes
  const headerClasses = scrolled
-  ? "sticky top-0 w-full z-50 text-black transition-all duration-300 py-4 bg-white shadow-sm"
-  : "sticky top-0 w-full z-50 text-white transition-all duration-300 py-4 ";
+  ? "sticky top-0 w-full z-50 text-(--color-body) transition-all duration-300 py-4 bg-white shadow-sm"
+  : "sticky top-0 w-full z-50 text-(--color-body) transition-all duration-300 py-4 ";
 
   // Mobile menu state
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -168,7 +168,7 @@ export default function Header({
                       href={langHref(item.url, lang)}
                       prefetch={true}
                       className={`
-                            ${scrolled ? "text-[#1E2E31] hover:text-black" : "text-[#1E2E31] hover:text-[#1E2E31]"} relative z-9 text-[15px] transition leading-[18px] flex items-center gap-2`}
+                            ${scrolled ? "text-(--color-body) hover:text-(--color-body)" : "text-(--color-body) hover:text-(--color-body)"} relative z-9 text-[15px] transition leading-[18px] flex items-center gap-2`}
                     >
                       {item.title}
 
@@ -177,8 +177,8 @@ export default function Header({
                           <Image
                             src={DownSvg}
                             alt="arrow"
-                            width={10}
-                            height={10}
+                            width={20}
+                            height={20}
                             className={scrolled ? "brightness-0" : ""}
                           />
                         </span>
@@ -201,7 +201,7 @@ export default function Header({
                         <ul className="
                             opacity-0 translate-x-4
                             group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-300 ease-out bg-white text-black rounded-sm shadow-lg overflow-hidden
+                            transition-all duration-300 ease-out bg-white text-(--color-body) rounded-sm shadow-lg overflow-hidden
                           "
                         >
                           {item.children.map((sub) => (
@@ -210,8 +210,8 @@ export default function Header({
                                 href={langHref(sub.url, lang)}
                                 prefetch={true}
                                 className="
-                                    block px-4 py-3 text-black text-sm
-                                    hover:text-black transition
+                                    block px-4 py-3 text-(--color-body) text-sm
+                                    hover:text-(--color-body) transition
                                   "
                               >
                                 {sub.title}
@@ -234,7 +234,7 @@ export default function Header({
               type="button"
               onClick={() => setLangOpen((v) => !v)}
               className={`
-                            ${scrolled ? " text-black hover:text-black/95 " : ""} flex items-center gap-2 cursor-pointer px-4 py-4 rounded-sm text-sm leading-3.5
+                            ${scrolled ? " text-(--color-body) hover:text-(--color-body)/95 " : ""} flex items-center gap-2 cursor-pointer px-4 py-4 rounded-sm text-sm leading-3.5
             transition`}>
               <span>{lang.toUpperCase()}</span>
 
@@ -247,8 +247,8 @@ export default function Header({
                 <Image
                   src={DownSvg}
                   alt="arrow"
-                  width={10}
-                  height={10}
+                  width={20}
+                  height={20}
                   className={scrolled ? "brightness-0" : ""}
                 />
               </span>
@@ -262,7 +262,7 @@ export default function Header({
                 <Link
                   href={altLangUrl}
                   onClick={() => setLangOpen(false)}
-                  className="block px-4 py-3 text-sm text-black bg-white  hover:text-black/95 transition"
+                  className="block px-4 py-3 text-sm text-(--color-body) bg-white  hover:text-(--color-body)/95 transition"
                 >
                   {SUPPORTED_LANGS.filter((l) => l !== lang)[0].toUpperCase()}
                 </Link>
@@ -276,39 +276,13 @@ export default function Header({
             <div className="w-[135px] h-[42px] rounded-sm bg-white/20 animate-pulse"></div>
           ) : (
             <Link
-              href={
-                langHref(options.button_url, lang)
-              }
-              className="gap-3 group relative inline-flex items-center select-none
-                    rounded-[50px] px-6 py-4 text-white
-                    transition-all duration-300
-                    w-[150px] overflow-hidden
-                    bg-(--color-brand)"
+              href={langHref(options.button_url, lang)}
+              className="inline-flex items-center justify-center
+                    rounded-[50px] px-8 py-4 text-(--color-white)
+                    bg-(--color-body)"
             >
-
-              {/* TEXT (slides left on hover) */}
-              <span
-                className="
-                      flex-1 text-[16px] leading-none text-white
-                      transition-all duration-300 ease-out
-                      group-hover:-translate-x-4
-                      whitespace-nowrap"
-              >
+              <span className="text-[16px] leading-none text-(--color-white) whitespace-nowrap">
                 {options.button_text}
-              </span>
-
-              {/* RIGHT SLOT (arrow area, fixed width) */}
-              <span className="relative w-4 flex items-center justify-center">
-                <span
-                  className="
-                        w-4 absolute text-[16px]
-                        opacity-0 -translate-x-4
-                        transition-all duration-300 ease-out
-                        group-hover:opacity-100 group-hover:-translate-x-2
-                      "
-                >
-                  <Image src={ArrowSvg} alt="arrow" width={13} height={13} />
-                </span>
               </span>
             </Link>
           )}
@@ -317,7 +291,7 @@ export default function Header({
         {/* MOBILE MENU BUTTON */}
         <button
           className={`lg:hidden text-3xl transition-colors ${
-            scrolled ? "text-black" : "text-white"
+            scrolled ? "text-(--color-body)" : "text-(--color-body)"
           }`}
           onClick={() => setMobileOpen(true)}
         >
@@ -329,9 +303,9 @@ export default function Header({
             <div className="absolute right-0 top-0 h-full w-72 bg-(--color-brand) shadow-xl flex flex-col" onClick={(e) => e.stopPropagation()}>
               {/* HEADER */}
               <div className="p-6 flex items-center justify-between">
-                <span className="text-white font-semibold">Menu</span>
+                <span className="text-(--color-body) font-semibold">Menu</span>
                 <button
-                  className="text-white text-3xl"
+                  className="text-(--color-body) text-3xl"
                   onClick={() => {
                     setMobileOpen(false);
                     setOpenSubmenu(null);
@@ -363,7 +337,7 @@ export default function Header({
                         <Link
                           href={parentHref}
                           prefetch={true}
-                          className="text-white text-lg px-6"
+                          className="text-(--color-body) text-lg px-6"
                           onClick={() => {
                             setMobileOpen(false);
                             setOpenSubmenu(null);
@@ -404,7 +378,7 @@ export default function Header({
                     >
                       {/* Back */}
                       <button
-                        className="text-white/80 text-sm flex items-center gap-2"
+                        className="text-(--color-body)/80 text-sm flex items-center gap-2"
                         onClick={() => setOpenSubmenu(null)}
                       >
                         <Image
@@ -420,7 +394,7 @@ export default function Header({
                       {/* Parent title */}
                       <Link
                         href={langHref(item.url, lang)}
-                        className="text-white text-lg font-semibold"
+                        className="text-(--color-body) text-lg font-semibold"
                         onClick={() => {
                           setMobileOpen(false);
                           setOpenSubmenu(null);
@@ -436,7 +410,7 @@ export default function Header({
                             key={sub.id}
                             href={langHref(sub.url, lang)}
                             prefetch={true}
-                            className="text-white/80 text-base hover:text-white transition"
+                            className="text-(--color-body)/80 text-base hover:text-(--color-body) transition"
                             onClick={() => {
                               setMobileOpen(false);
                               setOpenSubmenu(null);
@@ -456,7 +430,7 @@ export default function Header({
                 {/* Language Switcher */}
                 <Link
                   href={altLangUrl}
-                  className="text-white/80 mb-4"
+                  className="text-(--color-body)/80 mb-4"
                   onClick={() => {
                     setMobileOpen(false);
                     setOpenSubmenu(null);
@@ -470,7 +444,7 @@ export default function Header({
                   <Link
                     href={langHref(options.button_url, lang)}
                     className="gap-3 group relative inline-flex items-center
-                      rounded-sm bg-(--color-accent) px-6 py-4 text-white
+                      rounded-sm bg-(--color-accent) px-6 py-4 text-(--color-body)
                       transition-all duration-300 hover:bg-(--color-accent)
                       w-[154px] overflow-hidden select-none"
                     onClick={() => {
@@ -488,7 +462,7 @@ export default function Header({
                       ></span>
                     </span>
                     <span
-                      className="text-black
+                      className="text-(--color-body)
                             flex-1 text-[16px] leading-none
                             transition-all duration-300 ease-out
                             group-hover:-translate-x-4
