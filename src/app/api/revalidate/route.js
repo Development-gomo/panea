@@ -10,6 +10,8 @@ const POST_TYPE_PREFIX = {
   pages:      "",
   service:    "service",     // /en/service/seo
   services:   "service",
+  business_area:  "",
+  business_areas: "",
   case_study: "case-study",  // /en/case-study/project-x
   post:       "post",        // /en/post/my-article
   posts:      "post",

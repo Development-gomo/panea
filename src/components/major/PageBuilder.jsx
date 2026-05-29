@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllServices, getCaseStudies, getAllPosts, getAllTeam, getThemeOptions } from "@/lib/api";
+import { getAllServices, getAllBusinessAreas, getCaseStudies, getAllPosts, getAllTeam, getThemeOptions } from "@/lib/api";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
 const AboutUs = dynamic(() => import("../sections/home/HomeAbout"));
@@ -22,16 +22,19 @@ const Connectform = dynamic(() => import("../sections/inner-pages/Cform"));
 const CaseStudyListing = dynamic(() => import("../sections/inner-pages/CaseStusyListing"));
 const ClientsLogoSlider = dynamic(() => import("../sections/clients/ClientsLogoSlider"));
 const ImageCtaBanner = dynamic(() => import("../sections/home/ImageCtaBanner"));
+
 const WhyChooseUs = dynamic(() => import("../sections/home/WhyChooseUs"));
+const BusinessTabs = dynamic(() => import("../sections/home/BusinessTabs"));
 
 // Detect which data the page needs and fetch it all in parallel (server-side)
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
 
-  const needs = { services: false, cases: false, posts: false, team: false, clients: false };
+  const needs = { services: false, businessAreas: false, cases: false, posts: false, team: false, clients: false };
 
   for (const block of sections) {
     if (block.acf_fc_layout === "services_section") needs.services = true;
+    if (block.acf_fc_layout === "business_tabs") needs.businessAreas = true;
     if (block.acf_fc_layout === "casestudies_section") needs.cases = true;
     if (block.acf_fc_layout === "case_study_listing") needs.cases = true;
     if (block.acf_fc_layout === "news_section") needs.posts = true;
@@ -39,8 +42,9 @@ async function prefetchSectionData(sections, lang) {
     if (block.acf_fc_layout === "clients_slider_section") needs.clients = true;
   }
 
-  const [services, cases, posts, team, themeOpts] = await Promise.all([
+  const [services, businessAreas, cases, posts, team, themeOpts] = await Promise.all([
     needs.services ? getAllServices(lang) : null,
+    needs.businessAreas ? getAllBusinessAreas(lang) : null,
     needs.cases ? getCaseStudies(lang) : null,
     needs.posts ? getAllPosts(lang) : null,
     needs.team ? getAllTeam(lang) : null,
@@ -50,7 +54,7 @@ async function prefetchSectionData(sections, lang) {
   const clients = themeOpts?.clients?.client_images || [];
   const clientsTitle = themeOpts?.clients?.logo_slider_title || "";
 
-  return { services, cases, posts, team, clients, clientsTitle };
+  return { services, businessAreas, cases, posts, team, clients, clientsTitle };
 }
 
 export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
@@ -119,8 +123,12 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
           case "image_cta_banner":
             return <ImageCtaBanner key={i} data={block} lang={lang} />;
 
+
           case "why_choose_us":
             return <WhyChooseUs key={i} data={block} lang={lang} />;
+
+          case "business_tabs":
+            return <BusinessTabs key={i} data={block} lang={lang} prefetchedBusinessAreas={prefetched.businessAreas} />;
 
           default:
             return null;
