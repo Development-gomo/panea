@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
-import { SUPPORTED_LANGS } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 
 // Map WordPress post types to Next.js URL segments
 const POST_TYPE_PREFIX = {
@@ -12,9 +12,9 @@ const POST_TYPE_PREFIX = {
   services:   "service",
   business_area:  "",
   business_areas: "",
-  case_study: "case-study",  // /en/case-study/project-x
-  post:       "post",        // /en/post/my-article
-  posts:      "post",
+  case_study: "case",        // /en/case/project-x
+  post:       "artiklar",    // /artiklar/my-article
+  posts:      "artiklar",
 };
 
 export async function POST(req) {
@@ -48,9 +48,12 @@ export async function POST(req) {
       continue;
     }
 
-    const path = prefix
-      ? `/${lang}/${prefix}/${slug}`
-      : `/${lang}/${slug}`;
+    const postPrefix = lang === "en" ? "article" : "artiklar";
+    const localizedPrefix = ["post", "posts"].includes(postType) ? postPrefix : prefix;
+    const langPrefix = lang === DEFAULT_LANG ? "" : `/${lang}`;
+    const path = localizedPrefix
+      ? `${langPrefix}/${localizedPrefix}/${slug}`
+      : `${langPrefix}/${slug}`;
 
     revalidatePath(path);
     revalidated.push(path);

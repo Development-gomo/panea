@@ -18,8 +18,13 @@ const CONTENT_TYPES = [
   { endpoint: "/wp/v2/pages",      path: (s) => `/${s}`,            priority: 0.8, changeFrequency: "monthly", skip: new Set(["frontpage"]) },
   { endpoint: "/wp/v2/services",   path: (s) => `/service/${s}`,    priority: 0.8, changeFrequency: "monthly" },
   { endpoint: "/wp/v2/business_areas", path: (s) => `/${s}`,        priority: 0.8, changeFrequency: "monthly" },
-  { endpoint: "/wp/v2/case_study", path: (s) => `/case-study/${s}`, priority: 0.7, changeFrequency: "monthly" },
-  { endpoint: "/wp/v2/posts",      path: (s) => `/post/${s}`,       priority: 0.6, changeFrequency: "weekly"  },
+  { endpoint: "/wp/v2/case_study", path: (s) => `/case/${s}`,       priority: 0.7, changeFrequency: "monthly" },
+  {
+    endpoint: "/wp/v2/posts",
+    path: (s, lang) => `/${lang === "en" ? "article" : "artiklar"}/${s}`,
+    priority: 0.6,
+    changeFrequency: "weekly",
+  },
 ];
 
 export default async function sitemap() {
@@ -52,7 +57,7 @@ export default async function sitemap() {
         // Checks raw per-page meta (not aggregated robots which includes global WP noindex).
         if (item.meta?.["_yoast_wpseo_meta-robots-noindex"] === "1") continue;
         entries.push({
-          url: url(lang, type.path(item.slug)),
+          url: url(lang, type.path(item.slug, lang)),
           lastModified: new Date(item.modified || item.date),
           changeFrequency: type.changeFrequency,
           priority: type.priority,

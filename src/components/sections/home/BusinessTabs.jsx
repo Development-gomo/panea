@@ -7,6 +7,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { DEFAULT_LANG, langHref } from "@/config";
 import RightArrow from "../../../../public/right-arrow.svg";
+import PRightArrow from "../../../../public/p-right-arrow.svg";
+import PExplore from "../../../../public/p-explore.svg";
+import PExploreHover from "../../../../public/p-explore-hover.svg";
 import LogoWhite from "../../../../public/logowhite.png";
 
 const AUTO_ROTATE_DELAY = 5000;
@@ -112,6 +115,27 @@ function getItems(data, prefetchedBusinessAreas) {
   return rawItems.map(normalizeItem).filter((item) => item.title);
 }
 
+function ExploreIcon() {
+  return (
+    <span className="relative h-[14px] w-[14px] shrink-0 transition-transform duration-300 group-hover/cta:translate-x-1">
+      <Image
+        src={PExplore}
+        alt=""
+        width={14}
+        height={14}
+        className="absolute inset-0 transition-opacity duration-300 group-hover/cta:opacity-0"
+      />
+      <Image
+        src={PExploreHover}
+        alt=""
+        width={14}
+        height={14}
+        className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/cta:opacity-100"
+      />
+    </span>
+  );
+}
+
 export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusinessAreas }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -176,7 +200,7 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
           viewport={{ once: true }}
         >
           <div
-            className="rounded-[11px] bg-(--color-body) p-7 md:p-12"
+            className="rounded-[10px] bg-(--color-body) p-7 md:p-12"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
             onFocus={() => setIsPaused(true)}
@@ -201,7 +225,7 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
                       aria-pressed={isActive}
                     >
                       <span
-                        className={`ff-larken text-[25px] leading-[1.15] transition-colors duration-300 md:text-[31px] ${
+                        className={`ff-larken text-[25px] leading-[1.3] font-normal transition-colors duration-300 md:text-[31px] lg:text-[42px] ${
                           isActive
                             ? "text-white"
                             : "text-white/45 group-hover:text-white/75"
@@ -211,13 +235,23 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
                       </span>
 
                       <span
-                        className={`shrink-0 transition-all duration-300 ${
+                        className={`relative flex h-6 w-6 shrink-0 items-center justify-center transition-all duration-300 ease-out ${
                           isActive
-                            ? "translate-x-0 opacity-100"
-                            : "-translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-60"
+                            ? "translate-x-0 scale-100 opacity-100"
+                            : "-translate-x-3 scale-90 opacity-0 group-hover:translate-x-0 group-hover:scale-100 group-hover:opacity-100"
                         }`}
                       >
-                        <Image src={RightArrow} alt="" width={16} height={16} />
+                        <Image
+                          src={PRightArrow}
+                          alt=""
+                          width={20}
+                          height={20}
+                          className={`transition-transform duration-300 ease-out ${
+                            isActive
+                              ? "translate-x-0"
+                              : "group-hover:translate-x-1"
+                          }`}
+                        />
                       </span>
                     </button>
                   </li>
@@ -226,7 +260,7 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
             </ul>
           </div>
 
-          <div className="relative min-h-[340px] overflow-hidden rounded-[11px] bg-(--color-body) md:min-h-[407px]">
+          <div className="relative min-h-[340px] overflow-hidden rounded-[10px] bg-(--color-body) md:min-h-[407px]">
             {activeImage ? (
               <Image
                 key={activeImage}
@@ -252,58 +286,60 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
               />
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 p-5 text-white md:p-6">
-              <div className="rounded-[6px] bg-black/35 p-4 backdrop-blur-md">
-                {activeItem.title && (
-                  <h3 className="mb-3 text-[18px] leading-tight md:text-[20px]">
-                    {activeItem.title}
-                  </h3>
-                )}
+            <div className="absolute inset-x-0 bottom-0 text-white">
+              <div className=" backdrop-blur-md">
+                <div className="p-6">
+                  {activeItem.title && (
+                    <h3 className="mb-3 text-[18px] leading-tight md:text-[24px]">
+                      {activeItem.title}
+                    </h3>
+                  )}
 
-                {activeTags.length > 0 && (
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {activeTags.map((tag, index) => {
-                      const label = typeof tag === "string" ? decodeHtml(tag) : getChipLabel(tag);
-                      if (!label) return null;
+                  {activeTags.length > 0 && (
+                    <div className="mb-4 flex flex-wrap gap-2">
+                      {activeTags.map((tag, index) => {
+                        const label = typeof tag === "string" ? decodeHtml(tag) : getChipLabel(tag);
+                        if (!label) return null;
 
-                      return (
-                        <span
-                          key={`${label}-${index}`}
-                          className="rounded-full bg-(--color-body)/70 px-3 py-1 text-[10px] leading-none text-white"
-                        >
-                          {label}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
+                        return (
+                          <span
+                            key={`${label}-${index}`}
+                            className="rounded-full border border-white/25 bg-[#1E2E31]/35 px-3 py-1.5 text-[12px] leading-none text-white shadow-[inset_0_1px_8px_rgba(255,255,255,0.16)] backdrop-blur-md"
+                          >
+                            {label}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
 
-                {activeDescription && (
-                  <div
-                    className="max-w-[420px] text-[13px] font-light leading-[1.45] text-white [&_p]:mb-0"
-                    dangerouslySetInnerHTML={{ __html: activeDescription }}
-                  />
-                )}
+                  {activeDescription && (
+                    <div
+                      className="max-w-[420px] text-[16px] font-light leading-[1.45] text-white [&_p]:mb-0"
+                      dangerouslySetInnerHTML={{ __html: activeDescription }}
+                    />
+                  )}
+                </div>
 
                 {(webshopButton || activeHref) && (
-                  <div className="mt-6 flex flex-wrap justify-end gap-5">
+                  <div className="flex flex-wrap justify-end border-t border-white/15">
                     {webshopButton && (
                       <Link
                         href={webshopButton.url}
-                        className="inline-flex items-center gap-2 text-[12px] leading-none text-white/85 transition-colors duration-300 hover:text-white"
+                        className="group/cta inline-flex items-center gap-2 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors duration-300 hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
                       >
                         {webshopButton.text}
-                        <Image src={RightArrow} alt="" width={13} height={13} />
+                        <ExploreIcon />
                       </Link>
                     )}
 
                     {activeHref && (
                     <Link
                       href={activeHref}
-                      className="inline-flex items-center gap-2 text-[12px] leading-none text-white/85 transition-colors duration-300 hover:text-white"
+                      className="group/cta inline-flex items-center gap-2 border-l border-white/15 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors duration-300 hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
                     >
                       {ctaLabel}
-                      <Image src={RightArrow} alt="" width={13} height={13} />
+                      <ExploreIcon />
                     </Link>
                     )}
                   </div>

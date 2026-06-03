@@ -148,7 +148,7 @@ export async function getCaseStudies(lang = DEFAULT_LANG) {
 }
 
 export async function getAllPosts(lang) {
-  return fetchWP(`/wp/v2/posts?lang=${lang}&per_page=10&_embed`);
+  return fetchWP(`/wp/v2/posts?lang=${lang}&per_page=3&orderby=date&order=desc&_embed`);
 }
 
 export async function getCaseStudyById(id, lang) {

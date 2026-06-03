@@ -30,6 +30,44 @@ body {
 .fs-24 {
   font-size: 24px !important;
 }
+
+.panea-case-slider-shell {
+  /* padding-left: max(24px, calc((100vw - 1408px) / 2 + 24px)); */
+  padding-right: 0;
+}
+
+.panea-case-study-slider {
+  padding-bottom: 38px !important;
+}
+
+.panea-case-study-slider .swiper-pagination {
+  bottom: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.panea-case-study-slider .swiper-pagination-bullet {
+  width: 6px;
+  height: 6px;
+  margin: 0 !important;
+  background: var(--color-body);
+  opacity: 1;
+  transition: width 180ms ease, height 180ms ease, transform 180ms ease;
+}
+
+.panea-case-study-slider .swiper-pagination-bullet-active {
+  width: 8px;
+  height: 8px;
+}
+
+@media (max-width: 767px) {
+  .panea-case-slider-shell {
+    padding-left: 24px;
+    padding-right: 0;
+  }
+}
 /* Global heading tags default */
 h2,
 h3,

@@ -13,6 +13,12 @@ import Link from "next/link";
 
 export const revalidate = 3600;
 
+function getPostPath(slug, lang) {
+  const prefix = lang === "en" ? "article" : "artiklar";
+  const langPrefix = lang === DEFAULT_LANG ? "" : `/${lang}`;
+  return `${langPrefix}/${prefix}/${slug}`;
+}
+
 export async function generateStaticParams() {
   const results = await Promise.all(
     SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/posts?per_page=100&lang=${lang}`))
@@ -101,7 +107,7 @@ export default async function postSinglePage({ params }) {
         lang={lang}
         currentSlug={slug}
         entryType="post"
-        pathPrefix="post"
+        pathPrefix={{ sv: "artiklar", en: "article" }}
         entryId={post?.id}
         prefetchedMenu={menu}
         prefetchedOptions={themeOptions?.header || {}}
@@ -166,11 +172,7 @@ export default async function postSinglePage({ params }) {
                     )}
                     <h3 className="text-xl font-medium mb-4 ">
                       <Link
-                        href={
-                          lang === DEFAULT_LANG
-                            ? `/post/${relatedPost.slug}`
-                            : `/${lang}/post/${relatedPost.slug}`
-                        }
+                        href={getPostPath(relatedPost.slug, lang)}
                         className="hover:underline"
                       >
                         {relatedPost.title?.rendered || "Untitled"}

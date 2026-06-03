@@ -52,15 +52,29 @@ const nextConfig = {
   },
 
   async redirects() {
-    return SUPPORTED_LANGS.map((lang) => ({
-      source: lang === DEFAULT_LANG ? "/hem" : `/${lang}/hem`,
-      destination: lang === DEFAULT_LANG ? "/" : `/${lang}`,
-      permanent: true,
-    }));
+    return [
+      ...SUPPORTED_LANGS.map((lang) => ({
+        source: lang === DEFAULT_LANG ? "/hem" : `/${lang}/hem`,
+        destination: lang === DEFAULT_LANG ? "/" : `/${lang}`,
+        permanent: true,
+      })),
+      {
+        source: "/post/:slug",
+        destination: "/artiklar/:slug",
+        permanent: true,
+      },
+      {
+        source: "/en/post/:slug",
+        destination: "/en/article/:slug",
+        permanent: true,
+      },
+    ];
   },
 
   async rewrites() {
     return [
+      { source: "/artiklar/:slug", destination: `/${DEFAULT_LANG}/post/:slug` },
+      { source: "/en/article/:slug", destination: "/en/post/:slug" },
       // Pass-throughs for each non-default language (prevents catch-all rewrite below from grabbing them)
       ...nonDefaultLangs.flatMap((lang) => [
         { source: `/${lang}`, destination: `/${lang}` },

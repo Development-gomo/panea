@@ -94,7 +94,11 @@ export default function Header({
               setAltLangUrl(langHome(altLang));
               return;
             }
-            const prefix = pathPrefix ? `/${pathPrefix}` : "";
+            const resolvedPathPrefix =
+              typeof pathPrefix === "object"
+                ? pathPrefix?.[altLang] || ""
+                : pathPrefix;
+            const prefix = resolvedPathPrefix ? `/${resolvedPathPrefix}` : "";
             const langPrefix = altLang === DEFAULT_LANG ? "" : `/${altLang}`;
             setAltLangUrl(`${langPrefix}${prefix}/${translatedSlug}`);
             return;

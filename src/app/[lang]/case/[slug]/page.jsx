@@ -1,4 +1,4 @@
-// src/app/[lang]/case-study/[slug]/page.jsx
+// src/app/[lang]/case/[slug]/page.jsx
 
 import Header from "@/components/major/Header";
 import CaseStudyBuilder from "@/components/major/CasestudyBuilder";
@@ -43,7 +43,7 @@ export default async function CaseStudySinglePage({ params }) {
         lang={lang}
         currentSlug={slug}
         entryType="case_study"
-        pathPrefix="case-study"
+        pathPrefix="case"
         entryId={caseStudy?.id}
         prefetchedMenu={menu}
         prefetchedOptions={themeOptions?.header || {}}
