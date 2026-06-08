@@ -68,6 +68,16 @@ const nextConfig = {
         destination: "/en/article/:slug",
         permanent: true,
       },
+      {
+        source: "/solutions/:slug",
+        destination: "/losningar/:slug",
+        permanent: true,
+      },
+      {
+        source: "/en/solutions/:slug",
+        destination: "/en/solution/:slug",
+        permanent: true,
+      },
     ];
   },
 
@@ -75,6 +85,7 @@ const nextConfig = {
     return [
       { source: "/artiklar/:slug", destination: `/${DEFAULT_LANG}/post/:slug` },
       { source: "/en/article/:slug", destination: "/en/post/:slug" },
+      { source: "/losningar/:slug", destination: `/${DEFAULT_LANG}/solution/:slug` },
       // Pass-throughs for each non-default language (prevents catch-all rewrite below from grabbing them)
       ...nonDefaultLangs.flatMap((lang) => [
         { source: `/${lang}`, destination: `/${lang}` },

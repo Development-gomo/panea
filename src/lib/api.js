@@ -49,6 +49,10 @@ export async function getServiceBySlug(slug, lang = DEFAULT_LANG) {
   return getSingleEntry("services", slug, lang);
 }
 
+export async function getSolutionBySlug(slug, lang = DEFAULT_LANG) {
+  return getSingleEntry("solutions", slug, lang);
+}
+
 export async function getBusinessAreaBySlug(slug, lang = DEFAULT_LANG) {
   return getSingleEntry("business_areas", slug, lang);
 }
@@ -135,8 +139,16 @@ export async function getServiceById(id, lang) {
   return await getEntryById("services", id, lang);
 }
 
+export async function getSolutionById(id, lang) {
+  return await getEntryById("solutions", id, lang);
+}
+
 export async function getAllServices(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/services?lang=${lang}&per_page=100&_embed`);
+}
+
+export async function getAllSolutions(lang = DEFAULT_LANG) {
+  return await fetchWP(`/wp/v2/solutions?lang=${lang}&per_page=100&_embed`);
 }
 
 export async function getAllBusinessAreas(lang = DEFAULT_LANG) {
@@ -179,6 +191,8 @@ export async function getTranslationBySlug(slug, currentLang, targetLang, postTy
   const endpointMap = {
     page: "pages",
     service: "services",
+    solution: "solutions",
+    solutions: "solutions",
     business_area: "business_areas",
     business_areas: "business_areas",
     case_study: "case_study",
