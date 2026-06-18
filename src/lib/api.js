@@ -75,6 +75,45 @@ export async function getPostBySlug(slug, lang = DEFAULT_LANG) {
   return post;
 }
 
+export async function getProductBySlug(slug, lang = DEFAULT_LANG) {
+  if (!slug) return null;
+
+  const getProductFromEndpoint = async (endpoint) => {
+    const entries = await fetchWP(
+      `/wp/v2/${endpoint}?slug=${encodeURIComponent(slug)}&lang=${lang}&_embed&acf_format=standard`
+    );
+
+    if (!Array.isArray(entries) || entries.length === 0) {
+      return null;
+    }
+
+    return (
+      entries.find((entry) => entry.lang === lang) ||
+      entries.find((entry) => entry.slug === slug) ||
+      entries[0]
+    );
+  };
+
+  const product = (
+    (await getProductFromEndpoint("product")) ||
+    (await getProductFromEndpoint("products"))
+  );
+
+  if (!product) return null;
+
+  const storeProducts = await fetchWP(
+    `/wc/store/v1/products?slug=${encodeURIComponent(slug)}`
+  );
+  const storeProduct = Array.isArray(storeProducts) ? storeProducts[0] : null;
+
+  return storeProduct
+    ? {
+        ...product,
+        woo: storeProduct,
+      }
+    : product;
+}
+
 export async function getAllTeam(lang = DEFAULT_LANG) {
   return await fetchWP(
     `/wp/v2/team?per_page=100&_embed&lang=${lang}`
@@ -181,6 +220,70 @@ export async function getTestimonialsByIds(ids = [], lang = DEFAULT_LANG) {
 
 export async function getAllPosts(lang) {
   return fetchWP(`/wp/v2/posts?lang=${lang}&per_page=3&orderby=date&order=desc&_embed`);
+}
+
+export async function getAllProducts(lang = DEFAULT_LANG) {
+  const products = await fetchWP(`/wp/v2/product?lang=${lang}&per_page=100&_embed`);
+  if (Array.isArray(products)) return products;
+
+  const fallbackProducts = await fetchWP(`/wp/v2/products?lang=${lang}&per_page=100&_embed`);
+  return Array.isArray(fallbackProducts) ? fallbackProducts : [];
+}
+
+function getProductCategoryIds(product) {
+  const ids = new Set();
+
+  [
+    product?.product_cat,
+    product?.product_categories,
+    product?.categories,
+  ].forEach((value) => {
+    if (!Array.isArray(value)) return;
+    value.forEach((id) => {
+      if (Number.isInteger(Number(id))) ids.add(Number(id));
+    });
+  });
+
+  const embeddedTerms = product?._embedded?.["wp:term"] || [];
+  embeddedTerms.flat().forEach((term) => {
+    if (term?.taxonomy === "product_cat" && term?.id) {
+      ids.add(Number(term.id));
+    }
+  });
+
+  return [...ids];
+}
+
+export async function getRelatedProducts(product, lang = DEFAULT_LANG, limit = 8) {
+  if (!product?.id) return [];
+
+  const categoryIds = getProductCategoryIds(product);
+  const endpoints = ["product", "products"];
+
+  for (const endpoint of endpoints) {
+    const categoryQuery = categoryIds.length > 0
+      ? `&product_cat=${categoryIds.join(",")}`
+      : "";
+    const related = await fetchWP(
+      `/wp/v2/${endpoint}?lang=${lang}&per_page=${limit + 1}&exclude=${product.id}&_embed&acf_format=standard${categoryQuery}`
+    );
+
+    if (Array.isArray(related) && related.length > 0) {
+      return related.slice(0, limit);
+    }
+  }
+
+  const products = await getAllProducts(lang);
+  if (!Array.isArray(products) || products.length === 0) return [];
+
+  return products
+    .filter((item) => item?.id !== product.id)
+    .filter((item) => {
+      if (categoryIds.length === 0) return true;
+      const itemCategoryIds = getProductCategoryIds(item);
+      return itemCategoryIds.some((id) => categoryIds.includes(id));
+    })
+    .slice(0, limit);
 }
 
 export async function getCaseStudyById(id, lang) {
