@@ -10,17 +10,24 @@ import {
 import Image from "next/image";
 import ArrowSvg from "../../../../public/right-arrow.svg";
 
-function Field({ field, value, setValue, error }) {
-  const common =
-    "w-full rounded-md border px-4 py-3 text-sm outline-none " +
-    (error ? "border-red-500" : "border-black/15 focus:border-black/30");
+function Field({ field, value, setValue, error, variant = "default" }) {
+  const isSolution = variant === "solution";
+  const common = isSolution
+    ? "w-full border-0 border-b bg-transparent px-0 py-3 text-sm text-white outline-none placeholder:text-white/55 " +
+      (error ? "border-red-400" : "border-white/25 focus:border-white/55")
+    : "w-full rounded-md border px-4 py-3 text-sm outline-none " +
+      (error ? "border-red-500" : "border-black/15 focus:border-black/30");
+  const labelClass = isSolution
+    ? "text-sm font-medium text-white/60"
+    : "text-sm font-medium";
+  const errorClass = isSolution ? "text-xs text-red-300" : "text-xs text-red-600";
 
   const label = field.label || field.key;
 
   if (field.type === "textarea") {
     return (
       <div className="space-y-2">
-        <label className="text-sm font-medium">
+        <label className={labelClass}>
           {label} {field.required ? "*" : ""}
         </label>
         <textarea
@@ -29,7 +36,7 @@ function Field({ field, value, setValue, error }) {
           placeholder={field.placeholder || ""}
           onChange={(e) => setValue(field.key, e.target.value)}
         />
-        {error ? <p className="text-xs text-red-600">{error}</p> : null}
+        {error ? <p className={errorClass}>{error}</p> : null}
       </div>
     );
   }
@@ -37,7 +44,7 @@ function Field({ field, value, setValue, error }) {
   if (field.type === "select") {
     return (
       <div className="space-y-2">
-        <label className="text-sm font-medium">
+        <label className={labelClass}>
           {label} {field.required ? "*" : ""}
         </label>
         <select
@@ -52,7 +59,7 @@ function Field({ field, value, setValue, error }) {
             </option>
           ))}
         </select>
-        {error ? <p className="text-xs text-red-600">{error}</p> : null}
+        {error ? <p className={errorClass}>{error}</p> : null}
       </div>
     );
   }
@@ -64,7 +71,7 @@ function Field({ field, value, setValue, error }) {
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium">
+      <label className={labelClass}>
         {label} {field.required ? "*" : ""}
       </label>
       <input
@@ -74,12 +81,20 @@ function Field({ field, value, setValue, error }) {
         placeholder={field.placeholder || ""}
         onChange={(e) => setValue(field.key, e.target.value)}
       />
-      {error ? <p className="text-xs text-red-600">{error}</p> : null}
+      {error ? <p className={errorClass}>{error}</p> : null}
     </div>
   );
 }
 
-export default function ContactForm({ formId = 982, lang = DEFAULT_LANG }) {
+export default function ContactForm({
+  formId = 982,
+  lang = DEFAULT_LANG,
+  variant = "default",
+  className = "",
+  showTitle = false,
+  formTitle = "",
+  submitLabel = "Send Message",
+}) {
   const [schema, setSchema] = useState(null);
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
@@ -229,34 +244,64 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG }) {
 
   if (state.loading)
     return (
-      <div className="flex items-center gap-3 py-10 text-sm text-gray-500">
+      <div
+        className={`flex items-center gap-3 py-10 text-sm ${
+          variant === "solution" ? "text-white/65" : "text-gray-500"
+        }`}
+      >
         <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-[var(--color-brand)]" />
         Loading form…
       </div>
     );
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5">
-      {fields.map((f) => (
-        <Field
-          key={f.key}
-          field={f}
-          value={values[f.key]}
-          setValue={setValue}
-          error={errors[f.key]}
-        />
-      ))}
+    <form
+      onSubmit={onSubmit}
+      className={`${variant === "solution" ? "space-y-8" : "space-y-5"} ${className}`}
+    >
+      {showTitle && (formTitle || schema?.title) ? (
+        <h3 className="ff-larken mb-10 text-center text-[28px] font-light leading-tight text-white md:text-[34px]">
+          {formTitle || schema?.title}
+        </h3>
+      ) : null}
+
+      <div
+        className={
+          variant === "solution"
+            ? "grid gap-x-4 gap-y-7 md:grid-cols-2"
+            : "space-y-5"
+        }
+      >
+        {fields.map((f) => (
+          <div
+            key={f.key}
+            className={variant === "solution" && f.type === "textarea" ? "md:col-span-2" : ""}
+          >
+            <Field
+              field={f}
+              value={values[f.key]}
+              setValue={setValue}
+              error={errors[f.key]}
+              variant={variant}
+            />
+          </div>
+        ))}
+      </div>
 
       <button
         type="submit"
         disabled={state.submitting}
-        className=" cursor-pointer
+        className={`cursor-pointer
                     gap-3 group relative inline-flex items-center select-none
-                    rounded-sm bg-(--color-brand) px-6 py-4 text-white
-                    transition-all duration-300 hover:bg-(--color-brand)
-                    w-[170px] overflow-hidden
+                    px-6 py-4
+                    transition-all duration-300
+                    overflow-hidden
                     disabled:opacity-50 disabled:cursor-not-allowed
-                  "
+                    ${
+                      variant === "solution"
+                        ? "mt-4 w-[164px] rounded-[50px] bg-white text-(--color-body) hover:bg-white"
+                        : "w-[170px] rounded-sm bg-(--color-brand) text-white hover:bg-(--color-brand)"
+                    }`}
       >
         <span className="relative w-2 h-2 flex items-center justify-center">
           <span
@@ -274,7 +319,7 @@ export default function ContactForm({ formId = 982, lang = DEFAULT_LANG }) {
                       group-hover:-translate-x-4
                       whitespace-nowrap"
         >
-          {state.submitting ? "Sending…" : "Send Message"}
+          {state.submitting ? "Sending..." : submitLabel}
         </span>
 
         {/* RIGHT SLOT (arrow area, fixed width) */}

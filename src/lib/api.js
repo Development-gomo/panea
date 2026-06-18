@@ -81,6 +81,16 @@ export async function getAllTeam(lang = DEFAULT_LANG) {
   );
 }
 
+export async function getTeamMembersByIds(ids = [], lang = DEFAULT_LANG) {
+  const cleanIds = [...new Set(ids.map((id) => Number(id)).filter(Boolean))];
+
+  if (!cleanIds.length) return [];
+
+  return await fetchWP(
+    `/wp/v2/team?include=${cleanIds.join(",")}&per_page=${cleanIds.length}&orderby=include&_embed&lang=${lang}`
+  );
+}
+
 export async function getMediaById(id) {
   if (!id) return null;
   try {
@@ -157,6 +167,16 @@ export async function getAllBusinessAreas(lang = DEFAULT_LANG) {
 
 export async function getCaseStudies(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/case_study?lang=${lang}&per_page=100&_embed`);
+}
+
+export async function getTestimonialsByIds(ids = [], lang = DEFAULT_LANG) {
+  const cleanIds = [...new Set(ids.map((id) => Number(id)).filter(Boolean))];
+
+  if (!cleanIds.length) return [];
+
+  return await fetchWP(
+    `/wp/v2/testimonial?include=${cleanIds.join(",")}&per_page=${cleanIds.length}&orderby=include&lang=${lang}&_embed`
+  );
 }
 
 export async function getAllPosts(lang) {

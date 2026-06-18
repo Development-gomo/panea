@@ -3,6 +3,7 @@
 import { getPageBySlug, getBusinessAreaBySlug, fetchWP, getMenu, getThemeOptions, getAllBusinessAreas } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
+import BusinessAreaBuilder from "@/components/major/BusinessAreaBuilder";
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
 import { buildMetadataFromYoast } from "@/lib/seo";
@@ -80,7 +81,11 @@ export default async function SinglePage({ params }) {
         logoUrl={themeOptions?.header?.logo_light?.url || ""}
       />
       <main>
-        <PageBuilder sections={isBusinessArea ? businessAreaSections : acf.page_builder} lang={lang} />
+        {isBusinessArea ? (
+          <BusinessAreaBuilder sections={businessAreaSections} lang={lang} />
+        ) : (
+          <PageBuilder sections={acf.page_builder} lang={lang} />
+        )}
       </main>
       <Footer lang={lang} currentSlug={slug} />
     </>

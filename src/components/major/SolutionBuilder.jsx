@@ -1,6 +1,11 @@
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllBusinessAreas, getCaseStudies } from "@/lib/api";
+import {
+  getAllBusinessAreas,
+  getCaseStudies,
+  getTeamMembersByIds,
+  getTestimonialsByIds,
+} from "@/lib/api";
 
 const SolutionHero = dynamic(() => import("../sections/solution/Hero"));
 const SolutionFAQ = dynamic(() => import("../sections/solution/FAQ"));
@@ -8,6 +13,8 @@ const SolutionCaseStudiesSlider = dynamic(() => import("../sections/solution/Cas
 const SolutionOurApproach = dynamic(() => import("../sections/solution/OurApproach"));
 const SolutionOurClients = dynamic(() => import("../sections/solution/OurClients"));
 const SolutionBusinessAreas = dynamic(() => import("../sections/solution/BusinessAreas"));
+const SolutionTestimonialSlider = dynamic(() => import("../sections/solution/TestimonialSlider"));
+const SolutionContactFormSection = dynamic(() => import("../sections/solution/ContactFormSection"));
 
 function getSelectedBusinessAreas(selected, allBusinessAreas) {
   const selectedItems = Array.isArray(selected)
@@ -25,6 +32,31 @@ function getSelectedBusinessAreas(selected, allBusinessAreas) {
     .filter(Boolean);
 }
 
+function normalizeSelectedPosts(selected) {
+  if (!selected) return [];
+  return Array.isArray(selected) ? selected : [selected];
+}
+
+function collectTestimonialIds(sections) {
+  return sections
+    .filter((block) => block.acf_fc_layout === "testimonial")
+    .flatMap((block) => normalizeSelectedPosts(block.clients_testimonial))
+    .map((item) => (typeof item === "object" ? item?.ID || item?.id : item))
+    .filter(Boolean);
+}
+
+function collectTeamMemberIds(sections) {
+  return sections
+    .filter(
+      (block) =>
+        block.acf_fc_layout === "contact_form_section" ||
+        block.acf_fc_layout === "team_member_section"
+    )
+    .flatMap((block) => normalizeSelectedPosts(block.select_team_members))
+    .map((item) => (typeof item === "object" ? item?.ID || item?.id : item))
+    .filter(Boolean);
+}
+
 export default async function SolutionBuilder({
   sections,
   lang = DEFAULT_LANG,
@@ -38,9 +70,18 @@ export default async function SolutionBuilder({
   const needsBusinessAreas = sections.some(
     (block) => block.acf_fc_layout === "business_areas"
   );
-  const [prefetchedCases, allBusinessAreas] = await Promise.all([
+  const testimonialIds = collectTestimonialIds(sections);
+  const teamMemberIds = collectTeamMemberIds(sections);
+  const [
+    prefetchedCases,
+    allBusinessAreas,
+    prefetchedTestimonials,
+    prefetchedTeamMembers,
+  ] = await Promise.all([
     needsCases ? getCaseStudies(lang) : null,
     needsBusinessAreas ? getAllBusinessAreas(lang) : null,
+    testimonialIds.length ? getTestimonialsByIds(testimonialIds, lang) : null,
+    teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : null,
   ]);
   const selectedBusinessAreas = getSelectedBusinessAreas(
     solutionData?.select_business_areas,
@@ -87,6 +128,33 @@ export default async function SolutionBuilder({
                 contactButton={solutionData?.contact_button}
               />
             );
+
+          case "testimonial":
+            return (
+              <SolutionTestimonialSlider
+                key={i}
+                data={block}
+                prefetchedTestimonials={prefetchedTestimonials}
+              />
+            );
+
+          case "contact_form_section":
+            return (
+              <SolutionContactFormSection
+                key={i}
+                data={block}
+                teamData={
+                  sections[i + 1]?.acf_fc_layout === "team_member_section"
+                    ? sections[i + 1]
+                    : null
+                }
+                lang={lang}
+                prefetchedTeamMembers={prefetchedTeamMembers}
+              />
+            );
+
+          case "team_member_section":
+            return null;
 
           default:
             return null;
