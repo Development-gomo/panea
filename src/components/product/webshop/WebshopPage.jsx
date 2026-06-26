@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { DEFAULT_LANG, langHref } from "@/config";
 import DownArrow from "../../../../public/down-arrow.svg";
+import WebshopHighlightBanner from "./HighlightBanner";
+import WebshopContactFormSection from "./ContactFormSection";
 
 const heroImage =
   "https://backend.panea.se/wp-content/uploads/2026/05/solution-banner-img.jpg";
@@ -186,6 +188,41 @@ function getWebshopBanner(page) {
   return builder.find((block) => block?.acf_fc_layout === "banner") || null;
 }
 
+function getWebshopHighlightBanner(page) {
+  const acf = getPageAcf(page);
+  const builder = acf.webshop_page_builder;
+
+  if (!Array.isArray(builder)) return null;
+
+  return (
+    builder.find((block) =>
+      ["highlight_banner", "highlight"].includes(block?.acf_fc_layout)
+    ) || null
+  );
+}
+
+function getWebshopContactForm(page) {
+  const acf = getPageAcf(page);
+  const builder = acf.webshop_page_builder;
+
+  if (!Array.isArray(builder)) return null;
+
+  return (
+    builder.find((block) =>
+      ["contact_form_section", "contact_form"].includes(block?.acf_fc_layout)
+    ) || null
+  );
+}
+
+function getWebshopTeamData(page) {
+  const acf = getPageAcf(page);
+  const builder = acf.webshop_page_builder;
+
+  if (!Array.isArray(builder)) return null;
+
+  return builder.find((block) => block?.acf_fc_layout === "team_member_section") || null;
+}
+
 function getHeroImage(page) {
   const acf = getPageAcf(page);
   const banner = getWebshopBanner(page);
@@ -345,6 +382,7 @@ export default function WebshopPage({
   brands = [],
   lang = DEFAULT_LANG,
   initialCategory = "",
+  prefetchedTeamMembers = [],
 }) {
   const [currentPaginationPage, setCurrentPaginationPage] = useState(1);
   const [brandOpen, setBrandOpen] = useState(false);
@@ -391,6 +429,9 @@ export default function WebshopPage({
   const heroTitle = getHeroTitle(page);
   const heroImageUrl = getHeroImage(page);
   const heroCta = getHeroCta(page);
+  const highlightBanner = getWebshopHighlightBanner(page);
+  const contactForm = getWebshopContactForm(page);
+  const teamData = getWebshopTeamData(page);
 
   const toggleBrand = (brandKey) => {
     setSelectedBrands((brands) =>
@@ -407,7 +448,7 @@ export default function WebshopPage({
   };
 
   return (
-    <section className="bg-[#F2EBE2] pt-2 pb-20">
+    <section className="bg-[#F2EBE2]">
       <div className="web-width mx-auto px-6">
         <section className="relative flex h-[320px] items-center justify-center overflow-hidden rounded-[11px] bg-(--color-body) text-white md:h-[400px]">
           <Image
@@ -523,7 +564,7 @@ export default function WebshopPage({
                 <button
                   type="button"
                   onClick={clearBrands}
-                  className="text-[12px] text-[#1E2E31]/50 transition hover:text-[#1E2E31]"
+                  className="text-[12px] cursor-pointer text-[#1E2E31]/50 transition hover:text-[#1E2E31]"
                 >
                   Clear all
                 </button>
@@ -600,6 +641,14 @@ export default function WebshopPage({
             )}
           </div>
         </section>
+
+        <WebshopHighlightBanner data={highlightBanner} />
+        <WebshopContactFormSection
+          data={contactForm}
+          teamData={teamData}
+          lang={lang}
+          prefetchedTeamMembers={prefetchedTeamMembers}
+        />
       </div>
     </section>
   );

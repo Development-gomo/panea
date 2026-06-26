@@ -1,6 +1,6 @@
 // src/app/[lang]/[slug]/page.jsx
 
-import { getPageBySlug, getBusinessAreaBySlug, fetchWP, getMenu, getThemeOptions, getAllBusinessAreas, getAllProducts, getProductBrands, getProductCategories } from "@/lib/api";
+import { getPageBySlug, getBusinessAreaBySlug, fetchWP, getMenu, getThemeOptions, getAllBusinessAreas, getAllProducts, getProductBrands, getProductCategories, getTeamMembersByIds } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
 import BusinessAreaBuilder from "@/components/major/BusinessAreaBuilder";
@@ -52,6 +52,27 @@ function getBusinessAreaSections(acf = {}) {
   );
 }
 
+function normalizeSelectedPosts(selected) {
+  if (!selected) return [];
+  return Array.isArray(selected) ? selected : [selected];
+}
+
+function collectWebshopTeamMemberIds(page) {
+  const builder = page?.acf?.webshop_page_builder;
+  if (!Array.isArray(builder)) return [];
+
+  return builder
+    .filter(
+      (block) =>
+        ["contact_form_section", "contact_form"].includes(
+          block?.acf_fc_layout
+        ) || block?.acf_fc_layout === "team_member_section"
+    )
+    .flatMap((block) => normalizeSelectedPosts(block.select_team_members))
+    .map((item) => (typeof item === "object" ? item?.ID || item?.id : item))
+    .filter(Boolean);
+}
+
 export default async function SinglePage({ params }) {
   const resolved = await params;
   const parsed = resolveParams(resolved);
@@ -77,6 +98,11 @@ export default async function SinglePage({ params }) {
   const isBusinessArea = !data && !!businessArea;
   const acf = entry?.acf || {};
   const businessAreaSections = isBusinessArea ? getBusinessAreaSections(acf) : null;
+  const webshopTeamMemberIds =
+    slug === "webshop" && data ? collectWebshopTeamMemberIds(data) : [];
+  const prefetchedWebshopTeamMembers = webshopTeamMemberIds.length
+    ? await getTeamMembersByIds(webshopTeamMemberIds, lang)
+    : [];
 
   return (
     <>
@@ -97,6 +123,7 @@ export default async function SinglePage({ params }) {
             categories={productCategories || []}
             brands={productBrands || []}
             lang={lang}
+            prefetchedTeamMembers={prefetchedWebshopTeamMembers}
           />
         ) : isBusinessArea ? (
           <BusinessAreaBuilder sections={businessAreaSections} lang={lang} businessAreaData={businessArea}/>

@@ -7,12 +7,34 @@ import {
   getPageBySlug,
   getProductBrands,
   getProductCategories,
+  getTeamMembersByIds,
   getThemeOptions,
 } from "@/lib/api";
 import { DEFAULT_LANG } from "@/config";
 import { buildMetadataFromYoast } from "@/lib/seo";
 
 export const revalidate = 3600;
+
+function normalizeSelectedPosts(selected) {
+  if (!selected) return [];
+  return Array.isArray(selected) ? selected : [selected];
+}
+
+function collectWebshopTeamMemberIds(page) {
+  const builder = page?.acf?.webshop_page_builder;
+  if (!Array.isArray(builder)) return [];
+
+  return builder
+    .filter(
+      (block) =>
+        ["contact_form_section", "contact_form"].includes(
+          block?.acf_fc_layout
+        ) || block?.acf_fc_layout === "team_member_section"
+    )
+    .flatMap((block) => normalizeSelectedPosts(block.select_team_members))
+    .map((item) => (typeof item === "object" ? item?.ID || item?.id : item))
+    .filter(Boolean);
+}
 
 export default async function WebshopRoute() {
   const lang = DEFAULT_LANG;
@@ -24,6 +46,10 @@ export default async function WebshopRoute() {
     getProductCategories(lang),
     getProductBrands(lang),
   ]);
+  const teamMemberIds = collectWebshopTeamMemberIds(page);
+  const prefetchedTeamMembers = teamMemberIds.length
+    ? await getTeamMembersByIds(teamMemberIds, lang)
+    : [];
 
   return (
     <>
@@ -43,6 +69,7 @@ export default async function WebshopRoute() {
           categories={categories}
           brands={brands}
           lang={lang}
+          prefetchedTeamMembers={prefetchedTeamMembers}
         />
       </main>
       <Footer lang={lang} currentSlug="webshop" />
