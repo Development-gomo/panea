@@ -30,7 +30,7 @@ export default function ProductBreadcrumbs({ product, lang = DEFAULT_LANG }) {
     category
       ? {
           label: category.name,
-          href: langHref(`/webshop/${category.slug}`, lang),
+          href: langHref(`/product-category/${category.slug}/`, lang),
         }
       : null,
     {

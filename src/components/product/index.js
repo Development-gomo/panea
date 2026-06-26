@@ -5,3 +5,8 @@ export { default as ProductPage } from "./ProductPage";
 export { default as RelatedProducts } from "./RelatedProducts";
 export { default as ProductTabs } from "./ProductTabs";
 export { default as ProductTitle } from "./ProductTitle";
+export { default as ProductContactFormSection } from "./ContactFormSection";
+export { default as ProductFAQ } from "./FAQ";
+export { default as ProductOurApproach } from "./OurApproach";
+export { default as ProductTestimonialSlider } from "./TestimonialSlider";
+export { default as ProductWhyChooseUs } from "./ProductWhyChooseUs";

@@ -7,6 +7,8 @@ import {
   getAllProducts,
   getMenu,
   getRelatedProducts,
+  getTeamMembersByIds,
+  getTestimonialsByIds,
   getThemeOptions,
 } from "@/lib/api";
 import { buildMetadataFromYoast } from "@/lib/seo";
@@ -14,6 +16,53 @@ import { notFound } from "next/navigation";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 
 export const revalidate = 3600;
+
+function getProductAcf(product) {
+  return {
+    ...(product?.acf || {}),
+    ...(product?.acf_fields || {}),
+    ...(product?.advanced_custom_fields || {}),
+    ...(product?.meta?.acf || {}),
+  };
+}
+
+function normalizeSelectedPosts(selected) {
+  if (!selected) return [];
+  return Array.isArray(selected) ? selected : [selected];
+}
+
+function collectProductTestimonialIds(product) {
+  const acf = getProductAcf(product);
+
+  if (!Array.isArray(acf.product_page_builder)) return [];
+
+  return acf.product_page_builder
+    .filter((block) =>
+      ["testimonial", "testimonials", "testimonial_slider"].includes(
+        block?.acf_fc_layout
+      )
+    )
+    .flatMap((block) => normalizeSelectedPosts(block.clients_testimonial))
+    .map((item) => (typeof item === "object" ? item?.ID || item?.id : item))
+    .filter(Boolean);
+}
+
+function collectProductTeamMemberIds(product) {
+  const acf = getProductAcf(product);
+
+  if (!Array.isArray(acf.product_page_builder)) return [];
+
+  return acf.product_page_builder
+    .filter(
+      (block) =>
+        ["contact_form_section", "contact_form"].includes(
+          block?.acf_fc_layout
+        ) || block?.acf_fc_layout === "team_member_section"
+    )
+    .flatMap((block) => normalizeSelectedPosts(block.select_team_members))
+    .map((item) => (typeof item === "object" ? item?.ID || item?.id : item))
+    .filter(Boolean);
+}
 
 export async function generateStaticParams() {
   const results = await Promise.all(
@@ -45,7 +94,17 @@ export default async function ProductSinglePage({ params }) {
 
   if (!product) notFound();
 
-  const relatedProducts = await getRelatedProducts(product, lang);
+  const testimonialIds = collectProductTestimonialIds(product);
+  const teamMemberIds = collectProductTeamMemberIds(product);
+  const [
+    relatedProducts,
+    prefetchedTestimonials,
+    prefetchedTeamMembers,
+  ] = await Promise.all([
+    getRelatedProducts(product, lang),
+    testimonialIds.length ? getTestimonialsByIds(testimonialIds, lang) : [],
+    teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : [],
+  ]);
 
   return (
     <>
@@ -60,7 +119,13 @@ export default async function ProductSinglePage({ params }) {
         logoUrl={themeOptions?.header?.logo_light?.url || ""}
       />
       <main>
-        <ProductPage product={product} lang={lang} relatedProducts={relatedProducts} />
+        <ProductPage
+          product={product}
+          lang={lang}
+          relatedProducts={relatedProducts}
+          prefetchedTestimonials={prefetchedTestimonials}
+          prefetchedTeamMembers={prefetchedTeamMembers}
+        />
       </main>
       <Footer lang={lang} currentSlug={slug} />
     </>

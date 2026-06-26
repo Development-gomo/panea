@@ -42,7 +42,25 @@ async function getSingleEntry(endpoint, slug, lang = DEFAULT_LANG) {
 }
 
 export async function getPageBySlug(slug, lang = DEFAULT_LANG) {
-  return getSingleEntry("pages", slug, lang);
+  if (!slug) return null;
+
+  try {
+    const entries = await fetchWP(
+      `/wp/v2/pages?slug=${encodeURIComponent(slug)}&lang=${lang}&_embed&acf_format=standard`
+    );
+
+    if (!Array.isArray(entries) || entries.length === 0) {
+      return null;
+    }
+
+    return (
+      entries.find((entry) => entry.lang === lang) ||
+      entries.find((entry) => entry.slug === slug) ||
+      entries[0]
+    );
+  } catch {
+    return null;
+  }
 }
 
 export async function getServiceBySlug(slug, lang = DEFAULT_LANG) {
@@ -223,11 +241,69 @@ export async function getAllPosts(lang) {
 }
 
 export async function getAllProducts(lang = DEFAULT_LANG) {
-  const products = await fetchWP(`/wp/v2/product?lang=${lang}&per_page=100&_embed`);
-  if (Array.isArray(products)) return products;
+  const mergeStoreImages = async (products = []) => {
+    const storeProducts = await fetchWP(`/wc/store/v1/products?per_page=100`);
+    if (!Array.isArray(storeProducts) || storeProducts.length === 0) {
+      return products;
+    }
 
-  const fallbackProducts = await fetchWP(`/wp/v2/products?lang=${lang}&per_page=100&_embed`);
-  return Array.isArray(fallbackProducts) ? fallbackProducts : [];
+    const storeBySlug = new Map(
+      storeProducts
+        .filter((product) => product?.slug)
+        .map((product) => [product.slug, product])
+    );
+
+    return products.map((product) => {
+      const storeProduct = storeBySlug.get(product.slug);
+      return storeProduct
+        ? {
+            ...product,
+            woo: storeProduct,
+          }
+        : product;
+    });
+  };
+
+  const products = await fetchWP(
+    `/wp/v2/product?lang=${lang}&per_page=100&_embed&acf_format=standard`
+  );
+  if (Array.isArray(products)) return mergeStoreImages(products);
+
+  const fallbackProducts = await fetchWP(
+    `/wp/v2/products?lang=${lang}&per_page=100&_embed&acf_format=standard`
+  );
+  return Array.isArray(fallbackProducts)
+    ? mergeStoreImages(fallbackProducts)
+    : [];
+}
+
+export async function getProductCategories(lang = DEFAULT_LANG) {
+  const categories = await fetchWP(
+    `/wp/v2/product_cat?lang=${lang}&per_page=100&parent=0`
+  );
+  if (Array.isArray(categories)) return categories;
+
+  const storeCategories = await fetchWP(
+    `/wc/store/v1/products/categories?per_page=100`
+  );
+  if (!Array.isArray(storeCategories)) return [];
+
+  return storeCategories.filter((category) => !category.parent);
+}
+
+export async function getProductBrands(lang = DEFAULT_LANG) {
+  const endpoints = [
+    `/wp/v2/product_brand?lang=${lang}&per_page=100`,
+    `/wp/v2/pwb-brand?lang=${lang}&per_page=100`,
+    `/wp/v2/pa_brand?lang=${lang}&per_page=100`,
+  ];
+
+  for (const endpoint of endpoints) {
+    const brands = await fetchWP(endpoint);
+    if (Array.isArray(brands)) return brands;
+  }
+
+  return [];
 }
 
 function getProductCategoryIds(product) {
