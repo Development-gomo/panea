@@ -37,11 +37,16 @@ export async function generateStaticParams() {
 }
 
 function getBusinessAreaSections(acf = {}) {
+  const builderFields = [
+    acf.business_area_page_builder,
+    acf.business_areas_page_builder,
+    acf.services_page_builder,
+    acf.page_builder,
+  ];
+
   return (
-    acf.business_areas_page_builder ||
-    acf.business_area_page_builder ||
-    acf.services_page_builder ||
-    acf.page_builder ||
+    builderFields.find((sections) => Array.isArray(sections) && sections.length > 0) ||
+    builderFields.find((sections) => Array.isArray(sections)) ||
     null
   );
 }
@@ -82,7 +87,11 @@ export default async function SinglePage({ params }) {
       />
       <main>
         {isBusinessArea ? (
-          <BusinessAreaBuilder sections={businessAreaSections} lang={lang} />
+          <BusinessAreaBuilder
+            sections={businessAreaSections}
+            lang={lang}
+            businessAreaData={businessArea}
+          />
         ) : (
           <PageBuilder sections={acf.page_builder} lang={lang} />
         )}

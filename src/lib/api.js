@@ -197,7 +197,7 @@ export async function getAllServices(lang = DEFAULT_LANG) {
 }
 
 export async function getAllSolutions(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/solutions?lang=${lang}&per_page=100&_embed`);
+  return await fetchWP(`/wp/v2/solutions?lang=${lang}&per_page=100&_embed&acf_format=standard`);
 }
 
 export async function getAllBusinessAreas(lang = DEFAULT_LANG) {
