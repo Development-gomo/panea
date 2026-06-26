@@ -1,9 +1,10 @@
 // src/app/[lang]/[slug]/page.jsx
 
-import { getPageBySlug, getBusinessAreaBySlug, fetchWP, getMenu, getThemeOptions, getAllBusinessAreas } from "@/lib/api";
+import { getPageBySlug, getBusinessAreaBySlug, fetchWP, getMenu, getThemeOptions, getAllBusinessAreas, getAllProducts, getProductBrands, getProductCategories } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
 import BusinessAreaBuilder from "@/components/major/BusinessAreaBuilder";
+import WebshopPage from "@/components/product/webshop/WebshopPage";
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
 import { buildMetadataFromYoast } from "@/lib/seo";
@@ -55,11 +56,14 @@ export default async function SinglePage({ params }) {
 
   if (!slug) notFound();
 
-  const [data, businessArea, menu, themeOptions] = await Promise.all([
+  const [data, businessArea, menu, themeOptions, products, productCategories, productBrands] = await Promise.all([
     getPageBySlug(slug, lang),
     getBusinessAreaBySlug(slug, lang),
     getMenu(lang),
     getThemeOptions(lang),
+    slug === "webshop" ? getAllProducts(lang) : null,
+    slug === "webshop" ? getProductCategories(lang) : null,
+    slug === "webshop" ? getProductBrands(lang) : null,
   ]);
 
   const entry = data || businessArea;
@@ -81,7 +85,15 @@ export default async function SinglePage({ params }) {
         logoUrl={themeOptions?.header?.logo_light?.url || ""}
       />
       <main>
-        {isBusinessArea ? (
+        {slug === "webshop" && data ? (
+          <WebshopPage
+            page={data}
+            products={products || []}
+            categories={productCategories || []}
+            brands={productBrands || []}
+            lang={lang}
+          />
+        ) : isBusinessArea ? (
           <BusinessAreaBuilder sections={businessAreaSections} lang={lang} />
         ) : (
           <PageBuilder sections={acf.page_builder} lang={lang} />

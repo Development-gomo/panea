@@ -99,7 +99,7 @@ export default function ProductPage({
       <ProductBreadcrumbs product={product} lang={lang} />
 
       <article className="bg-[#F2EBE2]">
-        <div className="web-width mx-auto grid min-w-0 gap-8 px-4 py-10 sm:px-6 md:py-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-20">
+        <div className="web-width mx-auto grid min-w-0 gap-8 px-4 pt-[40px] pb-[60px] sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-20">
           <section aria-label="Product media" className="min-w-0">
             <ProductGallery product={product} />
           </section>

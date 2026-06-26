@@ -88,7 +88,7 @@ export default function ProductTestimonialSlider({
   if (!testimonials.length) return null;
 
   return (
-    <section className="w-full overflow-hidden pt-[60px] pb-[60px] md:pt-[60px]">
+    <section className="w-full overflow-hidden pt-[60px] pb-[60px]">
       <div className="web-width mx-auto">
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {text_above_title && (

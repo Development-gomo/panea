@@ -228,7 +228,7 @@ function DownloadRows({ rows }) {
               <a
                 href={file.href}
                 download
-                target="_self"
+                target="_blank"
                 className="flex min-h-10 cursor-pointer items-center justify-between gap-4 border border-[#D8D0C4] bg-[#F8F4EE] px-4 font-['Inter'] text-[14px] font-normal leading-5 text-[#1E2E31] transition hover:border-(--color-body) hover:bg-white"
               >
                 <span className="truncate">{file.label}</span>
@@ -309,7 +309,7 @@ export default function ProductTabs({ product }) {
 
   return (
     <section className="bg-[#F2EBE2]">
-      <div className="web-width mx-auto px-4 pb-[75px] sm:px-6">
+      <div className="web-width mx-auto px-4 pt-[60px] pb-[60px] sm:px-6">
         <div className="overflow-hidden border border-[#D8D0C4] rounded-lg">
           <div className="flex overflow-x-auto border-b border-[#D8D0C4]">
             {tabs.map((tab) => {

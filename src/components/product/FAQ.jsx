@@ -33,7 +33,7 @@ export default function ProductFAQ({ data }) {
   if (!data || !faqItems.length) return null;
 
   return (
-    <section className="w-full pt-[60px] pb-[60px] md:pt-[60px]">
+    <section className="w-full pt-[60px] pb-[60px]">
       <div className="web-width-sm mx-auto px-6">
         <div className="flex flex-col items-center text-center">
           {text_above_title && (

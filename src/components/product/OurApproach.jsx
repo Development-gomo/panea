@@ -34,7 +34,7 @@ export default function ProductOurApproach({ data }) {
   if (!text_above_title && !heading && steps.length === 0) return null;
 
   return (
-    <section className="w-full pt-[60px] pb-0 md:pt-[60px] pb-[60px]">
+    <section className="w-full pt-[60px] pb-[60px]">
       <div className="web-width mx-auto">
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {text_above_title && (

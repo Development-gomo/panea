@@ -22,7 +22,7 @@ export default function ProductWhyChooseUs({ data, lang = DEFAULT_LANG }) {
   const bgColor = background_color || "#B8D1D1";
 
   return (
-    <section className="w-full pt-[60px] md:pt-[60px] pb-[60px]">
+    <section className="w-full pt-[60px] pb-[60px]">
       <div className="web-width mx-auto">
         <div
           className="rounded-[11px] overflow-hidden"
