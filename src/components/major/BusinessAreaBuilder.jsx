@@ -1,12 +1,29 @@
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllSolutions } from "@/lib/api";
+import {
+  getAllSolutions,
+  getCaseStudies,
+  getTeamMembersByIds,
+  getTestimonialsByIds,
+} from "@/lib/api";
 
 const BusinessAreaHero = dynamic(() => import("../sections/business-area/Hero"));
 const BusinessAreaCounterSection = dynamic(() => import("../sections/business-area/CounterSection"));
 const BusinessAreaExpertiseAreas = dynamic(() => import("../sections/business-area/ExpertiseAreas"));
 const BusinessAreaHighlightBanner = dynamic(() => import("../sections/business-area/HighlightBanner"));
 const BusinessAreaSolutionSlider = dynamic(() => import("../sections/business-area/SolutionSlider"));
+const BusinessAreaOurApproach = dynamic(() => import("../sections/business-area/OurApproach"));
+const BusinessAreaFAQ = dynamic(() => import("../sections/business-area/FAQ"));
+const BusinessAreaWhyChooseUs = dynamic(() => import("../sections/business-area/WhyChooseUs"));
+const BusinessAreaTestimonialSlider = dynamic(() =>
+  import("../sections/business-area/TestimonialSlider")
+);
+const BusinessAreaContactFormSection = dynamic(() =>
+  import("../sections/business-area/ContactFormSection")
+);
+const BusinessAreaCaseStudiesSlider = dynamic(() =>
+  import("../sections/business-area/CaseStudiesSlider")
+);
 
 function selectedPosts(value) {
   if (!value) return [];
@@ -19,6 +36,28 @@ function postId(item) {
 
 function collectSelectedSolutionIds(businessArea) {
   return selectedPosts(businessArea?.acf?.select_solutions)
+    .map((item) => Number(postId(item)))
+    .filter(Boolean);
+}
+
+function collectTestimonialIds(sections) {
+  return sections
+    .filter((block) =>
+      ["testimonial", "testimonial_slider"].includes(block?.acf_fc_layout)
+    )
+    .flatMap((block) => selectedPosts(block.clients_testimonial))
+    .map((item) => Number(postId(item)))
+    .filter(Boolean);
+}
+
+function collectTeamMemberIds(sections) {
+  return sections
+    .filter((block) =>
+      ["contact_form_section", "contact_form", "team_member_section"].includes(
+        block?.acf_fc_layout
+      )
+    )
+    .flatMap((block) => selectedPosts(block.select_team_members))
     .map((item) => Number(postId(item)))
     .filter(Boolean);
 }
@@ -171,7 +210,22 @@ export default async function BusinessAreaBuilder({
   const needsSolutions = sectionItems.some(
     (block) => block?.acf_fc_layout === "solution_slider"
   );
-  const currentLanguageSolutions = needsSolutions ? await getAllSolutions(lang) : [];
+  const needsCases = sectionItems.some((block) =>
+    ["casestudies_slider", "case_studies_slider"].includes(block?.acf_fc_layout)
+  );
+  const testimonialIds = collectTestimonialIds(sectionItems);
+  const teamMemberIds = collectTeamMemberIds(sectionItems);
+  const [
+    currentLanguageSolutions,
+    prefetchedCases,
+    prefetchedTestimonials,
+    prefetchedTeamMembers,
+  ] = await Promise.all([
+    needsSolutions ? getAllSolutions(lang) : [],
+    needsCases ? getCaseStudies(lang) : null,
+    testimonialIds.length ? getTestimonialsByIds(testimonialIds, lang) : null,
+    teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : null,
+  ]);
   const selectedSolutionIds = collectSelectedSolutionIds(businessAreaData);
   const selectedSolutionIdSet = new Set(selectedSolutionIds);
   const selectedSolutions = Array.isArray(currentLanguageSolutions)
@@ -234,6 +288,57 @@ export default async function BusinessAreaBuilder({
                 solutions={linkedSolutions}
               />
             );
+
+          case "casestudies_slider":
+          case "case_studies_slider":
+            return (
+              <BusinessAreaCaseStudiesSlider
+                key={i}
+                data={block}
+                lang={lang}
+                prefetchedCases={prefetchedCases}
+              />
+            );
+
+          case "our_approach":
+            return <BusinessAreaOurApproach key={i} data={block} lang={lang} />;
+
+          case "faq":
+          case "faq_section":
+            return <BusinessAreaFAQ key={i} data={block} lang={lang} />;
+
+          case "why_choose_us":
+          case "why_choose":
+            return <BusinessAreaWhyChooseUs key={i} data={block} lang={lang} />;
+
+          case "testimonial":
+          case "testimonial_slider":
+            return (
+              <BusinessAreaTestimonialSlider
+                key={i}
+                data={block}
+                prefetchedTestimonials={prefetchedTestimonials}
+              />
+            );
+
+          case "contact_form_section":
+          case "contact_form":
+            return (
+              <BusinessAreaContactFormSection
+                key={i}
+                data={block}
+                teamData={
+                  sectionItems[i + 1]?.acf_fc_layout === "team_member_section"
+                    ? sectionItems[i + 1]
+                    : null
+                }
+                lang={lang}
+                prefetchedTeamMembers={prefetchedTeamMembers}
+              />
+            );
+
+          case "team_member_section":
+            return null;
 
           default:
             return null;

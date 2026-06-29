@@ -89,7 +89,7 @@ function mergeTestimonials(selected, fetched) {
     .filter(Boolean);
 }
 
-export default function SolutionTestimonialSlider({ data, prefetchedTestimonials = [] }) {
+export default function BusinessAreaTestimonialSlider({ data, prefetchedTestimonials = [] }) {
   const { text_above_title, title } = data || {};
   const sliderSideOffset = useSliderSideOffset();
   const testimonials = mergeTestimonials(
