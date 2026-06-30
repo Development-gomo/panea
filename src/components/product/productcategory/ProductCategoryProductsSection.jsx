@@ -1,15 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { DEFAULT_LANG, langHref } from "@/config";
 import DownArrow from "../../../../public/down-arrow.svg";
-import WebshopHighlightBanner from "./HighlightBanner";
-import WebshopContactFormSection from "./ContactFormSection";
-
-const heroImage =
-  "https://backend.panea.se/wp-content/uploads/2026/05/solution-banner-img.jpg";
 
 const PRODUCTS_PER_PAGE = 12;
 
@@ -170,114 +165,18 @@ function getBrandKey(brand) {
   return `name:${brand?.name || ""}`;
 }
 
-function getPageAcf(page) {
-  return {
-    ...(page?.acf || {}),
-    ...(page?.acf_fields || {}),
-    ...(page?.advanced_custom_fields || {}),
-    ...(page?.meta?.acf || {}),
-  };
+function getCategoryHref(category, lang = DEFAULT_LANG) {
+  if (!category?.slug) return langHref("/webshop", lang);
+  return langHref(`/product-category/${category.slug}/`, lang);
 }
 
-function getWebshopBanner(page) {
-  const acf = getPageAcf(page);
-  const builder = acf.webshop_page_builder;
+function getCategoryParentId(category) {
+  if (!category?.parent) return 0;
+  if (typeof category.parent === "object") {
+    return Number(category.parent.id || category.parent.ID || 0);
+  }
 
-  if (!Array.isArray(builder)) return null;
-
-  return builder.find((block) => block?.acf_fc_layout === "banner") || null;
-}
-
-function getWebshopHighlightBanner(page) {
-  const acf = getPageAcf(page);
-  const builder = acf.webshop_page_builder;
-
-  if (!Array.isArray(builder)) return null;
-
-  return (
-    builder.find((block) =>
-      ["highlight_banner", "highlight"].includes(block?.acf_fc_layout)
-    ) || null
-  );
-}
-
-function getWebshopContactForm(page) {
-  const acf = getPageAcf(page);
-  const builder = acf.webshop_page_builder;
-
-  if (!Array.isArray(builder)) return null;
-
-  return (
-    builder.find((block) =>
-      ["contact_form_section", "contact_form"].includes(block?.acf_fc_layout)
-    ) || null
-  );
-}
-
-function getWebshopTeamData(page) {
-  const acf = getPageAcf(page);
-  const builder = acf.webshop_page_builder;
-
-  if (!Array.isArray(builder)) return null;
-
-  return builder.find((block) => block?.acf_fc_layout === "team_member_section") || null;
-}
-
-function getHeroImage(page) {
-  const acf = getPageAcf(page);
-  const banner = getWebshopBanner(page);
-
-  return (
-    getImageUrl(banner?.background_image) ||
-    getImageUrl(acf.hero_image) ||
-    getImageUrl(acf.banner_image) ||
-    getImageUrl(acf.image) ||
-    getImageUrl(acf.background_image) ||
-    getImageUrl(page?._embedded?.["wp:featuredmedia"]?.[0]) ||
-    getImageUrl(page?.featured_image) ||
-    getImageUrl(page?.featured_image_url) ||
-    heroImage
-  );
-}
-
-function getHeroTitle(page) {
-  const acf = getPageAcf(page);
-  const banner = getWebshopBanner(page);
-
-  return (
-    toText(banner?.title) ||
-    toText(acf.title) ||
-    toText(acf.heading) ||
-    toText(acf.hero_title) ||
-    toText(page?.title) ||
-    "Machines and Equipment"
-  );
-}
-
-function getHeroCta(page) {
-  const acf = getPageAcf(page);
-  const banner = getWebshopBanner(page);
-  const link =
-    banner?.cta_link ||
-    banner?.button ||
-    acf.cta_link ||
-    acf.button ||
-    acf.hero_button ||
-    {};
-  const text =
-    toText(banner?.cta_text) ||
-    toText(acf.cta_text) ||
-    toText(acf.button_text) ||
-    toText(link.title) ||
-    "Talk with an expert";
-  const url =
-    toText(banner?.cta_url) ||
-    toText(acf.cta_url) ||
-    toText(acf.button_url) ||
-    toText(link.url) ||
-    "/contact-us";
-
-  return { text, url };
+  return Number(category.parent);
 }
 
 function getPaginationItems(currentPage, totalPages) {
@@ -291,11 +190,6 @@ function getPaginationItems(currentPage, totalPages) {
   }
 
   return [1, "...", currentPage, "...", totalPages];
-}
-
-function getCategoryHref(category, lang = DEFAULT_LANG) {
-  if (!category?.slug) return langHref("/webshop", lang);
-  return langHref(`/product-category/${category.slug}/`, lang);
 }
 
 function PaginationArrow({ direction = "prev" }) {
@@ -375,34 +269,58 @@ function ProductCard({ product, lang }) {
   );
 }
 
-export default function WebshopPage({
-  page = null,
+export default function ProductCategoryProductsSection({
   products = [],
   categories = [],
   brands = [],
+  categorySlug = "",
   lang = DEFAULT_LANG,
-  initialCategory = "",
-  heroTitle = "",
-  showHero = true,
-  showHighlightBanner = true,
-  prefetchedTeamMembers = [],
 }) {
   const [currentPaginationPage, setCurrentPaginationPage] = useState(1);
   const [brandOpen, setBrandOpen] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState([]);
+  const [selectedChildCategories, setSelectedChildCategories] = useState([]);
 
   const parentCategories = useMemo(
-    () => categories.filter((category) => !category.parent),
+    () => categories.filter((category) => !getCategoryParentId(category)),
     [categories]
   );
-  const activeCategory = parentCategories.find(
-    (category) => category.slug === initialCategory
+  const activeCategory = categories.find(
+    (category) => category.slug === categorySlug
   );
+  const activeParentCategory = activeCategory
+    ? parentCategories.find(
+        (category) => category.id === getCategoryParentId(activeCategory)
+      ) || activeCategory
+    : null;
+  const activeParentId = activeParentCategory?.id;
+
+  const childCategoriesByParent = useMemo(() => {
+    const nextChildren = new Map();
+
+    categories.forEach((category) => {
+      const parentId = getCategoryParentId(category);
+      if (!parentId) return;
+
+      const currentChildren = nextChildren.get(parentId) || [];
+      currentChildren.push(category);
+      nextChildren.set(parentId, currentChildren);
+    });
+
+    return nextChildren;
+  }, [categories]);
 
   const filteredProducts = useMemo(() => {
     let nextProducts = products;
 
-    if (activeCategory) {
+    if (selectedChildCategories.length > 0) {
+      nextProducts = nextProducts.filter((product) => {
+        const productCategoryIds = getProductCategoryIds(product);
+        return selectedChildCategories.some((categoryId) =>
+          productCategoryIds.includes(Number(categoryId))
+        );
+      });
+    } else if (activeCategory) {
       nextProducts = nextProducts.filter((product) =>
         getProductCategoryIds(product).includes(Number(activeCategory.id))
       );
@@ -416,7 +334,7 @@ export default function WebshopPage({
     }
 
     return nextProducts;
-  }, [activeCategory, products, selectedBrands]);
+  }, [activeCategory, products, selectedBrands, selectedChildCategories]);
 
   const totalPages = Math.max(
     1,
@@ -429,12 +347,8 @@ export default function WebshopPage({
     pageStart + PRODUCTS_PER_PAGE
   );
   const selectedBrandCount = selectedBrands.length;
-  const resolvedHeroTitle = heroTitle || getHeroTitle(page);
-  const heroImageUrl = getHeroImage(page);
-  const heroCta = getHeroCta(page);
-  const highlightBanner = getWebshopHighlightBanner(page);
-  const contactForm = getWebshopContactForm(page);
-  const teamData = getWebshopTeamData(page);
+  const selectedChildCategoryCount = selectedChildCategories.length;
+  const hasSelectedFilters = selectedBrandCount > 0 || selectedChildCategoryCount > 0;
 
   const toggleBrand = (brandKey) => {
     setSelectedBrands((brands) =>
@@ -447,50 +361,25 @@ export default function WebshopPage({
 
   const clearBrands = () => {
     setSelectedBrands([]);
+    setSelectedChildCategories([]);
     setBrandOpen(false);
+    setCurrentPaginationPage(1);
+  };
+
+  const toggleChildCategory = (categoryId) => {
+    setSelectedChildCategories((categories) =>
+      categories.includes(categoryId)
+        ? categories.filter((item) => item !== categoryId)
+        : [...categories, categoryId]
+    );
+    setCurrentPaginationPage(1);
   };
 
   return (
-    <section className="bg-[#F2EBE2]">
+    <section className="bg-[#F2EBE2] pt-[24px]">
       <div className="web-width mx-auto px-6">
-        <section
-          className={`relative h-[320px] items-center justify-center overflow-hidden rounded-[11px] bg-(--color-body) text-white md:h-[400px] ${
-            showHero ? "flex" : "hidden"
-          }`}
-          aria-hidden={!showHero}
-          suppressHydrationWarning
-        >
-          <Image
-            src={heroImageUrl}
-            alt=""
-            fill
-            priority
-            sizes="(min-width: 1440px) 1408px, calc(100vw - 48px)"
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-black/35" />
-
-          <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center">
-            <h1 className="text-[32px] font-normal leading-[1.2] text-white md:text-[40px]">
-              {resolvedHeroTitle}
-            </h1>
-
-            <Link
-              href={heroCta.url}
-              className="mt-6 inline-flex rounded-[50px] bg-(--color-brand) px-9 py-3.5 text-[16px] leading-none text-(--color-body) transition-colors duration-300 hover:bg-white"
-            >
-              {heroCta.text}
-            </Link>
-          </div>
-        </section>
-
-        <section
-          className={`grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] ${
-            showHero ? "pt-[60px]" : "pt-6"
-          }`}
-          suppressHydrationWarning
-        >
-          <aside className="overflow-hidden rounded-[4px] border border-[#D5CDC1] bg-[#F2EBE2] self-start">
+        <div className="grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)]">
+          <aside className="self-start overflow-hidden rounded-[4px] border border-[#D5CDC1] bg-[#F2EBE2]">
             <Link
               href={langHref("/webshop", lang)}
               className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[13px] transition ${
@@ -502,19 +391,95 @@ export default function WebshopPage({
               All categories
             </Link>
 
-            {parentCategories.map((category) => (
-              <Link
-                href={getCategoryHref(category, lang)}
-                key={category.id}
-                className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[13px] leading-[1.35] transition last:border-b-0 ${
-                  activeCategory?.id === category.id
-                    ? "bg-white text-[#1E2E31]"
-                    : "text-[#1E2E31]/80 hover:bg-white/55 hover:text-[#1E2E31]"
-                }`}
-              >
-                {category.name}
-              </Link>
-            ))}
+            {parentCategories.map((category) => {
+              const isActiveParent = activeParentId === category.id;
+              const childCategories = childCategoriesByParent.get(category.id) || [];
+              const showChildren = isActiveParent && childCategories.length > 0;
+
+              return (
+                <Fragment key={category.id}>
+                  <Link
+                    href={getCategoryHref(category, lang)}
+                    className={`flex min-h-[62px] w-full cursor-pointer items-center justify-between gap-4 border-[#D5CDC1] px-5 text-left text-[13px] leading-[1.35] transition ${
+                      isActiveParent
+                        ? "text-[#1E2E31]"
+                        : "text-[#1E2E31]/80 hover:bg-white/55 hover:text-[#1E2E31]"
+                    }`}
+                  >
+                    <span>{category.name}</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="10"
+                      viewBox="0 0 16 10"
+                      fill="none"
+                      className={`shrink-0 transition-transform ${
+                        isActiveParent ? "rotate-180" : ""
+                      }`}
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12.7757 2.20882C13.01 1.9745 13.3899 1.9745 13.6243 2.20882C13.8586 2.44313 13.8586 2.82303 13.6243 3.05735L8.82426 7.85735C8.58995 8.09166 8.21005 8.09166 7.97573 7.85735L3.17574 3.05735C2.94142 2.82303 2.94142 2.44313 3.17574 2.20882C3.41005 1.9745 3.78995 1.9745 4.02426 2.20882L8.4 6.58455L12.7757 2.20882Z"
+                        fill="#1E2E31"
+                      />
+                    </svg>
+                  </Link>
+
+                  {showChildren && (
+                    <div className="mx-5 mb-5 border border-[#D5CDC1] bg-white">
+                      <p className="border-b border-[#D5CDC1] px-5 py-3 text-[12px] leading-none text-[#1E2E31]/70">
+                        Select volume
+                      </p>
+                      <div className="py-1">
+                        {childCategories.map((childCategory) => {
+                          const isActiveChild = selectedChildCategories.includes(
+                            childCategory.id
+                          );
+
+                          return (
+                            <label
+                              key={childCategory.id}
+                              className="flex min-h-11 cursor-pointer items-center gap-3 px-5 text-[12px] leading-[1.35] text-[#1E2E31]/80 transition hover:bg-[#F2EBE2]"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={isActiveChild}
+                                onChange={() => toggleChildCategory(childCategory.id)}
+                                className="sr-only"
+                              />
+                              <span
+                                className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[1px] border ${
+                                  isActiveChild
+                                    ? "border-[#1E2E31] bg-[#1E2E31]"
+                                    : "border-[#1E2E31]/20 bg-white"
+                                }`}
+                                aria-hidden="true"
+                              >
+                                {isActiveChild && (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="9"
+                                    height="7"
+                                    viewBox="0 0 9 7"
+                                    fill="none"
+                                  >
+                                    <path
+                                      d="M3.374 6.125 0.75 3.5l.7-.7 1.924 1.925L7.55.55l.7.7-4.876 4.875Z"
+                                      fill="white"
+                                    />
+                                  </svg>
+                                )}
+                              </span>
+                              <span>{childCategory.name}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </Fragment>
+              );
+            })}
           </aside>
 
           <div className="min-w-0">
@@ -574,11 +539,11 @@ export default function WebshopPage({
                 )}
               </div>
 
-              {selectedBrandCount > 0 && (
+              {hasSelectedFilters && (
                 <button
                   type="button"
                   onClick={clearBrands}
-                  className="text-[12px] cursor-pointer text-[#1E2E31]/50 transition hover:text-[#1E2E31]"
+                  className="cursor-pointer text-[12px] text-[#1E2E31]/50 transition hover:text-[#1E2E31]"
                 >
                   Clear all
                 </button>
@@ -654,15 +619,7 @@ export default function WebshopPage({
               </nav>
             )}
           </div>
-        </section>
-
-        {showHighlightBanner && <WebshopHighlightBanner data={highlightBanner} />}
-        <WebshopContactFormSection
-          data={contactForm}
-          teamData={teamData}
-          lang={lang}
-          prefetchedTeamMembers={prefetchedTeamMembers}
-        />
+        </div>
       </div>
     </section>
   );
