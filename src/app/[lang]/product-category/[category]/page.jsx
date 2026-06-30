@@ -1,13 +1,5 @@
-import Header from "@/components/major/Header";
-import Footer from "@/components/major/Footer";
-import WebshopPage from "@/components/product/webshop/WebshopPage";
-import {
-  getAllProducts,
-  getMenu,
-  getProductBrands,
-  getProductCategories,
-  getThemeOptions,
-} from "@/lib/api";
+import ProductCategoryPage from "@/components/product/productcategory/ProductCategoryPage";
+import { getProductCategories } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 import { notFound } from "next/navigation";
@@ -43,41 +35,5 @@ export default async function LangProductCategoryRoute({ params }) {
   const categorySlug = resolved?.category;
 
   if (!categorySlug) notFound();
-
-  const [menu, themeOptions, products, categories, brands] = await Promise.all([
-    getMenu(lang),
-    getThemeOptions(lang),
-    getAllProducts(lang),
-    getProductCategories(lang),
-    getProductBrands(lang),
-  ]);
-
-  const categoryExists = categories.some(
-    (category) => !category.parent && category.slug === categorySlug
-  );
-
-  if (!categoryExists) notFound();
-
-  return (
-    <>
-      <Header
-        lang={lang}
-        currentSlug={`product-category/${categorySlug}`}
-        entryType="page"
-        prefetchedMenu={menu}
-        prefetchedOptions={themeOptions?.header || {}}
-        logoUrl={themeOptions?.header?.logo_light?.url || ""}
-      />
-      <main>
-        <WebshopPage
-          products={products}
-          categories={categories}
-          brands={brands}
-          lang={lang}
-          initialCategory={categorySlug}
-        />
-      </main>
-      <Footer lang={lang} currentSlug={`product-category/${categorySlug}`} />
-    </>
-  );
+  return <ProductCategoryPage categorySlug={categorySlug} lang={lang} />;
 }

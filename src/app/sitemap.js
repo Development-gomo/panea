@@ -72,5 +72,26 @@ export default async function sitemap() {
     }
   }
 
+  const categoryResults = await Promise.all(
+    SUPPORTED_LANGS.map((lang) =>
+      fetchWP(`/wp/v2/product_cat?per_page=100&parent=0&lang=${lang}`)
+    )
+  );
+
+  for (let i = 0; i < SUPPORTED_LANGS.length; i++) {
+    const lang = SUPPORTED_LANGS[i];
+    const categories = Array.isArray(categoryResults[i]) ? categoryResults[i] : [];
+
+    for (const category of categories) {
+      if (!category.slug) continue;
+      entries.push({
+        url: url(lang, `/product-category/${category.slug}`),
+        lastModified: new Date(),
+        changeFrequency: "weekly",
+        priority: 0.7,
+      });
+    }
+  }
+
   return entries;
 }

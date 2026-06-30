@@ -277,9 +277,11 @@ export async function getAllProducts(lang = DEFAULT_LANG) {
     : [];
 }
 
-export async function getProductCategories(lang = DEFAULT_LANG) {
+export async function getProductCategories(lang = DEFAULT_LANG, options = {}) {
+  const { includeChildren = false } = options;
+  const parentQuery = includeChildren ? "" : "&parent=0";
   const categories = await fetchWP(
-    `/wp/v2/product_cat?lang=${lang}&per_page=100&parent=0`
+    `/wp/v2/product_cat?lang=${lang}&per_page=100${parentQuery}&acf_format=standard`
   );
   if (Array.isArray(categories)) return categories;
 
@@ -288,7 +290,85 @@ export async function getProductCategories(lang = DEFAULT_LANG) {
   );
   if (!Array.isArray(storeCategories)) return [];
 
-  return storeCategories.filter((category) => !category.parent);
+  return includeChildren
+    ? storeCategories
+    : storeCategories.filter((category) => !category.parent);
+}
+
+async function hydrateProductCategoryAcf(acf = {}) {
+  const hydrateLogoRows = async (rows) => {
+    if (!Array.isArray(rows)) return rows;
+
+    return Promise.all(
+      rows.map(async (row) => {
+        const logo = row?.logo;
+
+        if (!Number.isInteger(Number(logo))) {
+          return row;
+        }
+
+        const media = await getMediaById(Number(logo));
+        if (!media) return row;
+
+        return { ...row, logo: media };
+      })
+    );
+  };
+
+  const group = acf.product_category_information;
+
+  return {
+    ...acf,
+    client_logos: await hydrateLogoRows(acf.client_logos),
+    product_category_information:
+      group && typeof group === "object"
+        ? {
+            ...group,
+            client_logos: await hydrateLogoRows(group.client_logos),
+          }
+        : group,
+  };
+}
+
+export async function getProductCategoryBySlug(slug, lang = DEFAULT_LANG) {
+  if (!slug) return null;
+
+  const categories = await fetchWP(
+    `/wp/v2/product_cat?slug=${encodeURIComponent(slug)}&lang=${lang}&per_page=1&acf_format=standard`
+  );
+  const category = Array.isArray(categories) ? categories[0] : null;
+
+  if (!category) return null;
+
+  return {
+    ...category,
+    acf: await hydrateProductCategoryAcf(category.acf || {}),
+  };
+}
+
+export async function getProductCategoryAcf(categoryId) {
+  if (!categoryId) return {};
+
+  const endpoints = [
+    `/acf/v3/product_cat/${categoryId}`,
+    `/acf/v3/product_cat/product_cat_${categoryId}`,
+    `/acf/v3/terms/product_cat/${categoryId}`,
+    `/acf/v3/terms/product_cat/product_cat_${categoryId}`,
+    `/acf/v3/term/product_cat/${categoryId}`,
+    `/acf/v3/term/product_cat_${categoryId}`,
+  ];
+
+  for (const endpoint of endpoints) {
+    const data = await fetchWP(endpoint);
+    const first = Array.isArray(data) ? data[0] : data;
+    const acf = first?.acf || first;
+
+    if (acf && typeof acf === "object" && !acf.code && Object.keys(acf).length > 0) {
+      return hydrateProductCategoryAcf(acf);
+    }
+  }
+
+  return {};
 }
 
 export async function getProductBrands(lang = DEFAULT_LANG) {
