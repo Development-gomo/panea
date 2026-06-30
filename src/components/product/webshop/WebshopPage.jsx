@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { DEFAULT_LANG, langHref } from "@/config";
@@ -12,6 +12,39 @@ const heroImage =
   "https://backend.panea.se/wp-content/uploads/2026/05/solution-banner-img.jpg";
 
 const PRODUCTS_PER_PAGE = 12;
+const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
+const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
+
+function parseQuoteCartItems(value) {
+  try {
+    const items = JSON.parse(value || "[]");
+    return Array.isArray(items) ? items : [];
+  } catch {
+    return [];
+  }
+}
+
+function subscribeQuoteCart(callback) {
+  if (typeof window === "undefined") return () => {};
+
+  const handleUpdate = () => callback();
+  window.addEventListener(QUOTE_CART_UPDATED_EVENT, handleUpdate);
+  window.addEventListener("storage", handleUpdate);
+
+  return () => {
+    window.removeEventListener(QUOTE_CART_UPDATED_EVENT, handleUpdate);
+    window.removeEventListener("storage", handleUpdate);
+  };
+}
+
+function getQuoteCartSnapshot() {
+  if (typeof window === "undefined") return "[]";
+  return window.localStorage.getItem(QUOTE_CART_STORAGE_KEY) || "[]";
+}
+
+function getServerQuoteCartSnapshot() {
+  return "[]";
+}
 
 function stripHtml(value = "") {
   return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
@@ -50,6 +83,67 @@ function getField(source, keys) {
   }
 
   return "";
+}
+
+function getRepeaterLabel(item) {
+  if (typeof item === "string" || typeof item === "number") return toText(item);
+  if (!item || typeof item !== "object") return "";
+
+  const preferredKeys = [
+    "available_model",
+    "available_models",
+    "model",
+    "model_name",
+    "model_label",
+    "title",
+    "label",
+    "name",
+    "text",
+    "litres",
+    "liters",
+    "liter",
+  ];
+
+  for (const key of preferredKeys) {
+    const value = toText(item[key]);
+    if (value) return value;
+  }
+
+  return toText(
+    Object.values(item).find(
+      (value) => typeof value === "string" || typeof value === "number"
+    )
+  );
+}
+
+function getRepeaterItems(acf, fieldName) {
+  const value = acf[fieldName];
+
+  if (Array.isArray(value)) return value.map(getRepeaterLabel).filter(Boolean);
+
+  if (value && typeof value === "object") {
+    return Object.values(value).map(getRepeaterLabel).filter(Boolean);
+  }
+
+  const rowCount = Number(value);
+  if (Number.isInteger(rowCount) && rowCount > 0) {
+    return Array.from({ length: rowCount }, (_, index) => {
+      const prefix = `${fieldName}_${index}_`;
+      const row = Object.fromEntries(
+        Object.entries(acf)
+          .filter(([key]) => key.startsWith(prefix))
+          .map(([key, fieldValue]) => [key.replace(prefix, ""), fieldValue])
+      );
+
+      return getRepeaterLabel(row);
+    }).filter(Boolean);
+  }
+
+  if (typeof value === "string" && value.includes(",")) {
+    return value.split(",").map((item) => item.trim()).filter(Boolean);
+  }
+
+  return toText(value) ? [toText(value)] : [];
 }
 
 function getImageUrl(image) {
@@ -317,15 +411,47 @@ function PaginationArrow({ direction = "prev" }) {
   );
 }
 
-function ProductCard({ product, lang }) {
+function saveQuoteCartItems(items) {
+  window.localStorage.setItem(QUOTE_CART_STORAGE_KEY, JSON.stringify(items));
+  window.dispatchEvent(
+    new CustomEvent(QUOTE_CART_UPDATED_EVENT, { detail: { items } })
+  );
+}
+
+function ProductCard({ product, lang, quoteCartItems = [] }) {
   const acf = getProductAcf(product);
   const title = toText(product?.title);
   const image = getProductImage(product);
+  const articleNumber = toText(getField(acf, ["article_number"]));
+  const availableModels = getRepeaterItems(acf, "available_models");
+  const firstModel = availableModels[0] || "";
   const description = toText(
     getField(acf, ["short_information", "short_description", "description"])
   );
   const quoteLabel =
     toText(getField(acf, ["request_a_quote_button_label"])) || "Request a quote";
+  const productId = String(product?.id || product?.slug || title || "");
+  const isInQuoteCart = quoteCartItems.some(
+    (item) => item.productId === productId
+  );
+  const quoteItemId = `${productId}:${firstModel || "default"}`;
+
+  const addToQuoteCart = () => {
+    if (quoteCartItems.some((item) => item.id === quoteItemId)) return;
+
+    saveQuoteCartItems([
+      ...quoteCartItems,
+      {
+        id: quoteItemId,
+        productId,
+        productName: title,
+        articleNumber,
+        model: firstModel,
+        imageUrl: image,
+        quantity: 1,
+      },
+    ]);
+  };
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-[7px] border border-[#CFC7BA] bg-white p-4">
@@ -357,12 +483,22 @@ function ProductCard({ product, lang }) {
         )}
 
         <div className="mt-auto space-y-3">
-          <button
-            type="button"
-            className="min-h-11 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[12px] text-[#1E2E31] transition hover:bg-black hover:text-white"
-          >
-            {quoteLabel}
-          </button>
+          {isInQuoteCart ? (
+            <Link
+              href={langHref("/cart", lang)}
+              className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#B8D9DB] px-4 text-[12px] text-[#1E2E31] transition hover:bg-black hover:text-white"
+            >
+              View cart
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={addToQuoteCart}
+              className="min-h-11 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[12px] text-[#1E2E31] transition hover:bg-black hover:text-white"
+            >
+              {quoteLabel}
+            </button>
+          )}
           <Link
             href={langHref(`/product/${product.slug}`, lang)}
             className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#1E2E31] px-4 text-[12px] text-white transition hover:bg-black"
@@ -387,6 +523,11 @@ export default function WebshopPage({
   showHighlightBanner = true,
   prefetchedTeamMembers = [],
 }) {
+  const quoteCartSnapshot = useSyncExternalStore(
+    subscribeQuoteCart,
+    getQuoteCartSnapshot,
+    getServerQuoteCartSnapshot
+  );
   const [currentPaginationPage, setCurrentPaginationPage] = useState(1);
   const [brandOpen, setBrandOpen] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState([]);
@@ -435,6 +576,7 @@ export default function WebshopPage({
   const highlightBanner = getWebshopHighlightBanner(page);
   const contactForm = getWebshopContactForm(page);
   const teamData = getWebshopTeamData(page);
+  const quoteCartItems = parseQuoteCartItems(quoteCartSnapshot);
 
   const toggleBrand = (brandKey) => {
     setSelectedBrands((brands) =>
@@ -588,7 +730,12 @@ export default function WebshopPage({
             {visibleProducts.length > 0 ? (
               <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
                 {visibleProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} lang={lang} />
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    lang={lang}
+                    quoteCartItems={quoteCartItems}
+                  />
                 ))}
               </div>
             ) : (

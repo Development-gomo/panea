@@ -11,6 +11,51 @@ import ArrowSvgB from "../../../public/right-arrow-black.png";
 import { getMenu, getThemeOptions, getEntryTranslations } from "@/lib/api";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
 
+const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
+const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
+
+function getQuoteCartCount() {
+  if (typeof window === "undefined") return 0;
+
+  try {
+    const items = JSON.parse(
+      window.localStorage.getItem(QUOTE_CART_STORAGE_KEY) || "[]"
+    );
+    if (!Array.isArray(items)) return 0;
+    return items.reduce((total, item) => total + Number(item?.quantity || 1), 0);
+  } catch {
+    return 0;
+  }
+}
+
+function CartIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      className="shrink-0"
+    >
+      <path
+        d="M6.5 6.5h14l-1.7 8.2a2 2 0 0 1-2 1.6H9.1a2 2 0 0 1-2-1.7L5.8 3.8H3.5"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 20.2h.1M17 20.2h.1"
+        stroke="currentColor"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 export default function Header({
   lang = DEFAULT_LANG,
   currentSlug = "",
@@ -25,6 +70,7 @@ export default function Header({
   const [options, setOptions] = useState(prefetchedOptions);
   const [altLangUrl, setAltLangUrl] = useState(langHome(SUPPORTED_LANGS.filter((l) => l !== lang)[0]));
   const [scrolled, setScrolled] = useState(false);
+  const [quoteCartCount, setQuoteCartCount] = useState(0);
   const isLoading = !menu;
 
   // Only fetch client-side if no prefetched data was provided
@@ -53,6 +99,19 @@ export default function Header({
     };
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  useEffect(() => {
+    const updateQuoteCartCount = () => setQuoteCartCount(getQuoteCartCount());
+
+    updateQuoteCartCount();
+    window.addEventListener(QUOTE_CART_UPDATED_EVENT, updateQuoteCartCount);
+    window.addEventListener("storage", updateQuoteCartCount);
+
+    return () => {
+      window.removeEventListener(QUOTE_CART_UPDATED_EVENT, updateQuoteCartCount);
+      window.removeEventListener("storage", updateQuoteCartCount);
+    };
   }, []);
 
   // Sticky header classes
@@ -166,67 +225,84 @@ export default function Header({
                 </>
               ) : (
                 // REAL MENU
-                menu.main.map((item) => (
-                  <li key={item.id} className="relative group">
-                    <Link
-                      href={langHref(item.url, lang)}
-                      prefetch={true}
-                      className={`
-                            ${scrolled ? "text-(--color-body) hover:text-(--color-body)" : "text-(--color-body) hover:text-(--color-body)"} relative z-9 text-[15px] transition leading-[18px] flex items-center gap-2`}
-                    >
-                      {item.title}
+                <>
+                  {menu.main.map((item) => (
+                    <li key={item.id} className="relative group">
+                      <Link
+                        href={langHref(item.url, lang)}
+                        prefetch={true}
+                        className={`
+                              ${scrolled ? "text-(--color-body) hover:text-(--color-body)" : "text-(--color-body) hover:text-(--color-body)"} relative z-9 text-[15px] transition leading-[18px] flex items-center gap-2`}
+                      >
+                        {item.title}
 
+                        {item.children?.length > 0 && (
+                          <span className="transition-transform duration-300 group-hover:rotate-180">
+                            <Image
+                              src={DownSvg}
+                              alt="arrow"
+                              width={20}
+                              height={20}
+                              className={scrolled ? "brightness-0" : ""}
+                            />
+                          </span>
+                        )}
+                      </Link>
+
+                      {/* SUBMENU */}
                       {item.children?.length > 0 && (
-                        <span className="transition-transform duration-300 group-hover:rotate-180">
-                          <Image
-                            src={DownSvg}
-                            alt="arrow"
-                            width={20}
-                            height={20}
-                            className={scrolled ? "brightness-0" : ""}
-                          />
+                        <div
+                          className={`
+                              ${scrolled ? "top-[15px]" : "top-0" }
+                              absolute left-1/2  mt-1
+                              -translate-x-1/2 min-w-[180px]
+                              pt-8
+                              pointer-events-none
+                              group-hover:pointer-events-auto
+                           z-2
+                            `}
+                        >
+                          <ul className="
+                              opacity-0 translate-x-4
+                              group-hover:opacity-100 group-hover:translate-x-0
+                              transition-all duration-300 ease-out bg-white text-(--color-body) rounded-sm shadow-lg overflow-hidden
+                            "
+                          >
+                            {item.children.map((sub) => (
+                              <li key={sub.id}>
+                                <Link
+                                  href={langHref(sub.url, lang)}
+                                  prefetch={true}
+                                  className="
+                                      block px-4 py-3 text-(--color-body) text-sm
+                                      hover:text-(--color-body) transition
+                                    "
+                                >
+                                  {sub.title}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+
+                  <li className="relative group">
+                    <Link
+                      href={langHref("/cart", lang)}
+                      className="relative block"
+                      aria-label="View cart"
+                    >
+                      <CartIcon />
+                      {quoteCartCount > 0 && (
+                        <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1E2E31] px-1 text-[10px] leading-none text-white">
+                          {quoteCartCount}
                         </span>
                       )}
                     </Link>
-
-                    {/* SUBMENU */}
-                    {item.children?.length > 0 && (
-                      <div
-                        className={`
-                            ${scrolled ? "top-[15px]" : "top-0" }
-                            absolute left-1/2  mt-1
-                            -translate-x-1/2 min-w-[180px]
-                            pt-8
-                            pointer-events-none
-                            group-hover:pointer-events-auto
-                         z-2
-                          `}
-                      >
-                        <ul className="
-                            opacity-0 translate-x-4
-                            group-hover:opacity-100 group-hover:translate-x-0
-                            transition-all duration-300 ease-out bg-white text-(--color-body) rounded-sm shadow-lg overflow-hidden
-                          "
-                        >
-                          {item.children.map((sub) => (
-                            <li key={sub.id}>
-                              <Link
-                                href={langHref(sub.url, lang)}
-                                prefetch={true}
-                                className="
-                                    block px-4 py-3 text-(--color-body) text-sm
-                                    hover:text-(--color-body) transition
-                                  "
-                              >
-                                {sub.title}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
                   </li>
-                ))
+                </>
               )}
             </ul>
           </div>

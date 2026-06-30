@@ -104,7 +104,7 @@ export default function ProductPage({
             <ProductGallery product={product} />
           </section>
           <section className="min-w-0">
-            <ProductDetails product={product} />
+            <ProductDetails product={product} lang={lang} />
           </section>
         </div>
       </article>

@@ -5,17 +5,7 @@ function stripHtml(value = "") {
   return value.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
 }
 
-function getProductCategory(product) {
-  const terms = product?._embedded?.["wp:term"];
-  if (!Array.isArray(terms)) return null;
-
-  return terms
-    .flat()
-    .find((term) => term?.taxonomy === "product_cat" && term?.name);
-}
-
 export default function ProductBreadcrumbs({ product, lang = DEFAULT_LANG }) {
-  const category = getProductCategory(product);
   const productName = stripHtml(product?.title?.rendered);
 
   const items = [
@@ -27,12 +17,6 @@ export default function ProductBreadcrumbs({ product, lang = DEFAULT_LANG }) {
       label: "Webshop",
       href: langHref("/webshop", lang),
     },
-    category
-      ? {
-          label: category.name,
-          href: langHref(`/product-category/${category.slug}/`, lang),
-        }
-      : null,
     {
       label: productName,
     },
@@ -52,7 +36,10 @@ export default function ProductBreadcrumbs({ product, lang = DEFAULT_LANG }) {
           return (
             <li key={`${item.label}-${index}`} className="flex items-center gap-2">
               {item.href && !isLast ? (
-                <Link href={item.href} className="transition hover:text-(--color-body)">
+                <Link
+                  href={item.href}
+                  className="transition hover:text-(--color-body)"
+                >
                   {item.label}
                 </Link>
               ) : (
