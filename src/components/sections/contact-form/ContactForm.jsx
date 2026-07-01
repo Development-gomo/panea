@@ -10,6 +10,62 @@ import {
 import Image from "next/image";
 import ArrowSvg from "../../../../public/right-arrow.svg";
 
+function parsePipeOption(value = "") {
+  const text = String(value);
+  const separatorIndex = text.indexOf("|");
+
+  if (separatorIndex === -1) {
+    return {
+      label: text.trim(),
+      value: text.trim(),
+      hasPipe: false,
+    };
+  }
+
+  const label = text.slice(0, separatorIndex).trim();
+
+  return {
+    label,
+    value: label,
+    pipeValue: text.slice(separatorIndex + 1).trim(),
+    hasPipe: true,
+  };
+}
+
+function getSelectOption(option) {
+  if (typeof option === "string" || typeof option === "number") {
+    return parsePipeOption(option);
+  }
+
+  const rawLabel =
+    option?.label ||
+    option?.text ||
+    option?.title ||
+    option?.name ||
+    "";
+  const rawValue =
+    option?.value ||
+    option?.option_value ||
+    option?.raw_value ||
+    "";
+  const parsedLabel = parsePipeOption(rawLabel);
+
+  if (parsedLabel.hasPipe) {
+    return parsedLabel;
+  }
+
+  if (rawValue) {
+    const parsedValue = parsePipeOption(rawValue);
+
+    return {
+      label: parsedLabel.label || parsedValue.label,
+      value: parsedValue.value,
+    };
+  }
+
+  return parsedLabel;
+}
+
 function Field({ field, value, setValue, error, variant = "default" }) {
   const isSolution = variant === "solution";
   const common = isSolution
@@ -52,12 +108,22 @@ function Field({ field, value, setValue, error, variant = "default" }) {
           value={value || ""}
           onChange={(e) => setValue(field.key, e.target.value)}
         >
-          <option value="">{field.placeholder || "Select"}</option>
-          {(field.options || []).map((opt, idx) => (
-            <option key={idx} value={opt.label}>
-              {opt.label}
-            </option>
-          ))}
+          <option value="" className="bg-[#f2ebe2] text-[#1e2e31]">
+            {field.placeholder || "Select"}
+          </option>
+          {(field.options || []).map((opt, idx) => {
+            const option = getSelectOption(opt);
+
+            return (
+              <option
+                key={`${option.value}-${idx}`}
+                value={option.value}
+                className="bg-[#f2ebe2] text-[#1e2e31]"
+              >
+                {option.label}
+              </option>
+            );
+          })}
         </select>
         {error ? <p className={errorClass}>{error}</p> : null}
       </div>
@@ -303,13 +369,7 @@ export default function ContactForm({
                         : "w-[170px] rounded-sm bg-(--color-brand) text-white hover:bg-(--color-brand)"
                     }`}
       >
-        <span className="relative w-2 h-2 flex items-center justify-center">
-          <span
-            className="absolute h-2 w-2 rounded-full bg-[#27E0C0]
-                        transition-all duration-300 ease-out
-                        group-hover:opacity-0 group-hover:-translate-x-1"
-          ></span>
-        </span>
+      
 
         {/* TEXT (slides left on hover) */}
         <span

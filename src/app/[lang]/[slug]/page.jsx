@@ -4,6 +4,7 @@ import { getPageBySlug, getBusinessAreaBySlug, fetchWP, getMenu, getThemeOptions
 import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
 import BusinessAreaBuilder from "@/components/major/BusinessAreaBuilder";
+import GenericPageBuilder from "@/components/major/GenericPageBuilder";
 import WebshopPage from "@/components/product/webshop/WebshopPage";
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
@@ -98,6 +99,9 @@ export default async function SinglePage({ params }) {
   const isBusinessArea = !data && !!businessArea;
   const acf = entry?.acf || {};
   const businessAreaSections = isBusinessArea ? getBusinessAreaSections(acf) : null;
+  const genericSections = Array.isArray(acf.generic_page_builder)
+    ? acf.generic_page_builder
+    : acf.page_builder;
   const webshopTeamMemberIds =
     slug === "webshop" && data ? collectWebshopTeamMemberIds(data) : [];
   const prefetchedWebshopTeamMembers = webshopTeamMemberIds.length
@@ -127,6 +131,8 @@ export default async function SinglePage({ params }) {
           />
         ) : isBusinessArea ? (
           <BusinessAreaBuilder sections={businessAreaSections} lang={lang} businessAreaData={businessArea}/>
+        ) : Array.isArray(acf.generic_page_builder) ? (
+          <GenericPageBuilder sections={genericSections} lang={lang} />
         ) : (
           <PageBuilder sections={acf.page_builder} lang={lang} />
         )}
