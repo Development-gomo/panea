@@ -63,9 +63,13 @@ function Field({ label, name, type = "text", required = false, textarea = false 
       {label}
       {required ? " *" : ""}
       {textarea ? (
-        <textarea name={name} className={`${inputClass} min-h-[122px] resize-y`} />
+        <textarea
+          name={name}
+          required={required}
+          className={`${inputClass} min-h-[122px] resize-y`}
+        />
       ) : (
-        <input name={name} type={type} className={inputClass} />
+        <input name={name} type={type} required={required} className={inputClass} />
       )}
     </label>
   );
@@ -160,6 +164,8 @@ export default function QuoteCartPage({ lang = DEFAULT_LANG }) {
     getServerQuoteCartSnapshot
   );
   const [submitMessage, setSubmitMessage] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const items = useMemo(
     () => parseQuoteCartItems(quoteCartSnapshot),
     [quoteCartSnapshot]
@@ -173,13 +179,57 @@ export default function QuoteCartPage({ lang = DEFAULT_LANG }) {
     saveQuoteCartItems([]);
   };
 
-  const submitRequest = (event) => {
+  const submitRequest = async (event) => {
     event.preventDefault();
-    setSubmitMessage(
-      items.length
-        ? "Thank you. Your quote request has been prepared."
-        : "Please add at least one product before submitting."
-    );
+    const formElement = event.currentTarget;
+    setSubmitMessage("");
+    setSubmitError("");
+
+    if (items.length === 0) {
+      setSubmitError("Please add at least one product before submitting.");
+      return;
+    }
+
+    const formData = new FormData(formElement);
+    const payload = {
+      form: {
+        name: String(formData.get("name") || ""),
+        email: String(formData.get("email") || ""),
+        phone: String(formData.get("phone") || ""),
+        company: String(formData.get("company") || ""),
+        message: String(formData.get("message") || ""),
+      },
+      items,
+    };
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/quote-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          data?.error || "Unable to submit your quote request. Please try again."
+        );
+      }
+
+      saveQuoteCartItems([]);
+      formElement.reset();
+      setSubmitMessage(
+        data?.orderId
+          ? `Thank you. Your quote request has been submitted. Order #${data.orderId}.`
+          : "Thank you. Your quote request has been submitted."
+      );
+    } catch (error) {
+      setSubmitError(error?.message || "Unable to submit your quote request.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -254,14 +304,20 @@ export default function QuoteCartPage({ lang = DEFAULT_LANG }) {
 
               <button
                 type="submit"
-                className="mt-1 min-h-11 cursor-pointer rounded-full border border-(--color-body) bg-(--color-body) px-8 text-[13px] text-white transition hover:bg-black"
+                disabled={isSubmitting}
+                className="mt-1 min-h-11 cursor-pointer rounded-full border border-(--color-body) bg-(--color-body) px-8 text-[13px] text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Submit quote request
+                {isSubmitting ? "Submitting..." : "Submit quote request"}
               </button>
 
               {submitMessage && (
                 <p className="text-[13px] leading-5 text-(--color-body)">
                   {submitMessage}
+                </p>
+              )}
+              {submitError && (
+                <p className="text-[13px] leading-5 text-red-700">
+                  {submitError}
                 </p>
               )}
             </form>
