@@ -1,6 +1,13 @@
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllBusinessAreas, getAllPosts, getCaseStudies } from "@/lib/api";
+import {
+  getAllBusinessAreas,
+  getAllPosts,
+  getAllSuppliers,
+  getAllTeam,
+  getCaseStudies,
+  getTeamMembersByIds,
+} from "@/lib/api";
 
 const GenericHero = dynamic(() => import("../sections/generic/Hero"));
 const GenericCounterSection = dynamic(() =>
@@ -19,6 +26,39 @@ const GenericImageCtaBanner = dynamic(() =>
   import("../sections/generic/ImageCtaBanner")
 );
 const GenericHomeNews = dynamic(() => import("../sections/generic/HomeNews"));
+const GenericContactFormSection = dynamic(() =>
+  import("../sections/generic/ContactFormSection")
+);
+const GenericMapAndLocations = dynamic(() =>
+  import("../sections/generic/MapAndLocations")
+);
+const GenericEmployeeListing = dynamic(() =>
+  import("../sections/generic/EmployeeListing")
+);
+const GenericSupplierListing = dynamic(() =>
+  import("../sections/generic/SupplierListing")
+);
+
+function selectedPosts(value) {
+  if (!value) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+function postId(item) {
+  return typeof item === "object" ? item?.ID || item?.id : item;
+}
+
+function collectTeamMemberIds(sections) {
+  return sections
+    .filter((block) =>
+      ["contact_form_section", "contact_form", "team_member_section"].includes(
+        block?.acf_fc_layout
+      )
+    )
+    .flatMap((block) => selectedPosts(block.select_team_members))
+    .map((item) => Number(postId(item)))
+    .filter(Boolean);
+}
 
 export default async function GenericPageBuilder({
   sections,
@@ -34,10 +74,27 @@ export default async function GenericPageBuilder({
     (block) => block?.acf_fc_layout === "business_tabs"
   );
   const needsPosts = sectionItems.some((block) => block?.acf_fc_layout === "news_section");
-  const [prefetchedCases, prefetchedBusinessAreas, prefetchedPosts] = await Promise.all([
+  const needsEmployees = sectionItems.some(
+    (block) => block?.acf_fc_layout === "employee_listing"
+  );
+  const needsSuppliers = sectionItems.some(
+    (block) => block?.acf_fc_layout === "supplier_listing"
+  );
+  const teamMemberIds = collectTeamMemberIds(sectionItems);
+  const [
+    prefetchedCases,
+    prefetchedBusinessAreas,
+    prefetchedPosts,
+    prefetchedTeamMembers,
+    prefetchedEmployees,
+    prefetchedSuppliers,
+  ] = await Promise.all([
     needsCases ? getCaseStudies(lang) : null,
     needsBusinessAreas ? getAllBusinessAreas(lang) : null,
     needsPosts ? getAllPosts(lang) : null,
+    teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : null,
+    needsEmployees ? getAllTeam(lang) : null,
+    needsSuppliers ? getAllSuppliers(lang) : null,
   ]);
 
   return (
@@ -97,6 +154,48 @@ export default async function GenericPageBuilder({
                 data={block}
                 lang={lang}
                 prefetchedPosts={prefetchedPosts}
+              />
+            );
+
+          case "contact_form_section":
+          case "contact_form":
+            return (
+              <GenericContactFormSection
+                key={i}
+                data={block}
+                teamData={
+                  sectionItems[i + 1]?.acf_fc_layout === "team_member_section"
+                    ? sectionItems[i + 1]
+                    : null
+                }
+                lang={lang}
+                prefetchedTeamMembers={prefetchedTeamMembers}
+              />
+            );
+
+          case "team_member_section":
+            return null;
+
+          case "map_and_locations":
+            return <GenericMapAndLocations key={i} data={block} lang={lang} />;
+
+          case "employee_listing":
+            return (
+              <GenericEmployeeListing
+                key={i}
+                data={block}
+                lang={lang}
+                employees={prefetchedEmployees}
+              />
+            );
+
+          case "supplier_listing":
+            return (
+              <GenericSupplierListing
+                key={i}
+                data={block}
+                lang={lang}
+                suppliers={prefetchedSuppliers}
               />
             );
 

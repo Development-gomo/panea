@@ -226,6 +226,10 @@ export async function getCaseStudies(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/case_study?lang=${lang}&per_page=100&_embed`);
 }
 
+export async function getAllSuppliers(lang = DEFAULT_LANG) {
+  return await fetchWP(`/wp/v2/suppliers?lang=${lang}&per_page=100&_embed&acf_format=standard`);
+}
+
 export async function getTestimonialsByIds(ids = [], lang = DEFAULT_LANG) {
   const cleanIds = [...new Set(ids.map((id) => Number(id)).filter(Boolean))];
 
