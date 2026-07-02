@@ -1,7 +1,8 @@
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
+import GenericPageBuilder from "@/components/major/GenericPageBuilder";
 import QuoteCartPage from "@/components/product/cart/QuoteCartPage";
-import { getMenu, getThemeOptions } from "@/lib/api";
+import { getMenu, getPageBySlug, getThemeOptions } from "@/lib/api";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 import { resolveParams } from "@/lib/params";
 import { notFound } from "next/navigation";
@@ -22,10 +23,14 @@ export default async function LangCartRoute({ params }) {
 
   if (!SUPPORTED_LANGS.includes(lang)) notFound();
 
-  const [menu, themeOptions] = await Promise.all([
+  const [menu, themeOptions, cartPage] = await Promise.all([
     getMenu(lang),
     getThemeOptions(lang),
+    getPageBySlug("cart", lang),
   ]);
+  const genericSections = Array.isArray(cartPage?.acf?.generic_page_builder)
+    ? cartPage.acf.generic_page_builder
+    : null;
 
   return (
     <>
@@ -33,11 +38,15 @@ export default async function LangCartRoute({ params }) {
         lang={lang}
         currentSlug="cart"
         entryType="page"
+        entryId={cartPage?.id}
         prefetchedMenu={menu}
         prefetchedOptions={themeOptions?.header || {}}
         logoUrl={themeOptions?.header?.logo_light?.url || ""}
       />
       <QuoteCartPage lang={lang} />
+      {genericSections?.length ? (
+        <GenericPageBuilder sections={genericSections} lang={lang} />
+      ) : null}
       <Footer lang={lang} currentSlug="cart" />
     </>
   );

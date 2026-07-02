@@ -141,6 +141,8 @@ export default function Header({
     async function fetchAltLangUrl() {
       try {
         const altLang = SUPPORTED_LANGS.filter((l) => l !== lang)[0];
+        const fallbackUrl =
+          currentSlug === "cart" ? langHref("/cart", altLang) : langHome(altLang);
 
         // Use entryId for dynamic translation lookup if available
         if (entryId) {
@@ -164,11 +166,14 @@ export default function Header({
           }
         }
 
-        // Fallback: if no entryId or translation not found, go to homepage
-        setAltLangUrl(langHome(altLang));
+        // Fallback: keep known utility routes on the same route, otherwise go home.
+        setAltLangUrl(fallbackUrl);
 
       } catch (error) {
-        setAltLangUrl(langHome(SUPPORTED_LANGS.filter((l) => l !== lang)[0]));
+        const altLang = SUPPORTED_LANGS.filter((l) => l !== lang)[0];
+        setAltLangUrl(
+          currentSlug === "cart" ? langHref("/cart", altLang) : langHome(altLang)
+        );
       }
     }
 
