@@ -70,8 +70,8 @@ export default function WhyChooseUs({ data, lang = DEFAULT_LANG }) {
                     {cta_text}
                     <span className="absolute bottom-0 left-0 h-[1px] bg-(--color-body) w-full transition-all duration-300 ease-out group-hover:w-[calc(100%+22px)]" />
                   </span>
-                  <span className="ml-1 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
-                    <Image src={RightArrow} alt="arrow" width={13} height={13} />
+                  <span className="ml-2 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                    <Image src={RightArrow} alt="arrow" width={15} height={15} />
                   </span>
                 </Link>
               </motion.div>
@@ -121,10 +121,10 @@ export default function WhyChooseUs({ data, lang = DEFAULT_LANG }) {
                         </div>
                       )}
 
-                      {/* 105px gap between icon and content */}
-                      <div className="mt-[105px]">
+                      {/* 130px gap between icon and content */}
+                      <div className="mt-[130px]">
                         {feature.title && (
-                          <h3 className="text-(--color-body) text-xl font-medium mb-3">
+                          <h3 className="text-(--color-body) text-xl font-normal mb-3">
                             {feature.title}
                           </h3>
                         )}

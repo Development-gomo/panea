@@ -129,9 +129,9 @@ export default function CaseStudiesSlider({
                 )}
 
                 <div className="absolute inset-x-0 bottom-0 bg-black/35 text-white shadow-[0_-12px_36px_rgba(0,0,0,0.3)] backdrop-blur-md">
-                  <div className="px-4 py-3">
+                  <div className="px-6 py-4">
                     <div className="min-w-0">
-                      <h3 className="truncate text-[16px] leading-[1.25] md:text-[20px]">
+                      <h3 className="truncate text-[16px] leading-[1.25] md:text-[24px]">
                         {title}
                       </h3>
                     </div>
@@ -139,7 +139,7 @@ export default function CaseStudiesSlider({
 
                   <div className="grid grid-cols-[1fr_auto] border-t border-white/15">
                     {excerpt && (
-                      <p className="min-w-0 truncate px-4 py-4 text-[12px] font-light leading-none text-white/85">
+                      <p className="min-w-0 truncate px-6 py-4 text-[14px] font-light leading-none text-white/85">
                         {excerpt}
                       </p>
                     )}

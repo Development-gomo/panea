@@ -82,8 +82,8 @@ export default function HomeCaseStudies({
                     {cta_text}
                     <span className="absolute bottom-0 left-0 h-[1px] w-full bg-(--color-dark) transition-all duration-300 ease-out group-hover:w-[calc(100%+22px)]" />
                   </span>
-                  <span className="ml-1 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
-                    <Image src={ArrowSvg} alt="arrow" width={13} height={13} />
+                  <span className="ml-2 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                    <Image src={ArrowSvg} alt="arrow" width={15} height={15} />
                   </span>
                 </Link>
               </motion.div>

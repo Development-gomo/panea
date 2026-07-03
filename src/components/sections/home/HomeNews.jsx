@@ -186,19 +186,19 @@ export default function HomeNews({
                     <div className="absolute inset-0 bg-[linear-gradient(135deg,#6d5c49_0%,#c5ad89_44%,#26383a_100%)]" />
                   )}
 
-                  <span className="absolute left-5 top-5 rounded-full border border-white/15 px-4 py-2 text-[11px] leading-none text-white shadow-sm backdrop-blur-md">
+                  <span className="absolute left-5 top-5 rounded-full border border-white/15 px-4 py-2 text-[12px] leading-none text-white shadow-sm backdrop-blur-md">
                     {decodeHtml(category)}
                   </span>
 
                   <div className="absolute inset-x-0 bottom-0 border-t border-white/15 bg-black/35 text-white shadow-[0_-12px_36px_rgba(0,0,0,0.3)] backdrop-blur-md">
-                    <div className="pt-6 px-6 pb-10">
-                      <h3 className="min-h-[54px] text-[18px] leading-[1.35] md:text-[18px]">
+                    <div className="pt-6 px-6 pb-10 min-h-[150px]">
+                      <h3 className="min-h-[54px] text-[18px] leading-[1.35] md:text-[20px]">
                         {titleText}
                       </h3>
                     </div>
 
                     <div className="grid grid-cols-[1fr_auto] border-t border-white/15">
-                      <span className="px-6 py-4 text-[12px] leading-none text-white/90">
+                      <span className="px-6 py-4 text-[14px] leading-none text-white/90">
                         {date}
                       </span>
                       <span className="group/cta inline-flex items-center gap-2 border-l border-white/15 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors duration-300 hover:bg-[#F2EBE2] hover:text-[#1E2E31]">

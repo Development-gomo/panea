@@ -225,7 +225,7 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
                       aria-pressed={isActive}
                     >
                       <span
-                        className={`ff-larken text-[25px] leading-[1.3] font-normal transition-colors duration-300 md:text-[31px] lg:text-[42px] ${
+                        className={`ff-larken text-[25px] leading-[1.3] font-300 transition-colors duration-300 md:text-[31px] lg:text-[42px] ${
                           isActive
                             ? "text-white"
                             : "text-white/45 group-hover:text-white/75"
@@ -244,8 +244,8 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
                         <Image
                           src={PRightArrow}
                           alt=""
-                          width={20}
-                          height={20}
+                          width={22}
+                          height={22}
                           className={`transition-transform duration-300 ease-out ${
                             isActive
                               ? "translate-x-0"
@@ -304,7 +304,7 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
                         return (
                           <span
                             key={`${label}-${index}`}
-                            className="rounded-full border border-white/25 bg-[#1E2E31]/35 px-3 py-1.5 text-[12px] leading-none text-white shadow-[inset_0_1px_8px_rgba(255,255,255,0.16)] backdrop-blur-md"
+                            className="rounded-full border border-white/25 bg-[#1E2E31]/35 px-4 py-2 text-[12px] leading-none text-white"
                           >
                             {label}
                           </span>
@@ -322,11 +322,11 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
                 </div>
 
                 {(webshopButton || activeHref) && (
-                  <div className="flex flex-wrap justify-end border-t border-white/15">
+                  <div className="flex mt-6 flex-wrap justify-end border-t border-white/15">
                     {webshopButton && (
                       <Link
                         href={webshopButton.url}
-                        className="group/cta inline-flex items-center gap-2 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors duration-300 hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
+                        className="group/cta inline-flex items-center gap-2 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors   hover:bg-[#F2EBE2] hover:text-[#1E2E31] hover:border hover:border-[#1e2e31]"
                       >
                         {webshopButton.text}
                         <ExploreIcon />

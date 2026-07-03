@@ -95,8 +95,8 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
                   <span className="absolute bottom-0 left-0 h-[1px] bg-(--color-dark) w-full transition-all duration-300 ease-out group-hover:w-[calc(100%+22px)]" />
                 </span>
                 {/* Arrow — always visible, shifts right on hover */}
-                <span className="ml-1 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
-                  <Image src={RightArrow} alt="arrow" width={13} height={13} />
+                <span className="ml-2 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                  <Image src={RightArrow} alt="arrow" width={17} height={17} />
                 </span>
               </Link>
             </motion.div>
@@ -140,27 +140,44 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
 
         {/* BOTTOM — counters row */}
         {counters.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 ff-larken">
-            {counters.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <p className="text-[36px] md:text-[64px] leading-none font-medium text-(--color-body) font-normal">
-                  <AnimatedNumber value={item.number} />
-                  {item.suffix && <span>{item.suffix}</span>}
-                </p>
-                {item.short_text && (
-                  <p className="mt-6 text-base text-(--color-body) font-light">{item.short_text}</p>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        )}
+          <>
+            <div className="counter-grid">
+              {counters.map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="w-full flex flex-col md:last:items-end"
+                >
+                  <div className="w-full md:w-auto">
+                    <p className="text-[36px] md:text-[64px] leading-none font-medium text-(--color-body) font-normal">
+                      <AnimatedNumber value={item.number} />
+                      {item.suffix && <span>{item.suffix}</span>}
+                    </p>
+                    {item.short_text && (
+                      <p className="mt-4 text-base text-left text-(--color-body) font-light">{item.short_text}</p>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            <style jsx>{`
+              .counter-grid {
+                display: grid;
+                gap: 2rem;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+              }
 
+              @media (min-width: 768px) {
+                .counter-grid {
+                  grid-template-columns: 332px 332px 332px minmax(0, 1fr);
+                }
+              }
+            `}</style>
+          </>
+        )}
       </div>
     </section>
   );

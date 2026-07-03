@@ -21,7 +21,7 @@ export default function ImageCtaBanner({ data, lang = DEFAULT_LANG }) {
 
   return (
     <section className="w-full py-[60px] md:py-[120px]">
-      <div className="web-width-sm mx-auto px-6">
+      <div className="web-width-sm mx-auto ">
         <div className="relative rounded-[10px] overflow-hidden min-h-[480px] md:min-h-[600px] flex items-center justify-center">
 
           {/* Background Image */}

@@ -15,7 +15,7 @@ export default function HomeHero({ data }) {
 
   return (
     <div className="web-width mx-auto px-6">
-      <section className="relative rounded-[11px] overflow-hidden hero min-h-[50vh] md:min-h-[clamp(480px,90svh,100svh)]">
+      <section className="relative rounded-[11px] overflow-hidden hero min-h-[50vh] md:min-h-[clamp(480px,86svh,100svh)]">
 
         {/* BG VIDEO / IMAGE */}
         <div className="absolute inset-0 -z-10">
@@ -43,7 +43,7 @@ export default function HomeHero({ data }) {
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30 -z-10" />
 
         {/* 3-ROW LAYOUT */}
-        <div className="relative flex flex-col items-center justify-between w-full min-h-[50vh] md:min-h-[clamp(480px,90svh,100svh)]">
+        <div className="relative flex flex-col items-center justify-between w-full min-h-[50vh] md:min-h-[clamp(480px,86svh,100svh)]">
 
           {/* TOP — short_heading */}
           {shortHeading && (
@@ -98,7 +98,7 @@ export default function HomeHero({ data }) {
               transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
               className="mt-1 opacity-80 cursor-pointer"
             >
-              <Image src={DownArrow} alt="scroll down" width={18} height={18} />
+              <Image src={DownArrow} alt="scroll down" width={22} height={22} />
             </motion.button>
           </motion.div>
 

@@ -116,7 +116,7 @@ export default function Header({
 
   // Sticky header classes
  const headerClasses = scrolled
-  ? "sticky top-0 w-full z-50 text-(--color-body) transition-all duration-300 py-4 bg-white shadow-sm"
+  ? "sticky top-0 w-full z-50 text-(--color-body) transition-all duration-300 py-4 bg-[#F2EBE2] shadow-sm"
   : "sticky top-0 w-full z-50 text-(--color-body) transition-all duration-300 py-4 ";
 
   // Mobile menu state
@@ -188,7 +188,7 @@ export default function Header({
         {/* LOGO */}
         <Link
           href={langHome(lang)}
-          className="flex relative h-8 w-[100px] md:h-10 md:w-[100px]"
+          className="flex relative h-12 md:h-12"
         >
           {(() => {
             const lightLogo = logoUrl || options?.logo_light?.url;
@@ -202,7 +202,7 @@ export default function Header({
                 src={activeLogo}
                 alt="panea Logo"
                 width={37}
-                height={16}
+                height={48}
                 className="object-contain"
                 priority
               />
@@ -214,10 +214,10 @@ export default function Header({
         <nav className="hidden lg:flex items-center gap-4 ">
           {/* Centered glass menu wrapper */}
           <div
-            className="px-8 py-4 flex items-center gap-8 lg:absolute lg:left-[100px]
+            className="px-10 py-4 flex items-center gap-8 lg:absolute lg:left-[62px]
             "
           >
-            <ul className="flex items-center gap-9 relative">
+            <ul className="flex items-center gap-6 relative">
               {isLoading ? (
                 // SKELETON MENU (no jump)
                 <>
@@ -246,8 +246,8 @@ export default function Header({
                             <Image
                               src={DownSvg}
                               alt="arrow"
-                              width={20}
-                              height={20}
+                              width={22}
+                              height={22}
                               className={scrolled ? "brightness-0" : ""}
                             />
                           </span>
@@ -319,7 +319,7 @@ export default function Header({
               type="button"
               onClick={() => setLangOpen((v) => !v)}
               className={`
-                            ${scrolled ? " text-(--color-body) hover:text-(--color-body)/95 " : ""} flex items-center gap-2 cursor-pointer px-4 py-4 rounded-sm text-sm leading-3.5
+                            ${scrolled ? " text-(--color-body) hover:text-(--color-body)/95 " : ""} flex items-center gap-2 cursor-pointer px-0 py-4 rounded-sm text-sm leading-3.5
             transition`}>
               <span>{lang.toUpperCase()}</span>
 
@@ -332,8 +332,8 @@ export default function Header({
                 <Image
                   src={DownSvg}
                   alt="arrow"
-                  width={20}
-                  height={20}
+                  width={22}
+                  height={22}
                   className={scrolled ? "brightness-0" : ""}
                 />
               </span>
@@ -360,16 +360,32 @@ export default function Header({
             // SKELETON PLACEHOLDER (prevents jump)
             <div className="w-[135px] h-[42px] rounded-sm bg-white/20 animate-pulse"></div>
           ) : (
-            <Link
-              href={langHref(options.button_url, lang)}
-              className="inline-flex items-center justify-center
-                    rounded-[50px] px-8 py-4 text-(--color-white)
-                    bg-(--color-body)"
-            >
-              <span className="text-[16px] leading-none text-(--color-white) whitespace-nowrap">
-                {options.button_text}
-              </span>
-            </Link>
+            <>
+              <Link
+                href={langHref(options.button_url, lang)}
+                className="inline-flex items-center justify-center
+                      rounded-[50px] px-8 py-4 text-(--color-white)
+                      bg-(--color-body)"
+              >
+                <span className="text-[16px] leading-none text-(--color-white) whitespace-nowrap">
+                  {options.button_text}
+                </span>
+              </Link>
+
+              {/* Desktop hamburger matching other icons */}
+              <button
+                type="button"
+                aria-label="Open menu"
+                onClick={() => setMobileOpen(true)}
+                className="inline-flex items-center justify-center text-(--color-body)"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true">
+                  <path d="M1 1h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M1 7h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M1 13h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </>
           )}
         </nav>
 

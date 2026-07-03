@@ -14,7 +14,7 @@
 body {
   font-family: var(--font-early-sans);
   font-size: 16px;
-  font-weight: 400;
+  font-weight: 300;
   line-height: 1.5;
   background-color: var(--color-brand);
   color: var(--color-body);
@@ -37,7 +37,7 @@ body {
 }
 
 .panea-case-study-slider {
-  padding-bottom: 38px !important;
+  padding-bottom: 50px !important;
 }
 
 .panea-case-study-slider .swiper-pagination {
@@ -45,12 +45,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 10px;
 }
 
 .panea-case-study-slider .swiper-pagination-bullet {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   margin: 0 !important;
   background: var(--color-body);
   opacity: 1;
@@ -58,8 +58,8 @@ body {
 }
 
 .panea-case-study-slider .swiper-pagination-bullet-active {
-  width: 8px;
-  height: 8px;
+  width: 16px !important;
+  height: 16px !important;
 }
 
 .panea-testimonial-slider-shell {
