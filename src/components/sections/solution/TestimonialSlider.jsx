@@ -194,19 +194,19 @@ export default function SolutionTestimonialSlider({ data, prefetchedTestimonials
 
                     {content && (
                       <div
-                        className="ff-larken relative z-10 max-w-[510px] text-[24px] font-light leading-[1.35] text-white md:text-[28px] [&_p]:mb-4 [&_p:last-child]:mb-0"
+                        className="ff-larken relative z-10 max-w-[510px] text-[32px] font-extralight leading-[1.35] text-white md:text-[32px] [&_p]:mb-4 [&_p:last-child]:mb-0"
                         dangerouslySetInnerHTML={{ __html: content }}
                       />
                     )}
 
                     <div className="relative z-10 mt-10">
                       {titleText && (
-                        <p className="text-[18px] font-normal leading-tight text-white">
+                        <p className="text-[20px] font-normal leading-tight text-white">
                           {titleText}
                         </p>
                       )}
                       {designation && (
-                        <p className="mt-1 text-[13px] font-light leading-normal text-white">
+                        <p className="mt-1 text-[14px] font-light leading-normal text-white">
                           {designation}
                         </p>
                       )}
