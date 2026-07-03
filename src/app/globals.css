@@ -58,8 +58,13 @@ body {
 }
 
 .panea-case-study-slider .swiper-pagination-bullet-active {
+<<<<<<< HEAD
   width: 16px !important;
   height: 16px !important;
+=======
+  width: 16px;
+  height: 16px;
+>>>>>>> feedback-ui
 }
 
 .panea-testimonial-slider-shell {
@@ -68,7 +73,7 @@ body {
 }
 
 .panea-testimonial-slider {
-  padding-bottom: 48px !important;
+  padding-bottom: 40px !important;
 }
 
 .panea-testimonial-slide {
@@ -84,8 +89,8 @@ body {
 }
 
 .panea-testimonial-slider .swiper-pagination-bullet {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   margin: 0 !important;
   background: var(--color-body);
   opacity: 1;

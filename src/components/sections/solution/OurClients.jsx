@@ -20,7 +20,7 @@ export default function SolutionOurClients({ data }) {
   if (!logos.length) return null;
 
   return (
-    <section className="w-full pt-[60px] pb-0 md:pt-[120px]">
+    <section className="w-full pt-[120px] pb-0 md:pt-[120px]">
       <div className="web-width mx-auto px-6">
         {textAboveTitle && (
           <motion.p

@@ -28,7 +28,7 @@ export default function SolutionOurApproach({ data }) {
   return (
     <section className="w-full pt-[60px] pb-0 md:pt-[120px]">
       <div className="web-width-sm mx-auto px-6">
-        <div className="mb-10 flex flex-col items-center text-center md:mb-16">
+        <div className="mb-[48px] flex flex-col items-center text-center">
           {text_above_title && (
             <motion.p
               className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
@@ -63,19 +63,19 @@ export default function SolutionOurApproach({ data }) {
               transition={{ duration: 0.5, delay: index * 0.08 }}
               viewport={{ once: true }}
             >
-              <p className="ff-larken text-[36px] font-medium leading-none text-(--color-body) md:text-[64px]">
+              <p className="ff-larken text-[36px] font-normal leading-none text-(--color-body) md:text-[64px]">
                 {formatStepNumber(step.step_number, index)}
               </p>
 
               {step.step_title && (
-                <h3 className="mt-6 mb-4 text-[18px] font-normal leading-[1.25] text-(--color-body)">
+                <h3 className="mt-6 mb-4 text-[20px] font-normal leading-[1.25] text-(--color-body)">
                   {step.step_title}
                 </h3>
               )}
 
               {step.step_details && (
                 <div
-                  className="text-[14px] font-light leading-[1.55] text-(--color-body) [&_p]:mb-4 [&_p:last-child]:mb-0"
+                  className="text-[16px] font-light leading-[1.55] text-(--color-body) [&_p]:mb-4 [&_p:last-child]:mb-0"
                   dangerouslySetInnerHTML={{ __html: step.step_details }}
                 />
               )}
@@ -85,7 +85,7 @@ export default function SolutionOurApproach({ data }) {
 
         {cta_text && cta_url && (
           <motion.div
-            className="mt-16 flex justify-center"
+            className="mt-[48px] flex justify-center"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}

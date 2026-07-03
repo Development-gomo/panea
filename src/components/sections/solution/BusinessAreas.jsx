@@ -270,7 +270,7 @@ export default function SolutionBusinessAreas({
                   )}
                   {activeDescription && (
                     <div
-                      className="mt-3 max-w-[460px] text-[14px] font-light leading-[1.5] text-white [&_p]:mb-0"
+                      className="mt-3 max-w-[460px] text-[16px] font-light leading-[1.5] text-white [&_p]:mb-0"
                       dangerouslySetInnerHTML={{ __html: activeDescription }}
                     />
                   )}

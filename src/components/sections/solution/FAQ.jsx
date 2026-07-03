@@ -32,7 +32,7 @@ export default function SolutionFAQ({ data }) {
   if (!data || !faqItems.length) return null;
 
   return (
-    <section className="w-full pt-[60px] pb-0 md:pt-[120px]">
+    <section className="w-full pt-[120px] pb-0 md:pt-[120px]">
       <div className="web-width-sm mx-auto px-6">
         <div className="flex flex-col items-center text-center">
           {text_above_title && (
@@ -105,14 +105,14 @@ export default function SolutionFAQ({ data }) {
                   aria-expanded={isOpen}
                   aria-controls={answerId}
                 >
-                  <span className="flex-1 text-[16px] leading-[1.4] text-(--color-body) md:text-[18px]">
+                  <span className="flex-1 text-[20px] leading-[1.4] text-(--color-body) md:text-[20px]">
                     {item.question}
                   </span>
                   <Image
                     src={ToggleIcon}
                     alt=""
-                    width={16}
-                    height={16}
+                    width={24}
+                    height={24}
                     className={`shrink-0 transition-transform duration-300 ${
                       isOpen ? "rotate-180" : ""
                     }`}
@@ -130,7 +130,7 @@ export default function SolutionFAQ({ data }) {
                       className="overflow-hidden"
                     >
                       <div
-                        className="max-w-[1080px] pb-6 pr-10 text-[14px] font-light leading-[1.6] text-(--color-body) md:pr-20 md:text-[16px] [&_p]:mb-4 [&_p:last-child]:mb-0"
+                        className="max-w-[1080px] pb-6 pr-10 text-[16px] font-light leading-[1.6] text-(--color-body) md:pr-20 md:text-[16px] [&_p]:mb-4 [&_p:last-child]:mb-0"
                         dangerouslySetInnerHTML={{ __html: item.answer }}
                       />
                     </motion.div>
