@@ -1,12 +1,10 @@
 // src/app/[lang]/not-found.jsx
 
 import Link from "next/link";
-import Image from "next/image";
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
 import { DEFAULT_LANG, langFromPath, langHome } from "@/config";
 import { headers } from "next/headers";
-import ArrowSvg from "../../../public/right-arrow.svg";
 
 export default async function LangScopedNotFound() {
   // next/navigation params are not passed to not-found components;
@@ -44,28 +42,9 @@ export default async function LangScopedNotFound() {
         <p className="text-gray-600 max-w-xl">{currentMessages.description}</p>
         <Link
           href={langHome(lang)}
-          className="gap-3 group relative inline-flex items-center rounded-sm bg-(--color-brand) px-6 py-4 text-white transition-all duration-300 hover:bg-(--color-brand) w-[195px] overflow-hidden select-none"
+          className="inline-flex rounded-[50px] bg-(--color-body) px-9 py-3.5 text-[16px] leading-none text-white transition-colors duration-300 hover:bg-white hover:text-(--color-body)"
         >
-          {/* DOT */}
-          <span className="relative w-6 flex items-center justify-center">
-            <span
-              className="absolute h-2 w-2 rounded-full bg-[#27E0C0] transition-all duration-300 ease-out group-hover:opacity-0 group-hover:-translate-x-1"
-            ></span>
-          </span>
-
-          {/* TEXT */}
-          <span
-            className="flex-1 text-[16px] leading-none whitespace-nowrap transition-all duration-300 ease-out group-hover:-translate-x-3"
-          >
-            {currentMessages.buttonText}
-          </span>
-          <span className="relative w-4 flex items-center justify-center">
-            <span
-              className="w-4 absolute opacity-0 -translate-x-4 transition-all duration-300 ease-out group-hover:opacity-100 group-hover:-translate-x-1"
-            >
-              <Image src={ArrowSvg} width={13} height={13} alt="arrow" />
-            </span>
-          </span>
+          {currentMessages.buttonText}
         </Link>
       </main>
       <Footer lang={lang} />
