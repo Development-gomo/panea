@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 import ContactArrow from "../../../../public/p-contact-arrow.svg";
-import LinkedinIcon from "../../../../public/linkedin.png";
+import LinkedinIcon from "../../../../public/linkedin-theme-icon.png";
 
 function selectedPosts(value) {
   if (!value) return [];
@@ -178,9 +178,9 @@ function EmployeeCard({ member, index }) {
             target="_blank"
             rel="noreferrer"
             aria-label={`${title || "Team member"} LinkedIn`}
-            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full border border-[#1E2E31]/45 bg-[#F2EBE2] transition-transform hover:scale-105"
+            className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full border border-[#1E2E31] bg-[#F2EBE2]"
           >
-            <Image src={LinkedinIcon} alt="" width={18} height={18} />
+            <Image src={LinkedinIcon} alt="" height={20} className="h-5 w-auto" />
           </Link>
         )}
       </div>
