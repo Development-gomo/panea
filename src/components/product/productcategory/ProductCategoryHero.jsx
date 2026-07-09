@@ -154,7 +154,7 @@ export default function ProductCategoryHero({
 
   return (
     <section className="bg-[#F2EBE2]">
-      <div className="web-width mx-auto grid gap-10 px-6 pt-9 pb-[64px] lg:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] lg:items-start">
+      <div className="web-width mx-auto grid gap-10 px-6 pt-9 pb-[64px] lg:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] lg:items-center">
         <div className="max-w-[620px]">
           {title && (
             <h1 className="mb-5 text-[32px] font-normal leading-tight text-[#1E2E31] md:text-[40px]">
@@ -164,7 +164,7 @@ export default function ProductCategoryHero({
 
           {description && (
             <div
-              className="max-w-[560px] whitespace-pre-line text-[15px] leading-6 text-[#1E2E31]"
+              className="max-w-[560px] whitespace-pre-line text-[16px] font-light leading-6 text-[#1E2E31]"
               dangerouslySetInnerHTML={{ __html: description }}
             />
           )}
@@ -172,7 +172,7 @@ export default function ProductCategoryHero({
           {cat_button.text && cat_button.url && (
             <Link
               href={cat_button.url}
-              className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#1E2E31] px-9 text-[14px] leading-none text-white transition hover:bg-black"
+              className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#1E2E31] px-9 text-[16px] leading-none text-white transition hover:bg-black"
             >
               {cat_button.text}
             </Link>

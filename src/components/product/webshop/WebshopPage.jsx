@@ -454,10 +454,10 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
   };
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-[7px] border border-[#CFC7BA] bg-white p-4">
+    <article className="flex h-full flex-col overflow-hidden rounded-[10px] border border-[#CFC7BA] bg-white p-4">
       <Link
         href={langHref(`/product/${product.slug}`, lang)}
-        className="relative mb-5 block aspect-[4/3] w-full"
+        className="relative mb-8 block aspect-[4/3] w-full"
       >
         {image ? (
           <Image
@@ -473,11 +473,11 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
       </Link>
 
       <div className="flex flex-1 flex-col">
-        <h3 className="mb-1 text-[18px] font-medium leading-snug text-[#1E2E31]">
+        <h3 className="mb-1 text-[20px] font-normal leading-snug text-[#1E2E31]">
           {title}
         </h3>
         {description && (
-          <p className="mb-5 truncate text-[12px] leading-5 text-[#1E2E31]">
+          <p className="mb-5 truncate text-[12px] font-light leading-5 text-[#1E2E31]">
             {description}
           </p>
         )}
@@ -486,7 +486,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
           {isInQuoteCart ? (
             <Link
               href={langHref("/cart", lang)}
-              className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#B8D9DB] px-4 text-[12px] text-[#1E2E31] transition hover:bg-black hover:text-white"
+              className="flex mb-3 min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#B8D9DB] px-4 text-[14px] text-[#1E2E31] transition hover:bg-black hover:text-white"
             >
               View cart
             </Link>
@@ -494,14 +494,14 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
             <button
               type="button"
               onClick={addToQuoteCart}
-              className="min-h-11 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[12px] text-[#1E2E31] transition hover:bg-black hover:text-white"
+              className="mb-3 min-h-11 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[14px] text-[#1E2E31] transition hover:bg-black hover:text-white"
             >
               {quoteLabel}
             </button>
           )}
           <Link
             href={langHref(`/product/${product.slug}`, lang)}
-            className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#1E2E31] px-4 text-[12px] text-white transition hover:bg-black"
+            className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#1E2E31] px-4 text-[14px] text-white transition hover:bg-black"
           >
             Read more
           </Link>
@@ -613,13 +613,13 @@ export default function WebshopPage({
           <div className="absolute inset-0 bg-black/35" />
 
           <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center">
-            <h1 className="text-[32px] font-normal leading-[1.2] text-white md:text-[40px]">
+            <h1 className="text-[40px] font-light leading-[1.2] text-white md:text-[40px]">
               {resolvedHeroTitle}
             </h1>
 
             <Link
               href={heroCta.url}
-              className="mt-6 inline-flex rounded-[50px] bg-(--color-brand) px-9 py-3.5 text-[16px] leading-none text-(--color-body) transition-colors duration-300 hover:bg-white"
+              className="mt-6 inline-flex rounded-[50px] bg-(--color-brand) px-9 py-4 text-[16px] leading-none text-(--color-body) transition-colors duration-300 hover:bg-white"
             >
               {heroCta.text}
             </Link>
@@ -627,15 +627,15 @@ export default function WebshopPage({
         </section>
 
         <section
-          className={`grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] ${
-            showHero ? "pt-[60px]" : "pt-6"
+          className={`grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)] ${
+            showHero ? "pt-[80px]" : "pt-6"
           }`}
           suppressHydrationWarning
         >
           <aside className="overflow-hidden rounded-[4px] border border-[#D5CDC1] bg-[#F2EBE2] self-start">
             <Link
               href={langHref("/webshop", lang)}
-              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[13px] transition ${
+              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[16px] transition ${
                 !activeCategory
                   ? "text-[#1E2E31]"
                   : "text-[#1E2E31] hover:bg-white/55"
@@ -648,7 +648,7 @@ export default function WebshopPage({
               <Link
                 href={getCategoryHref(category, lang)}
                 key={category.id}
-                className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[13px] leading-[1.35] transition last:border-b-0 ${
+                className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[14px] leading-[1.35] transition last:border-b-0 ${
                   activeCategory?.id === category.id
                     ? "bg-white text-[#1E2E31]"
                     : "text-[#1E2E31]/80 hover:bg-white/55 hover:text-[#1E2E31]"
@@ -665,7 +665,7 @@ export default function WebshopPage({
                 <button
                   type="button"
                   onClick={() => setBrandOpen((open) => !open)}
-                  className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#1E2E31]/20 bg-[#F2EBE2] px-5 text-[13px] leading-none text-[#1E2E31] transition hover:bg-white"
+                  className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#1E2E31]/20 bg-[#F2EBE2] px-5 text-[14px] leading-none text-[#1E2E31] transition hover:bg-white"
                 >
                   Brands
                   {selectedBrandCount > 0 && (
@@ -676,8 +676,8 @@ export default function WebshopPage({
                   <Image
                     src={DownArrow}
                     alt=""
-                    width={14}
-                    height={14}
+                    width={20}
+                    height={20}
                     className={`opacity-70 transition-transform ${
                       brandOpen ? "rotate-180" : ""
                     }`}
@@ -720,7 +720,7 @@ export default function WebshopPage({
                 <button
                   type="button"
                   onClick={clearBrands}
-                  className="text-[12px] cursor-pointer text-[#1E2E31]/50 transition hover:text-[#1E2E31]"
+                  className="text-[14px] cursor-pointer text-[#1E2E31]/50 transition hover:text-[#1E2E31]"
                 >
                   Clear all
                 </button>
@@ -728,7 +728,7 @@ export default function WebshopPage({
             </div>
 
             {visibleProducts.length > 0 ? (
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {visibleProducts.map((product) => (
                   <ProductCard
                     key={product.id}

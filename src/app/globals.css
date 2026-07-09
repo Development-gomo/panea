@@ -76,7 +76,7 @@ body {
 }
 
 .panea-testimonial-slider .swiper-pagination {
-  bottom: 0 !important;
+  bottom: 20 !important;
   display: flex;
   align-items: center;
   justify-content: center;

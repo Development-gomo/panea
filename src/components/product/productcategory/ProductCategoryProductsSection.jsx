@@ -351,7 +351,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
     <article className="flex h-full flex-col overflow-hidden rounded-[7px] border border-[#CFC7BA] bg-white p-4">
       <Link
         href={langHref(`/product/${product.slug}`, lang)}
-        className="relative mb-5 block aspect-[4/3] w-full"
+        className="relative mb-8 block aspect-[4/3] w-full"
       >
         {image ? (
           <Image
@@ -367,11 +367,11 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
       </Link>
 
       <div className="flex flex-1 flex-col">
-        <h3 className="mb-1 text-[18px] font-medium leading-snug text-[#1E2E31]">
+        <h3 className="mb-1 text-[20px] font-normal leading-snug text-[#1E2E31]">
           {title}
         </h3>
         {description && (
-          <p className="mb-5 truncate text-[12px] leading-5 text-[#1E2E31]">
+          <p className="mb-5 truncate text-[12px] font-light leading-5 text-[#1E2E31]">
             {description}
           </p>
         )}
@@ -380,7 +380,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
           {isInQuoteCart ? (
             <Link
               href={langHref("/cart", lang)}
-              className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#B8D9DB] px-4 text-[12px] text-[#1E2E31] transition hover:bg-black hover:text-white"
+              className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#B8D9DB] px-4 text-[14px] text-[#1E2E31] transition hover:bg-black hover:text-white"
             >
               View cart
             </Link>
@@ -388,14 +388,14 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
             <button
               type="button"
               onClick={addToQuoteCart}
-              className="min-h-11 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[12px] text-[#1E2E31] transition hover:bg-black hover:text-white"
+              className="min-h-11 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[14px] text-[#1E2E31] transition hover:bg-black hover:text-white"
             >
               {quoteLabel}
             </button>
           )}
           <Link
             href={langHref(`/product/${product.slug}`, lang)}
-            className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#1E2E31] px-4 text-[12px] text-white transition hover:bg-black"
+            className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#1E2E31] px-4 text-[14px] text-white transition hover:bg-black"
           >
             Read more
           </Link>
@@ -420,7 +420,6 @@ export default function ProductCategoryProductsSection({
   const [currentPaginationPage, setCurrentPaginationPage] = useState(1);
   const [brandOpen, setBrandOpen] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState([]);
-  const [selectedChildCategories, setSelectedChildCategories] = useState([]);
 
   const parentCategories = useMemo(
     () => categories.filter((category) => !getCategoryParentId(category)),
@@ -436,32 +435,10 @@ export default function ProductCategoryProductsSection({
     : null;
   const activeParentId = activeParentCategory?.id;
 
-  const childCategoriesByParent = useMemo(() => {
-    const nextChildren = new Map();
-
-    categories.forEach((category) => {
-      const parentId = getCategoryParentId(category);
-      if (!parentId) return;
-
-      const currentChildren = nextChildren.get(parentId) || [];
-      currentChildren.push(category);
-      nextChildren.set(parentId, currentChildren);
-    });
-
-    return nextChildren;
-  }, [categories]);
-
   const filteredProducts = useMemo(() => {
     let nextProducts = products;
 
-    if (selectedChildCategories.length > 0) {
-      nextProducts = nextProducts.filter((product) => {
-        const productCategoryIds = getProductCategoryIds(product);
-        return selectedChildCategories.some((categoryId) =>
-          productCategoryIds.includes(Number(categoryId))
-        );
-      });
-    } else if (activeCategory) {
+    if (activeCategory) {
       nextProducts = nextProducts.filter((product) =>
         getProductCategoryIds(product).includes(Number(activeCategory.id))
       );
@@ -475,7 +452,7 @@ export default function ProductCategoryProductsSection({
     }
 
     return nextProducts;
-  }, [activeCategory, products, selectedBrands, selectedChildCategories]);
+  }, [activeCategory, products, selectedBrands]);
 
   const totalPages = Math.max(
     1,
@@ -488,8 +465,7 @@ export default function ProductCategoryProductsSection({
     pageStart + PRODUCTS_PER_PAGE
   );
   const selectedBrandCount = selectedBrands.length;
-  const selectedChildCategoryCount = selectedChildCategories.length;
-  const hasSelectedFilters = selectedBrandCount > 0 || selectedChildCategoryCount > 0;
+  const hasSelectedFilters = selectedBrandCount > 0;
   const quoteCartItems = parseQuoteCartItems(quoteCartSnapshot);
 
   const toggleBrand = (brandKey) => {
@@ -503,17 +479,7 @@ export default function ProductCategoryProductsSection({
 
   const clearBrands = () => {
     setSelectedBrands([]);
-    setSelectedChildCategories([]);
     setBrandOpen(false);
-    setCurrentPaginationPage(1);
-  };
-
-  const toggleChildCategory = (categoryId) => {
-    setSelectedChildCategories((categories) =>
-      categories.includes(categoryId)
-        ? categories.filter((item) => item !== categoryId)
-        : [...categories, categoryId]
-    );
     setCurrentPaginationPage(1);
   };
 
@@ -524,7 +490,7 @@ export default function ProductCategoryProductsSection({
           <aside className="self-start overflow-hidden rounded-[4px] border border-[#D5CDC1] bg-[#F2EBE2]">
             <Link
               href={langHref("/webshop", lang)}
-              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[13px] transition ${
+              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[16px] transition ${
                 !activeCategory
                   ? "text-[#1E2E31]"
                   : "text-[#1E2E31] hover:bg-white/55"
@@ -535,14 +501,12 @@ export default function ProductCategoryProductsSection({
 
             {parentCategories.map((category) => {
               const isActiveParent = activeParentId === category.id;
-              const childCategories = childCategoriesByParent.get(category.id) || [];
-              const showChildren = isActiveParent && childCategories.length > 0;
 
               return (
                 <Fragment key={category.id}>
                   <Link
                     href={getCategoryHref(category, lang)}
-                    className={`flex min-h-[62px] w-full cursor-pointer items-center justify-between gap-4 border-[#D5CDC1] px-5 text-left text-[13px] leading-[1.35] transition ${
+                    className={`flex min-h-[62px] w-full cursor-pointer items-center justify-between gap-4 border-[#D5CDC1] px-5 text-left text-[14px] leading-[1.35] transition ${
                       isActiveParent
                         ? "text-[#1E2E31]"
                         : "text-[#1E2E31]/80 hover:bg-white/55 hover:text-[#1E2E31]"
@@ -566,59 +530,6 @@ export default function ProductCategoryProductsSection({
                       />
                     </svg>
                   </Link>
-
-                  {showChildren && (
-                    <div className="mx-5 mb-5 border border-[#D5CDC1] bg-white">
-                      <p className="border-b border-[#D5CDC1] px-5 py-3 text-[12px] leading-none text-[#1E2E31]/70">
-                        Select volume
-                      </p>
-                      <div className="py-1">
-                        {childCategories.map((childCategory) => {
-                          const isActiveChild = selectedChildCategories.includes(
-                            childCategory.id
-                          );
-
-                          return (
-                            <label
-                              key={childCategory.id}
-                              className="flex min-h-11 cursor-pointer items-center gap-3 px-5 text-[12px] leading-[1.35] text-[#1E2E31]/80 transition hover:bg-[#F2EBE2]"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={isActiveChild}
-                                onChange={() => toggleChildCategory(childCategory.id)}
-                                className="sr-only"
-                              />
-                              <span
-                                className={`flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-[1px] border ${
-                                  isActiveChild
-                                    ? "border-[#1E2E31] bg-[#1E2E31]"
-                                    : "border-[#1E2E31]/20 bg-white"
-                                }`}
-                                aria-hidden="true"
-                              >
-                                {isActiveChild && (
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="9"
-                                    height="7"
-                                    viewBox="0 0 9 7"
-                                    fill="none"
-                                  >
-                                    <path
-                                      d="M3.374 6.125 0.75 3.5l.7-.7 1.924 1.925L7.55.55l.7.7-4.876 4.875Z"
-                                      fill="white"
-                                    />
-                                  </svg>
-                                )}
-                              </span>
-                              <span>{childCategory.name}</span>
-                            </label>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
                 </Fragment>
               );
             })}
@@ -630,19 +541,19 @@ export default function ProductCategoryProductsSection({
                 <button
                   type="button"
                   onClick={() => setBrandOpen((open) => !open)}
-                  className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#1E2E31]/20 bg-[#F2EBE2] px-5 text-[13px] leading-none text-[#1E2E31] transition hover:bg-white"
+                  className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#1E2E31]/20 bg-[#F2EBE2] px-5 text-[14px] leading-none text-[#1E2E31] transition hover:bg-white"
                 >
                   Brands
                   {selectedBrandCount > 0 && (
-                    <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#1E2E31] px-1.5 text-[11px] leading-none text-white">
+                    <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#1E2E31] px-1.5 text-[14px] leading-none text-white">
                       {selectedBrandCount}
                     </span>
                   )}
                   <Image
                     src={DownArrow}
                     alt=""
-                    width={14}
-                    height={14}
+                    width={20}
+                    height={20}
                     className={`opacity-70 transition-transform ${
                       brandOpen ? "rotate-180" : ""
                     }`}
@@ -685,7 +596,7 @@ export default function ProductCategoryProductsSection({
                 <button
                   type="button"
                   onClick={clearBrands}
-                  className="cursor-pointer text-[12px] text-[#1E2E31]/50 transition hover:text-[#1E2E31]"
+                  className="cursor-pointer text-[14px] text-[#1E2E31]/50 transition hover:text-[#1E2E31]"
                 >
                   Clear all
                 </button>

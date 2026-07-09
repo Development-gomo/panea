@@ -65,27 +65,30 @@ export default function WebshopHighlightBanner({ data }) {
 
           <div className="absolute inset-0 bg-[linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.20) 100%)]" />
 
-          <div className="relative z-10 mx-auto flex max-w-[540px] flex-col items-center text-center">
+          <div className="relative z-10 mx-auto flex max-w-[620px] flex-col items-center text-center">
             {logoUrl && (
-              <Image
-                src={logoUrl}
-                alt={logo?.alt || ""}
-                width={58}
-                height={58}
-                className="mb-7 h-auto w-[46px] md:w-[58px]"
-              />
+              <div className="relative mb-7 overflow-hidden">
+                <Image
+                  src={logoUrl}
+                  alt={logo?.alt || ""}
+                  width={58}
+                  height={58}
+                  className="h-auto w-[46px] md:w-[58px]"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-black/20" />
+              </div>
             )}
 
             {data.title && (
               <div
-                className="ff-larken text-[32px] font-light leading-[1.18] md:text-[42px] [&_p]:mb-0"
+                className="ff-larken text-[48px] font-light leading-[1.18] md:text-[48px] [&_p]:mb-0"
                 dangerouslySetInnerHTML={{ __html: data.title }}
               />
             )}
 
             {data.description && (
               <div
-                className="mt-5 max-w-[500px] text-[15px] font-light leading-[1.45] text-white/85 md:text-[16px] [&_p]:mb-0"
+                className="mt-5 max-w-[620px] text-[15px] font-light leading-[1.45] text-white/85 md:text-[16px] [&_p]:mb-0"
                 dangerouslySetInnerHTML={{ __html: data.description }}
               />
             )}
@@ -96,7 +99,7 @@ export default function WebshopHighlightBanner({ data }) {
                   <Link
                     key={`${button.text}-${index}`}
                     href={button.url}
-                    className={`inline-flex rounded-[50px] border px-9 py-3.5 text-[14px] leading-none transition-colors duration-300 ${
+                    className={`inline-flex rounded-[50px] border px-9 py-4 text-[16px] leading-none transition-colors duration-300 ${
                       index === 0
                         ? "border-white bg-white text-(--color-body) hover:bg-transparent hover:text-white"
                         : "border-white/65 text-white hover:bg-white hover:text-(--color-body)"
@@ -108,6 +111,7 @@ export default function WebshopHighlightBanner({ data }) {
               </div>
             )}
           </div>
+        
         </motion.div>
       </div>
     </section>

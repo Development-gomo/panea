@@ -1,4 +1,4 @@
-import Header from "@/components/major/Header";
+import HeaderNoSsr from "@/components/major/HeaderNoSsr";
 import Footer from "@/components/major/Footer";
 import ProductBreadcrumbs from "./ProductBreadcrumbs";
 import ProductCategoryHero from "./ProductCategoryHero";
@@ -113,7 +113,7 @@ export default async function ProductCategoryPage({
 
   return (
     <>
-      <Header
+      <HeaderNoSsr
         lang={lang}
         currentSlug={currentSlug}
         entryType="page"

@@ -191,12 +191,12 @@ function SpecificationRows({ rows }) {
 
   return (
     <div className="overflow-hidden text-[13px] text-[#62696B]">
-      <div className="grid grid-cols-[38%_62%] gap-3 border-b border-[#D8D0C4] pb-3 text-[12px] font-semibold text-(--color-body) sm:grid-cols-[42%_58%] sm:gap-0">
+      <div className="grid grid-cols-[38%_62%] gap-3 border-b border-[#D8D0C4] pb-3 text-[14px] font-medium text-(--color-body) sm:grid-cols-[42%_58%] sm:gap-0">
         <div>Specification</div>
         <div>Details</div>
       </div>
 
-      <div className="divide-y divide-[#D8D0C4]">
+      <div className="divide-y divide-[#D8D0C4] text-[14px]">
         {normalizedRows.map((row, index) => (
           <div
             key={`${row.label}-${index}`}
@@ -229,13 +229,13 @@ function DownloadRows({ rows }) {
                 href={file.href}
                 download
                 target="_blank"
-                className="flex min-h-10 cursor-pointer items-center justify-between gap-4 border border-[#D8D0C4] bg-[#F8F4EE] px-4 font-['Inter'] text-[14px] font-normal leading-5 text-[#1E2E31] transition hover:border-(--color-body) hover:bg-white"
+                className="flex min-h-10 cursor-pointer items-center justify-between gap-4 rounded-sm border border-[#D8D0C4] bg-[#F8F4EE] px-4 font-['Inter'] text-[14px] font-normal leading-5 text-[#1E2E31] transition hover:border-(--color-body) hover:bg-white"
               >
                 <span className="truncate">{file.label}</span>
                 <span aria-hidden="true" className="shrink-0 text-[#62696B]">
                   <svg
-                    width="14"
-                    height="14"
+                    width="18"
+                    height="18"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"

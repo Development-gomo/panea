@@ -236,9 +236,9 @@ function ProductButton({
 
   const classes =
     variant === "primary"
-      ? "border-(--color-body) text-(--color-body)"
+      ? "border-[#1E2E31] bg-[#1E2E31] text-white"
       : "border-(--color-body) text-(--color-body)";
-  const className = `flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full border px-8 text-[14px] transition hover:border-black hover:bg-black hover:text-white sm:w-auto ${classes}`;
+  const className = `flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full border px-8 text-[16px] transition hover:border-black hover:bg-black hover:text-white sm:w-auto ${classes}`;
 
   if (href) {
     return (
@@ -324,7 +324,7 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
+      <div className="mb-4">
         <ProductTitle title={productName} />
 
         {articleNumber && (
@@ -336,14 +336,14 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
 
       {hasHtml(shortInformation) && (
         <div
-          className="body-text max-w-[590px] [&>p]:mb-4 [&>p:last-child]:mb-0"
+          className="max-w-[590px] mb-6 font-light [&>p:last-child]:mb-0 "
           dangerouslySetInnerHTML={{ __html: shortInformation }}
         />
       )}
 
       {availableModels.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-[16px] font-semibold">Available models</h2>
+          <h2 className="text-[16px] font-medium">Available models</h2>
           <div className="flex flex-wrap gap-2">
             {availableModels.map((model, index) => (
               <button
@@ -353,9 +353,9 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
                   setActiveModelIndex(index);
                   setQuoteMessage("");
                 }}
-                className={`inline-flex min-h-10 cursor-pointer items-center rounded-full px-4 text-[12px] transition hover:bg-black hover:text-white sm:px-6 ${
+                className={`inline-flex min-h-10 cursor-pointer items-center rounded-full px-4 text-[12px] transition hover:bg-[#1E2E31] hover:text-white sm:px-6 ${
                   effectiveModelIndex === index
-                    ? "bg-black text-white"
+                    ? "bg-[#1E2E31] text-white"
                     : "bg-[#B8D9DB] text-(--color-body)"
                 }`}
               >
@@ -368,7 +368,6 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
 
       {hasHtml(keyFeatures) && (
         <section className="space-y-3">
-          <h2 className="text-[16px] font-semibold">Key features</h2>
           <div
             className="body-text max-w-[590px] text-[14px] [&>ul]:list-disc [&>ul]:space-y-2 [&>ul]:pl-5 [&>p]:mb-3 [&>p:last-child]:mb-0"
             dangerouslySetInnerHTML={{ __html: keyFeatures }}
@@ -388,7 +387,7 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
         </div>
       )}
       {quoteMessage && (
-        <p className="text-[13px] leading-tight text-red-700">{quoteMessage}</p>
+        <p className="text-[14px] leading-tight text-red-700">{quoteMessage}</p>
       )}
     </div>
   );

@@ -2,57 +2,126 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ArrowSvg from "../../../public/right-arrow.svg";
 import DownSvg from "../../../public/down-arrow.svg";
 import ArrowSvgB from "../../../public/right-arrow-black.png";
+import CartSvg from "../../../public/cart-icon.svg";
 import { getMenu, getThemeOptions, getEntryTranslations } from "@/lib/api";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
 
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
 const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
 
-function getQuoteCartCount() {
-  if (typeof window === "undefined") return 0;
+function getQuoteCartItems() {
+  if (typeof window === "undefined") return [];
 
   try {
     const items = JSON.parse(
       window.localStorage.getItem(QUOTE_CART_STORAGE_KEY) || "[]"
     );
-    if (!Array.isArray(items)) return 0;
-    return items.reduce((total, item) => total + Number(item?.quantity || 1), 0);
+    return Array.isArray(items) ? items : [];
   } catch {
-    return 0;
+    return [];
   }
+}
+
+function saveQuoteCartItems(items) {
+  window.localStorage.setItem(QUOTE_CART_STORAGE_KEY, JSON.stringify(items));
+  window.dispatchEvent(
+    new CustomEvent(QUOTE_CART_UPDATED_EVENT, { detail: { items } })
+  );
 }
 
 function CartIcon() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
+    <Image
+      src={CartSvg}
+      alt=""
+      width="25"
+      height="25"
       aria-hidden="true"
-      className="shrink-0"
-    >
-      <path
-        d="M6.5 6.5h14l-1.7 8.2a2 2 0 0 1-2 1.6H9.1a2 2 0 0 1-2-1.7L5.8 3.8H3.5"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M9.5 20.2h.1M17 20.2h.1"
-        stroke="currentColor"
-        strokeWidth="2.6"
-        strokeLinecap="round"
-      />
-    </svg>
+      className="block shrink-0"
+    />
+  );
+}
+
+function MiniCart({ items, lang, onRemove }) {
+  const totalQuantity = items.reduce(
+    (total, item) => total + Number(item?.quantity || 1),
+    0
+  );
+
+  if (!items.length) return null;
+
+  return (
+    <div className="absolute right-[-18px] top-[calc(100%+10px)] z-[70] w-[calc(100vw-32px)] max-w-[460px] overflow-hidden rounded-[4px] border border-[#C7C0B6] bg-white text-(--color-body) shadow-[0_8px_28px_rgba(0,0,0,0.18)]">
+      <div className="flex items-center justify-between bg-[#D2C4B2] px-6 py-3">
+        <h2 className="ff-larken text-[22px] font-normal leading-none">Your Cart</h2>
+        <span className="text-[14px] leading-none">
+          ({totalQuantity} {totalQuantity === 1 ? "Item" : "Items"} selected)
+        </span>
+      </div>
+
+      <div className="px-6 pb-5 pt-5">
+        <div className="max-h-[250px] overflow-y-auto pr-1">
+          {items.map((item, index) => (
+            <article
+              key={item.id || `${item.productName}-${index}`}
+              className={`grid grid-cols-[74px_minmax(0,1fr)_28px] gap-4 py-4 ${
+                index > 0 ? "border-t border-dashed border-[#C7C0B6]" : "pt-0"
+              }`}
+            >
+              <div className="relative h-[74px] w-[74px] overflow-hidden rounded-[4px] border border-[#C7C0B6] bg-[#F8F4EE]">
+                {item.imageUrl && (
+                  <Image
+                    src={item.imageUrl}
+                    alt={item.productName || "Product image"}
+                    fill
+                    sizes="74px"
+                    className="object-contain p-2"
+                  />
+                )}
+              </div>
+
+              <div className="min-w-0">
+                <h3 className="truncate text-[18px] font-normal leading-tight text-(--color-body)">
+                  {item.productName || "Product"}
+                </h3>
+                {item.model && (
+                  <p className="mt-1 text-[12px] leading-5 text-[#596366]">
+                    Model: {item.model}
+                  </p>
+                )}
+                {item.articleNumber && (
+                  <p className="text-[12px] leading-5 text-[#596366]">
+                    Article: {item.articleNumber}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onRemove(item.id)}
+                className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-[#C7C0B6] bg-[#F8F4EE] text-[18px] leading-none text-(--color-body) transition hover:border-(--color-body) hover:bg-(--color-body) hover:text-white"
+                aria-label={`Remove ${item.productName || "product"}`}
+              >
+                &times;
+              </button>
+            </article>
+          ))}
+        </div>
+
+        <Link
+          href={langHref("/cart", lang)}
+          className="mt-4 flex min-h-11 w-full items-center justify-center rounded-full border border-(--color-body) bg-(--color-body) px-8 text-[13px] leading-none text-white transition hover:bg-black"
+        >
+          View cart to proceed
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -71,6 +140,13 @@ export default function Header({
   const [altLangUrl, setAltLangUrl] = useState(langHome(SUPPORTED_LANGS.filter((l) => l !== lang)[0]));
   const [scrolled, setScrolled] = useState(false);
   const [quoteCartCount, setQuoteCartCount] = useState(0);
+  const [quoteCartItems, setQuoteCartItems] = useState([]);
+  const [quoteCartHydrated, setQuoteCartHydrated] = useState(false);
+  const [miniCartOpen, setMiniCartOpen] = useState(false);
+  const [emptyCartMessageOpen, setEmptyCartMessageOpen] = useState(false);
+  const miniCartTimerRef = useRef(null);
+  const previousQuoteCartCountRef = useRef(0);
+  const hasLoadedQuoteCartRef = useRef(false);
   const isLoading = !menu;
 
   // Only fetch client-side if no prefetched data was provided
@@ -102,17 +178,74 @@ export default function Header({
   }, []);
 
   useEffect(() => {
-    const updateQuoteCartCount = () => setQuoteCartCount(getQuoteCartCount());
+    const showMiniCart = () => {
+      window.clearTimeout(miniCartTimerRef.current);
+      setMiniCartOpen(true);
+      setEmptyCartMessageOpen(false);
+      miniCartTimerRef.current = window.setTimeout(() => {
+        setMiniCartOpen(false);
+      }, 5000);
+    };
 
-    updateQuoteCartCount();
-    window.addEventListener(QUOTE_CART_UPDATED_EVENT, updateQuoteCartCount);
-    window.addEventListener("storage", updateQuoteCartCount);
+    const updateQuoteCart = () => {
+      const items = getQuoteCartItems();
+      const nextCount = items.reduce(
+        (total, item) => total + Number(item?.quantity || 1),
+        0
+      );
+
+      setQuoteCartItems(items);
+      setQuoteCartCount(nextCount);
+      setQuoteCartHydrated(true);
+
+      if (hasLoadedQuoteCartRef.current && nextCount > previousQuoteCartCountRef.current) {
+        showMiniCart();
+      }
+
+      if (nextCount === 0) {
+        setMiniCartOpen(false);
+      }
+
+      previousQuoteCartCountRef.current = nextCount;
+      hasLoadedQuoteCartRef.current = true;
+    };
+
+    updateQuoteCart();
+    window.addEventListener(QUOTE_CART_UPDATED_EVENT, updateQuoteCart);
+    window.addEventListener("storage", updateQuoteCart);
 
     return () => {
-      window.removeEventListener(QUOTE_CART_UPDATED_EVENT, updateQuoteCartCount);
-      window.removeEventListener("storage", updateQuoteCartCount);
+      window.clearTimeout(miniCartTimerRef.current);
+      window.removeEventListener(QUOTE_CART_UPDATED_EVENT, updateQuoteCart);
+      window.removeEventListener("storage", updateQuoteCart);
     };
   }, []);
+
+  const showEmptyCartMessage = () => {
+    setMiniCartOpen(false);
+    setEmptyCartMessageOpen(true);
+  };
+
+  const showMiniCartOnHover = () => {
+    if (!quoteCartHydrated || quoteCartCount <= 0) return;
+    window.clearTimeout(miniCartTimerRef.current);
+    setEmptyCartMessageOpen(false);
+    setMiniCartOpen(true);
+  };
+
+  const handleCartIconClick = () => {
+    if (quoteCartHydrated && quoteCartCount > 0) {
+      window.location.href = langHref("/cart", lang);
+      return;
+    }
+
+    showEmptyCartMessage();
+  };
+
+  const removeMiniCartItem = (itemId) => {
+    if (!itemId) return;
+    saveQuoteCartItems(quoteCartItems.filter((item) => item.id !== itemId));
+  };
 
   // Sticky header classes
  const headerClasses = scrolled
@@ -292,21 +425,6 @@ export default function Header({
                       )}
                     </li>
                   ))}
-
-                  <li className="relative group">
-                    <Link
-                      href={langHref("/cart", lang)}
-                      className="relative block"
-                      aria-label="View cart"
-                    >
-                      <CartIcon />
-                      {quoteCartCount > 0 && (
-                        <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1E2E31] px-1 text-[10px] leading-none text-white">
-                          {quoteCartCount}
-                        </span>
-                      )}
-                    </Link>
-                  </li>
                 </>
               )}
             </ul>
@@ -372,14 +490,55 @@ export default function Header({
                 </span>
               </Link>
 
+              <div
+                className="relative"
+                onMouseLeave={() => {
+                  setMiniCartOpen(false);
+                  setEmptyCartMessageOpen(false);
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={handleCartIconClick}
+                  onMouseEnter={
+                    quoteCartHydrated && quoteCartCount > 0
+                      ? showMiniCartOnHover
+                      : showEmptyCartMessage
+                  }
+                  className="relative inline-flex h-[27px] w-[25px] cursor-pointer items-start justify-center pt-[2px] text-(--color-body)"
+                  aria-label="Cart"
+                >
+                  <CartIcon />
+                  {quoteCartHydrated && quoteCartCount > 0 && (
+                    <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1E2E31] px-1 text-[10px] leading-none text-white">
+                      {quoteCartCount}
+                    </span>
+                  )}
+                </button>
+
+                {quoteCartHydrated && miniCartOpen && quoteCartItems.length > 0 && (
+                  <MiniCart
+                    items={quoteCartItems}
+                    lang={lang}
+                    onRemove={removeMiniCartItem}
+                  />
+                )}
+
+                {emptyCartMessageOpen && (
+                  <div className="absolute right-0 top-[calc(100%+18px)] z-[70] w-[260px] rounded-[12px] bg-[#F7F7F7] px-5 py-4 text-center text-[14px] font-semibold text-[#111] shadow-[0_8px_28px_rgba(0,0,0,0.18)]">
+                    No product available
+                  </div>
+                )}
+              </div>
+
               {/* Desktop hamburger matching other icons */}
               <button
                 type="button"
                 aria-label="Open menu"
                 onClick={() => setMobileOpen(true)}
-                className="inline-flex items-center justify-center text-(--color-body)"
+                className="inline-flex h-[25px] w-[25px] items-center justify-center text-(--color-body)"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true">
                   <path d="M1 1h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M1 7h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M1 13h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
