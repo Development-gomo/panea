@@ -486,11 +486,11 @@ export default function ProductCategoryProductsSection({
   return (
     <section className="bg-[#F2EBE2] pt-[24px]">
       <div className="web-width mx-auto px-6">
-        <div className="grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)]">
+        <div className="grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)]">
           <aside className="self-start overflow-hidden rounded-[4px] border border-[#D5CDC1] bg-[#F2EBE2]">
             <Link
               href={langHref("/webshop", lang)}
-              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[16px] transition ${
+              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-6 text-left text-[16px] transition ${
                 !activeCategory
                   ? "text-[#1E2E31]"
                   : "text-[#1E2E31] hover:bg-white/55"
@@ -506,29 +506,13 @@ export default function ProductCategoryProductsSection({
                 <Fragment key={category.id}>
                   <Link
                     href={getCategoryHref(category, lang)}
-                    className={`flex min-h-[62px] w-full cursor-pointer items-center justify-between gap-4 border-[#D5CDC1] px-5 text-left text-[14px] leading-[1.35] transition ${
+                    className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-6 text-left text-[14px] leading-[1.35] transition last:border-b-0 ${
                       isActiveParent
                         ? "text-[#1E2E31]"
                         : "text-[#1E2E31]/80 hover:bg-white/55 hover:text-[#1E2E31]"
                     }`}
                   >
                     <span>{category.name}</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="10"
-                      viewBox="0 0 16 10"
-                      fill="none"
-                      className={`shrink-0 transition-transform ${
-                        isActiveParent ? "rotate-180" : ""
-                      }`}
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M12.7757 2.20882C13.01 1.9745 13.3899 1.9745 13.6243 2.20882C13.8586 2.44313 13.8586 2.82303 13.6243 3.05735L8.82426 7.85735C8.58995 8.09166 8.21005 8.09166 7.97573 7.85735L3.17574 3.05735C2.94142 2.82303 2.94142 2.44313 3.17574 2.20882C3.41005 1.9745 3.78995 1.9745 4.02426 2.20882L8.4 6.58455L12.7757 2.20882Z"
-                        fill="#1E2E31"
-                      />
-                    </svg>
                   </Link>
                 </Fragment>
               );
