@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Pagination } from "swiper/modules";
@@ -78,6 +78,21 @@ function getField(source, keys) {
     if (source?.[key] !== undefined && source?.[key] !== null && source?.[key] !== "") {
       return source[key];
     }
+  }
+
+  return "";
+}
+
+function getFieldDeep(source, keys) {
+  if (!source || typeof source !== "object") return "";
+
+  const directValue = getField(source, keys);
+  if (directValue !== "") return directValue;
+
+  for (const value of Object.values(source)) {
+    if (!value || typeof value !== "object") continue;
+    const nestedValue = getFieldDeep(value, keys);
+    if (nestedValue !== "") return nestedValue;
   }
 
   return "";
@@ -177,7 +192,9 @@ function getProductImage(product) {
 
 function getRelatedProductsGroup(acf) {
   const group = getField(acf, ["related_products"]);
-  return group && typeof group === "object" && !Array.isArray(group) ? group : {};
+  return group && typeof group === "object" && !Array.isArray(group)
+    ? { ...acf, ...group }
+    : acf;
 }
 
 function saveQuoteCartItems(items) {
@@ -281,23 +298,52 @@ export default function RelatedProducts({
   product,
   products = [],
   lang = DEFAULT_LANG,
+  randomLimit = 0,
 }) {
+  const [isMounted, setIsMounted] = useState(false);
   const quoteCartSnapshot = useSyncExternalStore(
     subscribeQuoteCart,
     getQuoteCartSnapshot,
     getServerQuoteCartSnapshot
   );
   const quoteCartItems = parseQuoteCartItems(quoteCartSnapshot);
+  const displayedProducts = useMemo(() => {
+    if (!randomLimit || products.length <= randomLimit) return products;
+
+    const shuffledProducts = [...products];
+    for (let index = shuffledProducts.length - 1; index > 0; index -= 1) {
+      const randomIndex = Math.floor(Math.random() * (index + 1));
+      [shuffledProducts[index], shuffledProducts[randomIndex]] = [
+        shuffledProducts[randomIndex],
+        shuffledProducts[index],
+      ];
+    }
+
+    return shuffledProducts.slice(0, randomLimit);
+  }, [products, randomLimit]);
   const acf = getProductAcf(product);
   const relatedProducts = getRelatedProductsGroup(acf);
-  const smallHeading = toText(getField(relatedProducts, ["small_heading"]));
-  const largeHeading = toText(getField(relatedProducts, ["large_heading"]));
-  const webshopLinkText = toText(getField(relatedProducts, ["webshop_link_text"]));
+  const smallHeading = toText(getFieldDeep(relatedProducts, ["small_heading"]));
+  const largeHeading = toText(getFieldDeep(relatedProducts, ["large_heading"]));
+  const webshopLinkText = toText(
+    getFieldDeep(relatedProducts, ["webshop_link_text"])
+  );
   const webshopLink =
-    toText(getField(relatedProducts, ["webshop_link_url", "webshop_link", "link", "url"])) ||
+    toText(
+      getFieldDeep(relatedProducts, [
+        "webshop_link_url",
+        "webshop_link",
+        "link",
+        "url",
+      ])
+    ) ||
     "/webshop";
 
-  if (!products.length) return null;
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted || !displayedProducts.length) return null;
 
   return (
     <section className="overflow-hidden bg-[#F2EBE2]">
@@ -337,7 +383,7 @@ export default function RelatedProducts({
           }}
           className="related-products-swiper !overflow-visible [&_.swiper-pagination]:!relative [&_.swiper-pagination]:!bottom-auto [&_.swiper-pagination]:!mt-10 [&_.swiper-pagination]:!flex [&_.swiper-pagination]:!items-center [&_.swiper-pagination]:!justify-center [&_.swiper-pagination-bullet]:!mx-1 [&_.swiper-pagination-bullet]:!h-2 [&_.swiper-pagination-bullet]:!w-2 [&_.swiper-pagination-bullet]:!bg-[#1E2E31] [&_.swiper-pagination-bullet]:!opacity-100 [&_.swiper-pagination-bullet-active]:!h-4 [&_.swiper-pagination-bullet-active]:!w-4"
         >
-          {products.map((relatedProduct) => (
+          {displayedProducts.map((relatedProduct) => (
             <SwiperSlide key={relatedProduct.id} className="h-auto">
               <ProductCard
                 product={relatedProduct}

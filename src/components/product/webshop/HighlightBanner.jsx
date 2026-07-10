@@ -32,7 +32,10 @@ function getButtons(rows) {
     .filter((button) => button.text && button.url);
 }
 
-export default function WebshopHighlightBanner({ data }) {
+export default function WebshopHighlightBanner({
+  data,
+  paddingTopClass = "pt-[160px]",
+}) {
   if (!data) return null;
 
   const backgroundImage = data.background_image || data?.backgroundImage;
@@ -44,7 +47,7 @@ export default function WebshopHighlightBanner({ data }) {
   if (!backgroundUrl && !data.title && !data.description && !logoUrl) return null;
 
   return (
-    <section className="w-full pt-[160px] pb-[60px]">
+    <section className={`w-full pb-[60px] ${paddingTopClass}`}>
       <div className="web-width mx-auto">
         <motion.div
           className="relative overflow-hidden rounded-[10px] bg-(--color-body) px-8 py-10 text-white md:px-[60px] md:py-[80px]"

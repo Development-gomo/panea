@@ -3,7 +3,9 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG, langHome, langHref } from "@/config";
+import RelatedProducts from "@/components/product/RelatedProducts";
+import WebshopHighlightBanner from "@/components/product/webshop/HighlightBanner";
 
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
 const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
@@ -54,19 +56,61 @@ function updateItemQuantity(items, itemId, quantity) {
   );
 }
 
+function getCartHighlightBanner(page) {
+  const acf = page?.acf || page?.acf_fields || {};
+
+  function findBannerData(value) {
+    if (!value || typeof value !== "object") return null;
+
+    const hasBannerFields =
+      value.background_image !== undefined &&
+      (value.title !== undefined ||
+        value.description !== undefined ||
+        value.cta_text !== undefined);
+
+    if (hasBannerFields) return value;
+
+    for (const nestedValue of Object.values(value)) {
+      const match = findBannerData(nestedValue);
+      if (match) return match;
+    }
+
+    return null;
+  }
+
+  const data =
+    acf.highlight_banner ||
+    acf.cart_highlight_banner ||
+    findBannerData(acf);
+
+  if (!data) return null;
+
+  return {
+    background_image: data.background_image,
+    logo: data.logo,
+    title: data.title,
+    description: data.description,
+    button_row:
+      data.button_row ||
+      (data.cta_text && data.cta_url
+        ? [{ cta_text: data.cta_text, cta_url: data.cta_url }]
+        : []),
+  };
+}
+
 function Field({ label, name, type = "text", required = false, textarea = false }) {
   const inputClass =
-    "mt-2 w-full rounded-[4px] border border-[#C7C0B6] bg-white px-4 py-3 text-[14px] text-(--color-body) outline-none transition focus:border-(--color-body)";
+    "mt-2 w-full border-0 border-b border-white/20 bg-transparent px-0 py-2 text-[14px] text-white outline-none transition focus:border-white";
 
   return (
-    <label className="block text-[12px] font-semibold leading-none text-(--color-body)">
+    <label className="block text-[12px] font-normal leading-none text-white/60">
       {label}
       {required ? " *" : ""}
       {textarea ? (
         <textarea
           name={name}
           required={required}
-          className={`${inputClass} min-h-[122px] resize-y`}
+          className={`${inputClass} min-h-[92px] resize-y`}
         />
       ) : (
         <input name={name} type={type} required={required} className={inputClass} />
@@ -87,42 +131,42 @@ function CartItem({ item, items }) {
   };
 
   return (
-    <article className="grid gap-4 rounded-[4px] border border-[#C7C0B6] bg-white p-4 sm:grid-cols-[74px_minmax(0,1fr)_auto]">
-      <div className="relative h-[74px] w-[74px] overflow-hidden rounded-[4px] border border-[#C7C0B6] bg-[#F8F4EE]">
+    <article className="grid gap-4 border-b border-[#DED8CF] bg-white p-4 sm:grid-cols-[104px_minmax(0,1fr)] sm:p-5">
+      <div className="relative h-[104px] w-[104px] overflow-hidden rounded-[8px] bg-[#F1EFEB]">
         {item.imageUrl && (
           <Image
             src={item.imageUrl}
             alt={item.productName || "Product image"}
             fill
-            sizes="74px"
-            className="object-contain p-2"
+            sizes="104px"
+            className="object-contain p-3"
           />
         )}
       </div>
 
       <div className="min-w-0">
-        <h3 className="mb-2 text-[18px] font-normal leading-tight text-(--color-body)">
+        <h3 className="mb-1 text-[18px] font-normal leading-tight text-(--color-body)">
           {item.productName || "Product"}
         </h3>
 
         {item.model && (
-          <p className="mb-2 text-[12px] leading-none text-(--color-body)">
-            Model: {item.model}
+          <p className="mb-1 text-[12px] leading-4 text-[#596366]">
+            Module: {item.model}
           </p>
         )}
 
         {item.articleNumber && (
-          <p className="mb-4 text-[12px] leading-none text-[#596366]">
-            Article: {item.articleNumber}
+          <p className="mb-4 text-[12px] leading-4 text-[#596366]">
+            Article number: {item.articleNumber}
           </p>
         )}
 
-        <div className="flex items-center gap-3">
-          <span className="text-[12px] leading-none text-[#596366]">Quantity</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex h-9 items-center rounded-full border border-[#C7C0B6] bg-white">
           <button
             type="button"
             onClick={() => setQuantity(quantity - 1)}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[#C7C0B6] bg-[#F8F4EE] text-[16px] text-(--color-body) transition hover:border-(--color-body) hover:bg-(--color-body) hover:text-white"
+            className="flex h-9 w-9 cursor-pointer items-center justify-center text-[16px] text-(--color-body)"
             aria-label="Decrease quantity"
           >
             -
@@ -132,32 +176,36 @@ function CartItem({ item, items }) {
             min="1"
             value={quantity}
             onChange={(event) => setQuantity(event.target.value)}
-            className="h-8 w-[66px] rounded-[4px] border border-[#C7C0B6] bg-white px-3 text-[13px] text-(--color-body) outline-none focus:border-(--color-body)"
+            className="h-9 w-8 border-0 bg-transparent p-0 text-center text-[13px] text-(--color-body) outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             aria-label="Quantity"
           />
           <button
             type="button"
             onClick={() => setQuantity(quantity + 1)}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-[#C7C0B6] bg-[#F8F4EE] text-[16px] text-(--color-body) transition hover:border-(--color-body) hover:bg-(--color-body) hover:text-white"
+            className="flex h-9 w-9 cursor-pointer items-center justify-center text-[16px] text-(--color-body)"
             aria-label="Increase quantity"
           >
             +
           </button>
+          </div>
+          <button
+            type="button"
+            onClick={removeItem}
+            className="cursor-pointer text-[12px] leading-none text-[#596366] transition hover:text-(--color-body)"
+          >
+            Remove
+          </button>
         </div>
       </div>
-
-      <button
-        type="button"
-        onClick={removeItem}
-        className="cursor-pointer self-start justify-self-start border-b border-[#596366] text-[12px] leading-none text-[#596366] transition hover:border-(--color-body) hover:text-(--color-body) sm:justify-self-end"
-      >
-        Remove
-      </button>
     </article>
   );
 }
 
-export default function QuoteCartPage({ lang = DEFAULT_LANG }) {
+export default function QuoteCartPage({
+  lang = DEFAULT_LANG,
+  page,
+  relatedProducts = [],
+}) {
   const quoteCartSnapshot = useSyncExternalStore(
     subscribeQuoteCart,
     getQuoteCartSnapshot,
@@ -174,10 +222,7 @@ export default function QuoteCartPage({ lang = DEFAULT_LANG }) {
     (total, item) => total + Number(item.quantity || 1),
     0
   );
-
-  const clearCart = () => {
-    saveQuoteCartItems([]);
-  };
+  const highlightBanner = getCartHighlightBanner(page);
 
   const submitRequest = async (event) => {
     event.preventDefault();
@@ -233,40 +278,55 @@ export default function QuoteCartPage({ lang = DEFAULT_LANG }) {
   };
 
   return (
-    <main className="bg-(--color-brand)">
+    <main className="bg-[#F3EDE5]">
+      <nav
+        aria-label="Breadcrumb"
+        className="border-t border-[#D6CEC2] bg-[#F2EBE2]"
+      >
+        <ol className="web-width mx-auto flex min-h-11 items-center gap-2 px-6 text-[12px] leading-none text-[#596366]">
+          <li>
+            <Link
+              href={langHome(lang)}
+              className="transition hover:text-(--color-body)"
+            >
+              Home
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <Link
+              href={langHref("/webshop", lang)}
+              className="transition hover:text-(--color-body)"
+            >
+              Webshop
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li className="text-(--color-body)" aria-current="page">
+            Cart
+          </li>
+        </ol>
+      </nav>
+
       <section className="web-width mx-auto px-6 py-12 md:py-16">
-        <h1 className="ff-larken mb-8 text-[44px] font-normal leading-none tracking-normal text-(--color-body) md:text-[54px]">
-          Request a <span className="text-(--color-body)">quote</span>
-        </h1>
+        <section className="mb-6 grid gap-8 lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.85fr)]">
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="ff-larken text-[32px] font-normal leading-tight text-(--color-body) md:text-[40px]">
+              Items in cart
+            </h1>
+            {items.length > 0 && (
+              <p className="shrink-0 text-right text-[12px] text-[#596366]">
+                {items.length} {items.length === 1 ? "item" : "items"} / Total
+                quantity {totalQuantity}
+              </p>
+            )}
+          </div>
+        </section>
 
-        <div className="grid overflow-hidden rounded-[4px] border border-[#C7C0B6] bg-white lg:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.85fr)]">
-          <section className="min-h-[560px] bg-[#F8F4EE] p-7 md:p-8">
-            <div className="mb-6 flex items-center justify-between gap-4">
-              <div>
-                <h2 className="text-[24px] font-normal leading-tight text-(--color-body)">
-                  Quotation cart
-                </h2>
-                {items.length > 0 && (
-                  <p className="mt-2 text-[12px] text-[#596366]">
-                    {items.length} {items.length === 1 ? "item" : "items"} /{" "}
-                    {totalQuantity} total
-                  </p>
-                )}
-              </div>
-
-              {items.length > 0 && (
-                <button
-                  type="button"
-                  onClick={clearCart}
-                  className="cursor-pointer border-b border-[#596366] text-[12px] leading-none text-[#596366] transition hover:border-(--color-body) hover:text-(--color-body)"
-                >
-                  Clear cart
-                </button>
-              )}
-            </div>
-
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.85fr)]">
+          <section>
             {items.length > 0 ? (
-              <div className="space-y-4">
+              <div className="overflow-hidden rounded-[5px] border border-[#DED8CF]">
                 {items.map((item) => (
                   <CartItem key={item.id} item={item} items={items} />
                 ))}
@@ -284,16 +344,28 @@ export default function QuoteCartPage({ lang = DEFAULT_LANG }) {
                 </Link>
               </div>
             )}
+            {items.length > 0 && (
+              <Link
+                href={langHref("/webshop", lang)}
+                className="group mt-5 ml-auto flex w-fit items-center gap-1.5 whitespace-nowrap text-[12px] text-[#596366]"
+              >
+                <span className="border-b border-[#596366] leading-5">
+                  Continue shopping
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="transition-transform group-hover:translate-x-1"
+                >
+                  →
+                </span>
+              </Link>
+            )}
           </section>
 
-          <section className="border-t border-[#C7C0B6] bg-[#B8D9DB] p-7 md:border-l md:border-t-0 md:p-8">
-            <h2 className="text-(--color-body) mb-3 text-[24px] font-normal leading-tight">
-              Contact details
+          <section className="rounded-[5px] bg-[#183034] p-7 md:p-10 lg:mt-0">
+            <h2 className="ff-larken mb-10 text-[28px] font-normal leading-tight text-white">
+              Contact us at Panea
             </h2>
-            <p className="mb-7 max-w-[390px] text-[12px] leading-5 text-(--color-body)">
-              Send us your selected products and contact details. We will review
-              the request and get back to you.
-            </p>
 
             <form className="space-y-5" onSubmit={submitRequest}>
               <Field label="Name" name="name" required />
@@ -305,13 +377,13 @@ export default function QuoteCartPage({ lang = DEFAULT_LANG }) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-1 min-h-11 cursor-pointer rounded-full border border-(--color-body) bg-(--color-body) px-8 text-[13px] text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 min-h-11 cursor-pointer rounded-full bg-white px-8 text-[13px] text-[#183034] transition hover:bg-[#F3EDE5] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? "Submitting..." : "Submit quote request"}
+                {isSubmitting ? "Submitting..." : "Request a quote"}
               </button>
 
               {submitMessage && (
-                <p className="text-[13px] leading-5 text-(--color-body)">
+                <p className="text-[13px] leading-5 text-white">
                   {submitMessage}
                 </p>
               )}
@@ -324,6 +396,16 @@ export default function QuoteCartPage({ lang = DEFAULT_LANG }) {
           </section>
         </div>
       </section>
+      <RelatedProducts
+        product={page}
+        products={relatedProducts}
+        lang={lang}
+        randomLimit={12}
+      />
+      <WebshopHighlightBanner
+        data={highlightBanner}
+        paddingTopClass="pt-[60px] pb-[120px]"
+      />  
     </main>
   );
 }
