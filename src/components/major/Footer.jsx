@@ -74,22 +74,22 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
     <>
       {/* footer logo top */}
       <footer className="bg-[#1f1f1f] text-white overflow-hidden">
-        <div className="w-full flex justify-center overflow-hidden pt-[60px]">
+        <div className="web-width mx-auto flex justify-center overflow-hidden px-6 pt-[60px]">
           {footerLogo && (
             <img
               src={footerLogo.url}
               alt="Footer Logo"
-              className="w-full max-w-[1200px] h-auto object-contain opacity-90"
+              className="w-full h-auto object-contain opacity-90"
             />
           )}
         </div>
        {/* footer_column_1 */}   
-        <div className="max-w-[1400px] mx-auto px-6 py-14">
+        <div className="web-width mx-auto px-6 pt-12 pb-20">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-7 grid grid-cols-2 md:grid-cols-4 gap-10">
               <div>
                 {footer_column_1.column_one_heading && (
-                  <h4 className="text-white text-[20px] font-normal leading-normal text-lg mb-5">
+                  <h4 className="text-white text-[20px] font-[300] leading-normal text-lg mb-5">
                     {footer_column_1.column_one_heading}
                   </h4>
                 )}
@@ -98,7 +98,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                     <li key={index}>
                       <a
                         href={item.url}
-                        className="hover:text-white transition-colors"
+                        className="text-white/70 transition-colors hover:text-white"
                       >
                         {item.link_text}
                       </a>
@@ -110,7 +110,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
               {/* footer_column_2 */}   
               <div>
                 {footer_column_2.column_two_heading && (
-                  <h4 className="text-white text-[20px] font-normal leading-normal text-lg mb-5">
+                  <h4 className="text-white text-[20px] font-[300] leading-normal text-lg mb-5">
                     {footer_column_2.column_two_heading}
                   </h4>
                 )}
@@ -119,7 +119,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                     <li key={index}>
                       <a
                         href={item.url}
-                        className="hover:text-white transition-colors"
+                        className="text-white/70 transition-colors hover:text-white"
                       >
                         {item.link_text}
                       </a>
@@ -131,7 +131,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                {/* footer_column_3 */}    
               <div>
                 {footer_column_3.column_three_heading && (
-                  <h4 className="text-white text-[20px] font-normal leading-normal text-lg mb-5">
+                  <h4 className="text-white text-[20px] font-[300] leading-normal text-lg mb-5">
                     {footer_column_3.column_three_heading}
                   </h4>
                 )}
@@ -140,7 +140,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                     <li key={index}>
                       <a
                         href={item.url}
-                        className="hover:text-white transition-colors"
+                        className="text-white/70 transition-colors hover:text-white"
                       >
                         {item.link_text}
                       </a>
@@ -152,11 +152,11 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
               {/* footer_column_4 */}
               <div>
                 {footer_column_4.column_four_heading && (
-                  <h4 className="text-white text-[20px] font-normal leading-normal text-lg mb-5">
+                  <h4 className="text-white text-[20px] font-[300] leading-normal text-lg mb-5">
                     {footer_column_4.column_four_heading}
                   </h4>
                 )}
-                <div className="space-y-5 text-sm text-[#F2EBE2] text-[16px] font-normal leading-normal">
+                <div className="space-y-5 text-[16px] font-normal leading-normal text-white/70 [&_a]:text-white/70 [&_a]:transition-colors [&_a:hover]:text-white">
                    
                    {footer_column_4?.mobile_no && (
                     <div
@@ -167,7 +167,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                     )}    
 
                     {footer_column_4?.email_id && (
-                    <div className="text-[#F2EBE2] text-[16px] font-normal leading-normal"
+                    <div className="text-[16px] font-normal leading-normal text-white/70"
                       dangerouslySetInnerHTML={{
                         __html: footer_column_4?.email_id,
                       }}
@@ -175,7 +175,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                     )}
 
                     {footer_column_4?.visiting_address && (
-                    <div className="text-[#F2EBE2] text-[16px] font-normal leading-normal mb-5"
+                    <div className="mb-5 text-[16px] font-normal leading-normal text-white/70"
                       dangerouslySetInnerHTML={{
                         __html: footer_column_4?.visiting_address,
                       }}
@@ -184,7 +184,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
 
                     {footer_column_4?.postal_address && (
                     <div
-                      className="text-[#F2EBE2] text-[16px] font-normal leading-normal mb-5"
+                      className="mb-5 text-[16px] font-normal leading-normal text-white/70"
                       dangerouslySetInnerHTML={{
                         __html: footer_column_4?.postal_address,
                       }}
@@ -199,7 +199,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
             <div className="md:col-span-5 flex flex-col justify-between">
               <div>
                 {footer_column_5.column_five_heading && (
-                  <h3 className="text-4xl md:text-5xl leading-tight text-[#B8D1D1] font-light max-w-[500px]">
+                  <h3 className="ff-larken text-4xl md:text-5xl leading-tight text-[#B8D1D1] font-light max-w-[500px]">
                     {footer_column_5.column_five_heading}
                   </h3>
                 )}
@@ -207,20 +207,20 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                   <input
                     type="email"
                     placeholder="Email address"
-                    className="bg-transparent outline-none text-white placeholder:text-white/40 w-full"
+                    className="bg-transparent outline-none text-white placeholder:text-white w-full"
                   />
-                  <button className="ml-4 text-2xl">→</button>
+                  <button className="ml-4 text-2xl text-white">→</button>
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 mt-12">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 mt-8">
                 <div className="flex items-center gap-5">
                   {footer_column_5?.iso_logos?.map((item, index) => (
                     <img
                       key={index}
                       src={item.logo}
                       alt=""
-                      className="w-16 h-16 object-contain opacity-80"
+                      className="h-20 w-auto object-contain"
                     />
                   ))}
                 </div>
@@ -247,15 +247,15 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
         </div>
 
         {/* Copyright section */}
-        <div className="bg-[#caaed1] text-[16px] font-normal leading-normal text-[#1E2E31]">
-          <div className="max-w-[1400px] mx-auto px-6 py-[21px] flex flex-col md:flex-row items-center justify-between gap-4 text-sm">
+        <div className="ff-larken bg-[#A68AA4] text-[16px] font-normal leading-normal text-[#1E2E31]">
+          <div className="web-width mx-auto grid grid-cols-1 items-center gap-4 px-6 py-[21px] text-sm md:grid-cols-3">
             {copyrightText?.column_one_text && (
-              <p>{copyrightText.column_one_text}</p>
+              <p className="text-center md:text-left">{copyrightText.column_one_text}</p>
             )}
             {copyrightText?.column_two_text && (
-              <p>{copyrightText.column_two_text}</p>
+              <p className="text-center">{copyrightText.column_two_text}</p>
             )}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center gap-3 md:justify-end">
             {copyrightText?.column_three_text && (
               <div
                 dangerouslySetInnerHTML={{

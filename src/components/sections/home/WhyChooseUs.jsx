@@ -130,7 +130,7 @@ export default function WhyChooseUs({ data, lang = DEFAULT_LANG }) {
                         )}
                         {feature.description && (
                           <div
-                            className="text-(--color-body) text-sm font-light leading-relaxed [&_p]:mb-0"
+                            className="text-(--color-body) text-[16px] font-light leading-relaxed [&_p]:mb-0"
                             dangerouslySetInnerHTML={{ __html: feature.description }}
                           />
                         )}

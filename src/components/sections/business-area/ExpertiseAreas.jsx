@@ -112,14 +112,16 @@ export default function BusinessAreaExpertiseAreas({ data }) {
                   <li key={`${item.item_title}-${index}`}>
                     <button
                       type="button"
-                      className="grid w-full cursor-pointer grid-cols-[34px_minmax(0,1fr)] gap-4 border-b border-(--color-dark)/20 py-5 text-left focus-visible:outline-none md:grid-cols-[44px_minmax(0,1fr)]"
+                      className={`grid w-full cursor-pointer grid-cols-[34px_minmax(0,1fr)] gap-4 border-b border-(--color-dark)/20 pb-4 text-left focus-visible:outline-none md:grid-cols-[44px_minmax(0,1fr)] ${
+                        index === 0 ? "pt-0" : "pt-4"
+                      }`}
                       onMouseEnter={() => setActiveIndex(index)}
                       onFocus={() => setActiveIndex(index)}
                       onClick={() => setActiveIndex(index)}
                       aria-pressed={isActive}
                     >
                       <span
-                        className={`ff-larken pt-1 text-[14px] font-light italic leading-none text-(--color-body) transition-opacity duration-300 ${
+                        className={`ff-larken flex h-full items-center text-[14px] font-light italic leading-none text-(--color-body) transition-opacity duration-300 ${
                           isActive ? "opacity-100" : "opacity-0"
                         }`}
                       >
@@ -127,14 +129,14 @@ export default function BusinessAreaExpertiseAreas({ data }) {
                       </span>
 
                       <span>
-                        <span className="ff-larken block text-[28px] font-normal leading-[1.2] text-(--color-body) transition-colors duration-300 md:text-[34px] lg:text-[42px]">
+                        <span className="ff-larken block text-[28px] font-[300] leading-[1.2] text-(--color-body) transition-colors duration-300 md:text-[34px] lg:text-[32px]">
                           {item.item_title}
                         </span>
 
                         {isActive && item.item_content && (
                           <motion.span
                             key={`${item.item_title}-content`}
-                            className="mt-3 block max-w-[560px] text-[15px] font-light leading-[1.55] text-(--color-body) md:text-[16px] [&_p]:mb-0"
+                            className="mt-1 block max-w-[560px] text-[15px] font-light leading-[1.55] text-(--color-body) md:text-[16px] [&_p]:mb-0"
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.35 }}

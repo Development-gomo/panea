@@ -159,16 +159,16 @@ function SolutionSlideCard({ solution, lang }) {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 top-0 bottom-[51px] overflow-auto px-5 py-7 text-white opacity-0 transition-opacity duration-0 group-hover:duration-300 group-hover:opacity-100 md:px-7 md:py-8">
+        <div className="absolute inset-x-0 top-0 bottom-[51px] overflow-auto p-6 text-white opacity-0 transition-opacity duration-0 group-hover:duration-300 group-hover:opacity-100">
         {title && (
-          <h3 className="mb-5 text-[22px] font-normal leading-tight text-white md:text-[26px]">
+          <h3 className="mb-5 text-[22px] font-normal leading-tight text-white md:text-[24px]">
             {title}
           </h3>
         )}
 
         {hoverText && (
           <div
-            className="text-[15px] font-light leading-[1.5] text-white md:text-[16px] [&_li]:border-b [&_li]:border-white/15 [&_li]:py-3 [&_p]:mb-7 [&_ul]:mt-6"
+            className="text-[15px] font-light leading-[1.5] text-white md:text-[16px] [&_li]:border-b [&_li]:border-white/15 [&_li]:py-3 [&_li]:text-[16px] [&_li]:[font-family:var(--font-larken)!important] [&_li:first-child]:pt-0 [&_ul]:mt-0 [&_p]:mb-7"
             dangerouslySetInnerHTML={{ __html: hoverText }}
           />
         )}

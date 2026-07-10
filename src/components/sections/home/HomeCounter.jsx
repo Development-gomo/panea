@@ -119,7 +119,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
                   alt={image.alt || ""}
                   width={560}
                   height={420}
-                  className="w-full h-auto rounded-sm object-cover"
+                  className="w-full h-auto rounded-[10px] object-cover"
                 />
               </div>
             )}

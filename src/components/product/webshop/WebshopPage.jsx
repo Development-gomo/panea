@@ -613,7 +613,7 @@ export default function WebshopPage({
           <div className="absolute inset-0 bg-black/35" />
 
           <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center">
-            <h1 className="text-[40px] font-light leading-[1.2] text-white md:text-[40px]">
+            <h1 className="max-w-[920px] text-[30px] font-[300] leading-[1.2] text-white md:text-[36px] lg:text-[40px]">
               {resolvedHeroTitle}
             </h1>
 

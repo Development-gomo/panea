@@ -90,7 +90,7 @@ export default function BusinessAreaCounterSection({ data }) {
                   alt={image.alt || ""}
                   width={560}
                   height={420}
-                  className="h-auto w-full rounded-sm object-cover"
+                  className="h-auto w-full rounded-[10px] object-cover"
                 />
               </div>
             )}
@@ -121,7 +121,7 @@ export default function BusinessAreaCounterSection({ data }) {
                           {item.suffix && <span>{item.suffix}</span>}
                         </p>
                         {item.short_text && (
-                          <p className="mt-4 text-base font-light text-(--color-body)">
+                          <p className="mt-1 text-base font-light text-(--color-body)">
                             {item.short_text}
                           </p>
                         )}

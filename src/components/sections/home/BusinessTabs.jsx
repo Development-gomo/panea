@@ -117,7 +117,7 @@ function getItems(data, prefetchedBusinessAreas) {
 
 function ExploreIcon() {
   return (
-    <span className="relative h-[14px] w-[14px] shrink-0 transition-transform duration-300 group-hover/cta:translate-x-1">
+    <span className="relative h-[14px] w-[14px] shrink-0">
       <Image
         src={PExplore}
         alt=""
@@ -276,12 +276,12 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
               </div>
             )}
 
-            <div className="absolute right-5 top-5 h-8 w-8">
+            <div className="absolute right-5 top-5 h-20 w-20">
               <Image
                 src={LogoWhite}
                 alt=""
                 fill
-                sizes="32px"
+                sizes="80px"
                 className="object-contain"
               />
             </div>
@@ -326,7 +326,7 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
                     {webshopButton && (
                       <Link
                         href={webshopButton.url}
-                        className="group/cta inline-flex items-center gap-2 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors   hover:bg-[#F2EBE2] hover:text-[#1E2E31] hover:border hover:border-[#1e2e31]"
+                        className="group/cta inline-flex items-center gap-2 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
                       >
                         {webshopButton.text}
                         <ExploreIcon />

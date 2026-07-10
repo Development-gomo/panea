@@ -110,7 +110,7 @@ function SupplierCard({ supplier, lang = DEFAULT_LANG, index }) {
       </div>
 
       {title && (
-        <h3 className="mb-2 text-[18px] font-normal leading-tight text-(--color-body)">
+        <h3 className="mb-2 text-[20px] font-normal leading-tight text-(--color-body)">
           {title}
         </h3>
       )}

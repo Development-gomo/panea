@@ -65,14 +65,14 @@ export default function BusinessAreaHighlightBanner({ data }) {
 
             {data.title && (
               <div
-                className="ff-larken text-[32px] font-light leading-[1.18] md:text-[42px] [&_p]:mb-0"
+                className="ff-larken text-[32px] font-light leading-[1.18] md:text-[42px] [font-family:var(--font-larken)!important] [&_*]:[font-family:var(--font-larken)!important] [&_p]:mb-0"
                 dangerouslySetInnerHTML={{ __html: data.title }}
               />
             )}
 
             {data.description && (
               <div
-                className="mt-5 max-w-[500px] text-[15px] font-light leading-[1.45] text-white/85 md:text-[16px] [&_p]:mb-0"
+                className="mt-2 max-w-[500px] text-[15px] font-light leading-[1.45] text-white/85 md:text-[16px] [&_p]:mb-0"
                 dangerouslySetInnerHTML={{ __html: data.description }}
               />
             )}

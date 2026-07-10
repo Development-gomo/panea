@@ -121,7 +121,7 @@ export default function BusinessAreaWhyChooseUs({ data, lang = DEFAULT_LANG }) {
                         )}
                         {feature.description && (
                           <div
-                            className="text-sm font-light leading-relaxed text-(--color-body) [&_p]:mb-0"
+                            className="text-[16px] font-light leading-relaxed text-(--color-body) [&_p]:mb-0"
                             dangerouslySetInnerHTML={{ __html: feature.description }}
                           />
                         )}
