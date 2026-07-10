@@ -15,6 +15,7 @@ export default function ImageCtaBanner({ data, lang = DEFAULT_LANG }) {
     background_overlay,
     logo,
     title,
+    description,
     cta_text_copy,
     cta_url_copy,
   } = data;
@@ -45,7 +46,7 @@ export default function ImageCtaBanner({ data, lang = DEFAULT_LANG }) {
 
           {/* Content */}
           <motion.div
-            className="relative z-[2] flex flex-col items-center text-center px-6 py-16 max-w-[630px] mx-auto"
+            className="relative z-[2] mx-auto flex max-w-[980px] flex-col items-center px-6 py-16 text-center"
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
@@ -73,11 +74,23 @@ export default function ImageCtaBanner({ data, lang = DEFAULT_LANG }) {
             {/* Title */}
             {title && (
               <motion.h2
-                className="ff-larken font-light text-[40px] md:text-[48px] leading-normal text-white mb-8"
+                className="ff-larken mb-8 max-w-[630px] text-[40px] font-light leading-normal text-white md:text-[48px]"
                 dangerouslySetInnerHTML={{ __html: title }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.15 }}
+                viewport={{ once: true }}
+              />
+            )}
+
+            {/* Description */}
+            {description && (
+              <motion.div
+                className="mb-8 w-full max-w-[940px] text-[16px] font-light leading-[1.45] text-white [&_p]:mx-auto [&_p]:mb-4 [&_p]:max-w-[720px] [&_p:last-child]:mb-0 [&_ul]:mx-auto [&_ul]:mt-8 [&_ul]:flex [&_ul]:w-full [&_ul]:max-w-[940px] [&_ul]:list-disc [&_ul]:flex-wrap [&_ul]:items-center [&_ul]:justify-center [&_ul]:gap-x-8 [&_ul]:gap-y-2 [&_ul]:pl-5 [&_li]:text-left [&_li]:text-[14px] [&_li]:italic [&_li]:marker:text-white"
+                dangerouslySetInnerHTML={{ __html: description }}
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.55, delay: 0.22 }}
                 viewport={{ once: true }}
               />
             )}
