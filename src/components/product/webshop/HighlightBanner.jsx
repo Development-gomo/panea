@@ -65,7 +65,7 @@ export default function WebshopHighlightBanner({ data }) {
 
           <div className="absolute inset-0 bg-[linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.20) 100%)]" />
 
-          <div className="relative z-10 mx-auto flex max-w-[620px] flex-col items-center text-center">
+          <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center text-center">
             {logoUrl && (
               <div className="relative mb-7 overflow-hidden">
                 <Image
@@ -81,14 +81,14 @@ export default function WebshopHighlightBanner({ data }) {
 
             {data.title && (
               <div
-                className="ff-larken text-[48px] font-light leading-[1.18] md:text-[48px] [&_p]:mb-0"
+                className="ff-larken max-w-[620px] text-[48px] font-light leading-[1.18] md:text-[48px] [&_p]:mb-0"
                 dangerouslySetInnerHTML={{ __html: data.title }}
               />
             )}
 
             {data.description && (
               <div
-                className="mt-5 max-w-[620px] text-[15px] font-light leading-[1.45] text-white/85 md:text-[16px] [&_p]:mb-0"
+                className="mt-5 w-full max-w-[940px] text-[16px] font-light leading-[1.45] text-white [&_p]:mx-auto [&_p]:mb-4 [&_p]:max-w-[720px] [&_p:last-child]:mb-0 [&_ul]:mx-auto [&_ul]:mt-8 [&_ul]:flex [&_ul]:w-full [&_ul]:max-w-[940px] [&_ul]:list-disc [&_ul]:flex-wrap [&_ul]:items-center [&_ul]:justify-center [&_ul]:gap-x-8 [&_ul]:gap-y-2 [&_ul]:pl-5 [&_li]:text-left [&_li]:text-[14px] [&_li]:italic [&_li]:marker:text-white"
                 dangerouslySetInnerHTML={{ __html: data.description }}
               />
             )}
