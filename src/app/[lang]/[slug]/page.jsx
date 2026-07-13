@@ -42,7 +42,6 @@ function getBusinessAreaSections(acf = {}) {
   const builderFields = [
     acf.business_area_page_builder,
     acf.business_areas_page_builder,
-    acf.services_page_builder,
     acf.page_builder,
   ];
 

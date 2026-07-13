@@ -2,16 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllServices, getAllBusinessAreas, getCaseStudies, getAllPosts, getAllTeam, getThemeOptions } from "@/lib/api";
+import { getAllBusinessAreas, getCaseStudies, getAllPosts, getAllTeam, getThemeOptions } from "@/lib/api";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
-const AboutUs = dynamic(() => import("../sections/home/HomeAbout"));
-const ServicesSlider = dynamic(() => import("../sections/home/HomeServices"));
 const HomeCounter = dynamic(() => import("../sections/home/HomeCounter"));
 const HomeCaseStudies = dynamic(() => import("../sections/home/HomeCaseStudies"));
 const HomeNews = dynamic(() => import("../sections/home/HomeNews"));
-const AskAI = dynamic(() => import("../sections/home/HomeAIAsk"));
-const HomePartners = dynamic(() => import("../sections/home/HomePartners"));
 const InnerHero = dynamic(() => import("../sections/inner-pages/InnerHero"));
 const Overview = dynamic(() => import("../sections/inner-pages/Overview"));
 const CollaborationSection = dynamic(() => import("../sections/inner-pages/CollaborationSection"));
@@ -30,10 +26,9 @@ const BusinessTabs = dynamic(() => import("../sections/home/BusinessTabs"));
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
 
-  const needs = { services: false, businessAreas: false, cases: false, posts: false, team: false, clients: false };
+  const needs = { businessAreas: false, cases: false, posts: false, team: false, clients: false };
 
   for (const block of sections) {
-    if (block.acf_fc_layout === "services_section") needs.services = true;
     if (block.acf_fc_layout === "business_tabs") needs.businessAreas = true;
     if (block.acf_fc_layout === "casestudies_section") needs.cases = true;
     if (block.acf_fc_layout === "case_study_listing") needs.cases = true;
@@ -42,8 +37,7 @@ async function prefetchSectionData(sections, lang) {
     if (block.acf_fc_layout === "clients_slider_section") needs.clients = true;
   }
 
-  const [services, businessAreas, cases, posts, team, themeOpts] = await Promise.all([
-    needs.services ? getAllServices(lang) : null,
+  const [businessAreas, cases, posts, team, themeOpts] = await Promise.all([
     needs.businessAreas ? getAllBusinessAreas(lang) : null,
     needs.cases ? getCaseStudies(lang) : null,
     needs.posts ? getAllPosts(lang) : null,
@@ -54,7 +48,7 @@ async function prefetchSectionData(sections, lang) {
   const clients = themeOpts?.clients?.client_images || [];
   const clientsTitle = themeOpts?.clients?.logo_slider_title || "";
 
-  return { services, businessAreas, cases, posts, team, clients, clientsTitle };
+  return { businessAreas, cases, posts, team, clients, clientsTitle };
 }
 
 export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
@@ -68,12 +62,6 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
         switch (block.acf_fc_layout) {
           case "home_hero":
             return <Hero key={i} data={block} lang={lang} />;
-
-          case "about_us_section":
-            return <AboutUs key={i} data={block} lang={lang} />;
-
-          case "services_section":
-            return <ServicesSlider key={i} data={block} lang={lang} prefetchedServices={prefetched.services} />;
 
           case "counter_section":
             return <HomeCounter key={i} data={block} lang={lang} />;
@@ -89,12 +77,6 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
 
           case "news_section":
             return <HomeNews key={i} data={block} lang={lang} prefetchedPosts={prefetched.posts} />;
-
-          case "home_ask_ai_section":
-            return <AskAI key={i} data={block} lang={lang} />;  
-
-          case "home_partners_section":
-            return <HomePartners key={i} data={block} lang={lang} />;
 
           case "hero_section":
             return <InnerHero key={i} data={block} lang={lang} />;

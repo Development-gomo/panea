@@ -8,8 +8,6 @@ import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 const POST_TYPE_PREFIX = {
   page:       "",            // /en/about-us
   pages:      "",
-  service:    "service",     // /en/service/seo
-  services:   "service",
   solution:   "losningar",   // /losningar/planning
   solutions:  "losningar",
   business_area:  "",

@@ -12,7 +12,6 @@ export default async function LangScopedNotFound() {
   const h = await headers();
   const pathname = h.get("x-pathname") ?? h.get("referer") ?? "";
   const lang = langFromPath(pathname);
-  const showHeaderSpacer = pathname !== "/error-page";
 
   // Language-specific messages
   const messages = {
@@ -35,7 +34,6 @@ export default async function LangScopedNotFound() {
   return (
     <>
       <Header lang={lang} />
-      {showHeaderSpacer && <div className="h-28 w-full bg-black"></div>}
       <main className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-4 py-16 text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-gray-500">404</p>
         <h1 className="text-4xl font-semibold">{currentMessages.title}</h1>

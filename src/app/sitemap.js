@@ -16,7 +16,6 @@ function url(lang, path) {
 
 const CONTENT_TYPES = [
   { endpoint: "/wp/v2/pages",      path: (s) => `/${s}`,            priority: 0.8, changeFrequency: "monthly", skip: new Set(["frontpage"]) },
-  { endpoint: "/wp/v2/services",   path: (s) => `/service/${s}`,    priority: 0.8, changeFrequency: "monthly" },
   {
     endpoint: "/wp/v2/solutions",
     path: (s, lang) => `/${lang === "en" ? "solution" : "losningar"}/${s}`,
