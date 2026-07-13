@@ -7,8 +7,6 @@ import {
   submitCf7Direct,
   submitCf7FormProxy,
 } from "@/lib/api";
-import Image from "next/image";
-import ArrowSvg from "../../../../public/right-arrow.svg";
 
 function parsePipeOption(value = "") {
   const text = String(value);
@@ -79,15 +77,17 @@ function Field({ field, value, setValue, error, variant = "default" }) {
   const errorClass = isSolution ? "text-xs text-red-300" : "text-xs text-red-600";
 
   const label = field.label || field.key;
+  const hasPlaceholder = Boolean(field.placeholder);
+  const visibleLabelClass = hasPlaceholder ? "sr-only" : labelClass;
 
   if (field.type === "textarea") {
     return (
       <div className="space-y-2">
-        <label className={labelClass}>
+        <label className={visibleLabelClass}>
           {label} {field.required ? "*" : ""}
         </label>
         <textarea
-          className={common + " min-h-[140px]"}
+          className={common + " min-h-[90px]"}
           value={value || ""}
           placeholder={field.placeholder || ""}
           onChange={(e) => setValue(field.key, e.target.value)}
@@ -100,7 +100,7 @@ function Field({ field, value, setValue, error, variant = "default" }) {
   if (field.type === "select") {
     return (
       <div className="space-y-2">
-        <label className={labelClass}>
+        <label className={visibleLabelClass}>
           {label} {field.required ? "*" : ""}
         </label>
         <select
@@ -137,7 +137,7 @@ function Field({ field, value, setValue, error, variant = "default" }) {
 
   return (
     <div className="space-y-2">
-      <label className={labelClass}>
+      <label className={visibleLabelClass}>
         {label} {field.required ? "*" : ""}
       </label>
       <input
@@ -358,42 +358,22 @@ export default function ContactForm({
         type="submit"
         disabled={state.submitting}
         className={`cursor-pointer
-                    gap-3 group relative inline-flex items-center select-none
+                    relative inline-flex items-center justify-center select-none
                     px-6 py-4
-                    transition-all duration-300
                     overflow-hidden
                     disabled:opacity-50 disabled:cursor-not-allowed
                     ${
                       variant === "solution"
-                        ? "mt-4 w-[164px] rounded-[50px] bg-white text-(--color-body) hover:bg-white"
-                        : "w-[170px] rounded-sm bg-(--color-brand) text-white hover:bg-(--color-brand)"
+                        ? "mt-4 w-[164px] rounded-[50px] bg-white text-(--color-body)"
+                        : "w-[170px] rounded-sm bg-(--color-brand) text-white"
                     }`}
       >
-      
-
-        {/* TEXT (slides left on hover) */}
         <span
           className="
-                      flex-1 text-[16px] leading-none
-                      transition-all duration-300 ease-out 
-                      group-hover:-translate-x-4
+                      text-[16px] leading-none
                       whitespace-nowrap"
         >
           {state.submitting ? "Sending..." : submitLabel}
-        </span>
-
-        {/* RIGHT SLOT (arrow area, fixed width) */}
-        <span className="relative w-4 flex items-center justify-center">
-          <span
-            className="
-                        w-4 absolute text-[16px]
-                        opacity-0 -translate-x-4
-                        transition-all duration-300 ease-out
-                        group-hover:opacity-100 group-hover:-translate-x-2
-                      "
-          >
-            <Image src={ArrowSvg} alt="arrow" width={13} height={13} />
-          </span>
         </span>
       </button>
 

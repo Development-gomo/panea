@@ -155,7 +155,7 @@ function EmployeeCard({ member, index }) {
 
   return (
     <motion.article
-      className="overflow-hidden rounded-[7px] border border-[#1E2E31]/20 bg-transparent"
+      className="flex h-full flex-col overflow-hidden rounded-[7px] border border-[#1E2E31]/20 bg-transparent"
       initial={{ opacity: 0, y: 18 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.05 }}
@@ -185,7 +185,7 @@ function EmployeeCard({ member, index }) {
         )}
       </div>
 
-      <div className="px-4 py-5">
+      <div className="flex flex-1 flex-col px-4 py-5">
         {title && (
           <h3 className="mb-2 text-[22px] font-normal leading-tight text-(--color-body)">
             {title}
@@ -212,7 +212,7 @@ function EmployeeCard({ member, index }) {
         )}
       </div>
 
-      <div>
+      <div className="mt-auto">
         <ContactLink href={phone ? `tel:${phone.replace(/\s+/g, "")}` : "#"}>
           {phone}
         </ContactLink>

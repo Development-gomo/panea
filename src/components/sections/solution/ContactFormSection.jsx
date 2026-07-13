@@ -141,7 +141,7 @@ function ContactRow({ label, items, showLabel }) {
 
   return (
     <div
-      className={`grid items-center gap-4 border-b border-[#1E2E31]/12 py-3 text-[14px] leading-tight text-(--color-body) ${
+      className={`grid items-center gap-4 border-b border-[#1E2E31]/12 py-4 text-[14px] leading-tight text-(--color-body) ${
         showLabel ? "grid-cols-1 sm:grid-cols-[minmax(120px,1fr)_minmax(0,1fr)]" : "grid-cols-1"
       }`}
     >
@@ -163,7 +163,7 @@ function ContactRow({ label, items, showLabel }) {
               alt=""
               width={12}
               height={14}
-              className="opacity-45 transition-transform group-hover:translate-x-1"
+              className="transition-transform group-hover:translate-x-1"
             />
           </a>
         ))}
@@ -187,7 +187,7 @@ function TeamMemberCard({ member, compact }) {
       <div className={compact ? "space-y-4" : "grid gap-6 sm:grid-cols-[176px_1fr]"}>
         <div
           className={`relative shrink-0 overflow-hidden rounded-[4px] bg-[#1E2E31]/10 ${
-            compact ? "h-[144px] w-[144px]" : "h-[176px] w-[176px] max-w-full"
+            compact ? "h-[160px] w-[160px]" : "h-[160px] w-[160px] max-w-full"
           }`}
         >
           {image ? (
@@ -195,7 +195,7 @@ function TeamMemberCard({ member, compact }) {
               src={image}
               alt={title || "Team member"}
               fill
-              sizes={compact ? "144px" : "176px"}
+              sizes="160px"
               className="object-cover"
             />
           ) : null}
@@ -203,7 +203,7 @@ function TeamMemberCard({ member, compact }) {
 
         <div>
           {title && (
-            <h3 className={`${compact ? "text-[20px]" : "text-[26px]"} mb-2 font-normal leading-tight text-(--color-body)`}>
+            <h3 className={`${compact ? "text-[20px]" : "text-[26px]"} mb-2 font-[300] leading-tight text-(--color-body)`}>
               {title}
             </h3>
           )}
@@ -236,7 +236,7 @@ export default function SolutionContactFormSection({
   lang,
   prefetchedTeamMembers = [],
 }) {
-  const { text_above_title, title, select_form } = data || {};
+  const { text_above_title, title, select_form, contact_form_title } = data || {};
   const selectedTeamMembers =
     teamData?.select_team_members || data?.select_team_members;
   const teamMembers = mergeMembers(
@@ -279,7 +279,7 @@ export default function SolutionContactFormSection({
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-5">
           {formId && (
             <motion.div
-              className="rounded-[7px] bg-(--color-body) px-7 py-10 text-white md:min-h-[520px] md:px-11 md:py-13"
+              className="rounded-[10px] bg-(--color-body) p-12 text-white md:min-h-[520px]"
               initial={{ opacity: 0, y: 18 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -290,6 +290,7 @@ export default function SolutionContactFormSection({
                 lang={lang}
                 variant="solution"
                 showTitle
+                formTitle={contact_form_title}
                 submitLabel="Submit form"
               />
             </motion.div>
@@ -297,7 +298,7 @@ export default function SolutionContactFormSection({
 
           {teamMembers.length > 0 && (
             <motion.div
-              className={`rounded-[7px] border border-[#1E2E31]/16 ${
+              className={`rounded-[10px] border border-[#1E2E31]/16 ${
                 compactCards
                   ? "grid gap-x-8 gap-y-6 p-6 sm:grid-cols-2 md:min-h-[520px]"
                   : "grid grid-cols-1 p-6 md:min-h-[520px] md:p-7"

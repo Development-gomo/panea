@@ -152,7 +152,7 @@ function ContactRow({ label, items, showLabel }) {
 
   return (
     <div
-      className={`grid items-center gap-4 border-b border-[#1E2E31]/12 py-3 text-[14px] leading-tight text-(--color-body) ${
+      className={`grid items-center gap-4 border-b border-[#1E2E31]/12 py-4 text-[14px] leading-tight text-(--color-body) ${
         showLabel ? "grid-cols-1 sm:grid-cols-[minmax(120px,1fr)_minmax(0,1fr)]" : "grid-cols-1"
       }`}
     >
@@ -174,7 +174,7 @@ function ContactRow({ label, items, showLabel }) {
               alt=""
               width={12}
               height={14}
-              className="opacity-45 transition-transform group-hover:translate-x-1"
+              className="transition-transform group-hover:translate-x-1"
             />
           </a>
         ))}
@@ -194,7 +194,7 @@ function TeamMemberCard({ member, compact }) {
       <div className={compact ? "space-y-4" : "grid gap-6 sm:grid-cols-[176px_1fr]"}>
         <div
           className={`relative shrink-0 overflow-hidden rounded-[4px] bg-[#1E2E31]/10 ${
-            compact ? "h-[144px] w-[144px]" : "h-[176px] w-[176px] max-w-full"
+            compact ? "h-[160px] w-[160px]" : "h-[160px] w-[160px] max-w-full"
           }`}
         >
           {image ? (
@@ -202,7 +202,7 @@ function TeamMemberCard({ member, compact }) {
               src={image}
               alt={title || "Team member"}
               fill
-              sizes={compact ? "144px" : "176px"}
+              sizes="160px"
               className="object-cover"
             />
           ) : null}
@@ -210,7 +210,7 @@ function TeamMemberCard({ member, compact }) {
 
         <div>
           {title && (
-            <h3 className={`${compact ? "text-[20px]" : "text-[26px]"} mb-2 font-normal leading-tight text-(--color-body)`}>
+            <h3 className={`${compact ? "text-[20px]" : "text-[26px]"} mb-2 font-[300] leading-tight text-(--color-body)`}>
               {title}
             </h3>
           )}
