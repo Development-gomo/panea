@@ -43,7 +43,7 @@ export default async function CaseStudySinglePage({ params }) {
         lang={lang}
         currentSlug={slug}
         entryType="case_study"
-        pathPrefix="case"
+        pathPrefix=""
         entryId={caseStudy?.id}
         prefetchedMenu={menu}
         prefetchedOptions={themeOptions?.header || {}}

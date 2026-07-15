@@ -4,12 +4,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-export default function BusinessAreaHero({ data }) {
+export default function BusinessAreaHero({
+  data,
+  pageTitle = "",
+  scrollTargetId = "",
+}) {
   const backgroundImage = data?.background_image?.url || "";
   const backgroundAlt = data?.background_image?.alt || "";
-  const title = data?.title || "";
+  const title = pageTitle || data?.title || "";
   const ctaText = data?.cta_text || "";
   const ctaUrl = data?.cta_url || "";
+  const scrollToTarget = () => {
+    const target = document.getElementById(scrollTargetId);
+    if (!target) return;
+
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+    target.focus({ preventScroll: true });
+  };
 
   return (
     <div className="web-width mx-auto px-6">
@@ -38,19 +49,29 @@ export default function BusinessAreaHero({ data }) {
             />
           )}
 
-          {ctaText && ctaUrl && (
+          {ctaText && (scrollTargetId || ctaUrl) && (
             <motion.div
               className="mt-6"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.15 }}
             >
-              <Link
-                href={ctaUrl}
-                className="inline-flex rounded-[50px] bg-(--color-brand) px-9 py-4 text-[16px] leading-none text-(--color-body) transition-colors duration-300 hover:bg-white"
-              >
-                {ctaText}
-              </Link>
+              {scrollTargetId ? (
+                <button
+                  type="button"
+                  onClick={scrollToTarget}
+                  className="inline-flex cursor-pointer rounded-[50px] bg-(--color-brand) px-9 py-4 text-[16px] leading-none text-(--color-body) transition-colors duration-300 hover:bg-white"
+                >
+                  {ctaText}
+                </button>
+              ) : (
+                <Link
+                  href={ctaUrl}
+                  className="inline-flex rounded-[50px] bg-(--color-brand) px-9 py-4 text-[16px] leading-none text-(--color-body) transition-colors duration-300 hover:bg-white"
+                >
+                  {ctaText}
+                </Link>
+              )}
             </motion.div>
           )}
         </div>

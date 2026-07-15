@@ -23,7 +23,7 @@ const CONTENT_TYPES = [
     changeFrequency: "monthly",
   },
   { endpoint: "/wp/v2/business_areas", path: (s) => `/${s}`,        priority: 0.8, changeFrequency: "monthly" },
-  { endpoint: "/wp/v2/case_study", path: (s) => `/case/${s}`,       priority: 0.7, changeFrequency: "monthly" },
+  { endpoint: "/wp/v2/case_study", path: (s) => `/${s}`,            priority: 0.7, changeFrequency: "monthly" },
   {
     endpoint: "/wp/v2/posts",
     path: (s, lang) => `/${lang === "en" ? "article" : "artiklar"}/${s}`,

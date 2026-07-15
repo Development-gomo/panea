@@ -12,7 +12,7 @@ const POST_TYPE_PREFIX = {
   solutions:  "",
   business_area:  "",
   business_areas: "",
-  case_study: "case",        // /en/case/project-x
+  case_study: "",
   post:       "artiklar",    // /artiklar/my-article
   posts:      "artiklar",
 };

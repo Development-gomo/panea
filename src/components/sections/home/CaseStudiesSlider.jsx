@@ -109,7 +109,7 @@ export default function CaseStudiesSlider({
           const title = getCaseTitle(item);
           const excerpt = getCaseExcerpt(item);
           const image = getCaseImage(item);
-          const href = langHref(`/case/${item.slug}`, lang);
+          const href = langHref(`/${item.slug}/`, lang);
 
           return (
             <SwiperSlide

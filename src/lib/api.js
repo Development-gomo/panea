@@ -246,6 +246,38 @@ export async function getAllPosts(lang) {
   return fetchWP(`/wp/v2/posts?lang=${lang}&per_page=3&orderby=date&order=desc&_embed`);
 }
 
+export async function getArticleArchivePosts(lang = DEFAULT_LANG) {
+  const posts = [];
+
+  for (let page = 1; page <= 100; page += 1) {
+    const pagePosts = await fetchWP(
+      `/wp/v2/posts?lang=${lang}&per_page=100&page=${page}&orderby=date&order=desc&_embed`
+    );
+
+    if (!Array.isArray(pagePosts) || pagePosts.length === 0) break;
+    posts.push(...pagePosts);
+    if (pagePosts.length < 100) break;
+  }
+
+  return posts;
+}
+
+export async function getPostCategories(lang = DEFAULT_LANG) {
+  const categories = [];
+
+  for (let page = 1; page <= 100; page += 1) {
+    const pageCategories = await fetchWP(
+      `/wp/v2/categories?lang=${lang}&per_page=100&page=${page}&hide_empty=true&orderby=name&order=asc`
+    );
+
+    if (!Array.isArray(pageCategories) || pageCategories.length === 0) break;
+    categories.push(...pageCategories);
+    if (pageCategories.length < 100) break;
+  }
+
+  return categories;
+}
+
 export async function getAllProducts(lang = DEFAULT_LANG) {
   const mergeStoreImages = async (products = []) => {
     const storeProducts = await fetchWP(`/wc/store/v1/products?per_page=100`);

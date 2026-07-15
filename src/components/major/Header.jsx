@@ -15,6 +15,16 @@ import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
 const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
 
+function getFixedLocalizedRoute(slug, lang) {
+  if (slug === "cart") return langHref("/cart", lang);
+  if (slug === "cases") return langHref("/cases", lang);
+  if (["artiklar", "article"].includes(slug)) {
+    return lang === DEFAULT_LANG ? "/artiklar" : `/${lang}/article`;
+  }
+
+  return "";
+}
+
 function getQuoteCartItems() {
   if (typeof window === "undefined") return [];
 
@@ -274,13 +284,9 @@ export default function Header({
     async function fetchAltLangUrl() {
       try {
         const altLang = SUPPORTED_LANGS.filter((l) => l !== lang)[0];
-        const fixedLocalizedRoutes = {
-          cart: "/cart",
-          cases: "/cases",
-        };
-        const fixedRoute = fixedLocalizedRoutes[currentSlug];
+        const fixedRoute = getFixedLocalizedRoute(currentSlug, altLang);
         const fallbackUrl = fixedRoute
-          ? langHref(fixedRoute, altLang)
+          ? fixedRoute
           : langHome(altLang);
 
         // Use entryId for dynamic translation lookup if available
@@ -310,13 +316,8 @@ export default function Header({
 
       } catch (error) {
         const altLang = SUPPORTED_LANGS.filter((l) => l !== lang)[0];
-        const fixedRoute =
-          currentSlug === "cart"
-            ? "/cart"
-            : currentSlug === "cases"
-              ? "/cases"
-              : "";
-        setAltLangUrl(fixedRoute ? langHref(fixedRoute, altLang) : langHome(altLang));
+        const fixedRoute = getFixedLocalizedRoute(currentSlug, altLang);
+        setAltLangUrl(fixedRoute || langHome(altLang));
       }
     }
 

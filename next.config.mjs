@@ -93,6 +93,16 @@ const nextConfig = {
         destination: "/en/:slug",
         permanent: true,
       },
+      {
+        source: "/case/:slug",
+        destination: "/:slug",
+        permanent: true,
+      },
+      {
+        source: "/en/case/:slug",
+        destination: "/en/:slug",
+        permanent: true,
+      },
     ];
   },
 
