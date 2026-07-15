@@ -214,6 +214,20 @@ export async function getCaseStudies(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/case_study?lang=${lang}&per_page=100&_embed`);
 }
 
+export async function getCaseStudyTypes(lang = DEFAULT_LANG) {
+  return await fetchWP(
+    `/wp/v2/case_study_type?lang=${lang}&per_page=100&hide_empty=true`
+  );
+}
+
+export async function getCaseStudiesByType(typeId, lang = DEFAULT_LANG) {
+  if (!typeId) return [];
+
+  return await fetchWP(
+    `/wp/v2/case_study?lang=${lang}&per_page=100&case_study_type=${typeId}&_embed`
+  );
+}
+
 export async function getAllSuppliers(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/suppliers?lang=${lang}&per_page=100&_embed&acf_format=standard`);
 }

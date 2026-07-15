@@ -82,8 +82,13 @@ export default function CaseStudiesSlider({
   cases = [],
   lang = DEFAULT_LANG,
   className = "",
+  excludeSlug = "",
 }) {
-  if (!cases.length) return null;
+  const visibleCases = excludeSlug
+    ? cases.filter((item) => item?.slug !== excludeSlug)
+    : cases;
+
+  if (!visibleCases.length) return null;
 
   const readCaseLabel = READ_CASE_LABELS[lang] || READ_CASE_LABELS.en;
 
@@ -100,7 +105,7 @@ export default function CaseStudiesSlider({
           1024: { spaceBetween: 16 },
         }}
       >
-        {cases.map((item) => {
+        {visibleCases.map((item) => {
           const title = getCaseTitle(item);
           const excerpt = getCaseExcerpt(item);
           const image = getCaseImage(item);

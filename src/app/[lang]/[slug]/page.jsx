@@ -1,9 +1,10 @@
 // src/app/[lang]/[slug]/page.jsx
 
-import { getPageBySlug, getBusinessAreaBySlug, fetchWP, getMenu, getThemeOptions, getAllBusinessAreas, getAllProducts, getProductBrands, getProductCategories, getTeamMembersByIds } from "@/lib/api";
+import { getPageBySlug, getBusinessAreaBySlug, getCaseStudyBySlug, getCaseStudies, fetchWP, getMenu, getThemeOptions, getAllBusinessAreas, getAllProducts, getProductBrands, getProductCategories, getTeamMembersByIds } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
 import BusinessAreaBuilder from "@/components/major/BusinessAreaBuilder";
+import CaseStudyBuilder from "@/components/major/CasestudyBuilder";
 import GenericPageBuilder from "@/components/major/GenericPageBuilder";
 import WebshopPage from "@/components/product/webshop/WebshopPage";
 import Header from "@/components/major/Header";
@@ -15,17 +16,19 @@ import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const [pageResults, businessAreaResults] = await Promise.all([
+  const [pageResults, businessAreaResults, caseStudyResults] = await Promise.all([
     Promise.all(
       SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/pages?per_page=100&lang=${lang}`))
     ),
     Promise.all(SUPPORTED_LANGS.map((lang) => getAllBusinessAreas(lang))),
+    Promise.all(SUPPORTED_LANGS.map((lang) => getCaseStudies(lang))),
   ]);
 
   const params = SUPPORTED_LANGS.flatMap((lang, i) =>
     [
       ...(Array.isArray(pageResults[i]) ? pageResults[i] : []),
       ...(Array.isArray(businessAreaResults[i]) ? businessAreaResults[i] : []),
+      ...(Array.isArray(caseStudyResults[i]) ? caseStudyResults[i] : []),
     ].map((entry) => ({ lang, slug: entry.slug }))
   );
 
@@ -82,9 +85,10 @@ export default async function SinglePage({ params }) {
 
   if (!slug) notFound();
 
-  const [data, businessArea, menu, themeOptions, products, productCategories, productBrands] = await Promise.all([
+  const [data, businessArea, caseStudy, menu, themeOptions, products, productCategories, productBrands] = await Promise.all([
     getPageBySlug(slug, lang),
     getBusinessAreaBySlug(slug, lang),
+    getCaseStudyBySlug(slug, lang),
     getMenu(lang),
     getThemeOptions(lang),
     slug === "webshop" ? getAllProducts(lang) : null,
@@ -92,10 +96,11 @@ export default async function SinglePage({ params }) {
     slug === "webshop" ? getProductBrands(lang) : null,
   ]);
 
-  const entry = data || businessArea;
+  const entry = data || businessArea || caseStudy;
   if (!entry) notFound();
 
   const isBusinessArea = !data && !!businessArea;
+  const isCaseStudy = !data && !businessArea && !!caseStudy;
   const acf = entry?.acf || {};
   const businessAreaSections = isBusinessArea ? getBusinessAreaSections(acf) : null;
   const genericSections = Array.isArray(acf.generic_page_builder)
@@ -112,14 +117,21 @@ export default async function SinglePage({ params }) {
       <Header
         lang={lang}
         currentSlug={slug}
-        entryType={isBusinessArea ? "business_areas" : "pages"}
+        entryType={isCaseStudy ? "case_study" : isBusinessArea ? "business_areas" : "pages"}
         entryId={entry?.id}
         prefetchedMenu={menu}
         prefetchedOptions={themeOptions?.header || {}}
         logoUrl={themeOptions?.header?.logo_light?.url || ""}
       />
       <main>
-        {slug === "webshop" && data ? (
+        {isCaseStudy ? (
+          <CaseStudyBuilder
+            sections={caseStudy?.acf?.case_study_builder}
+            lang={lang}
+            caseStudyTitle={caseStudy?.title?.rendered || caseStudy?.title || ""}
+            currentSlug={slug}
+          />
+        ) : slug === "webshop" && data ? (
           <WebshopPage
             page={data}
             products={products || []}
@@ -148,8 +160,9 @@ export async function generateMetadata({ params }) {
   const slug = parsed?.slug;
   const data = await getPageBySlug(slug, lang);
   const businessArea = data ? null : await getBusinessAreaBySlug(slug, lang);
+  const caseStudy = data || businessArea ? null : await getCaseStudyBySlug(slug, lang);
 
-  return buildMetadataFromYoast(data || businessArea, {
+  return buildMetadataFromYoast(data || businessArea || caseStudy, {
     fallbackTitle: slug ? `${slug} | panea` : "panea",
     lang,
   });

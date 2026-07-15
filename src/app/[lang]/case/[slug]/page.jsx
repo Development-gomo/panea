@@ -50,7 +50,12 @@ export default async function CaseStudySinglePage({ params }) {
         logoUrl={themeOptions?.header?.logo_light?.url || ""}
       />
       <main>
-        <CaseStudyBuilder sections={caseStudy?.acf?.case_study_builder} lang={lang} />
+        <CaseStudyBuilder
+          sections={caseStudy?.acf?.case_study_builder}
+          lang={lang}
+          caseStudyTitle={caseStudy?.title?.rendered || caseStudy?.title || ""}
+          currentSlug={slug}
+        />
       </main>
       <Footer lang={lang} currentSlug={slug} />
     </>

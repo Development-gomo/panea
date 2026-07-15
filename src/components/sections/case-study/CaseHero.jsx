@@ -1,81 +1,157 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
-import DownArrow from "../../../../public/hero-down-arrow.png";
-import Overlay from "../../../../public/overlay.png";
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { DEFAULT_LANG, langHome } from "@/config";
 
-export default function CaseHero({ data }) {
-  const bgImage = data?.bg_image?.url || "";
-  const heading = data?.heading || "";
-  const sub_heading = data?.sub_heading || "";
-  const logo = data?.logo?.url || "";
+function getImageUrl(image) {
+  if (!image) return "";
+  if (typeof image === "string") return image;
 
   return (
-    <section id="inner-hero" className="relative w-full overflow-hidden hero">
-      {/* BG IMAGE/VIDEO */}
-      <div className="absolute inset-0 -z-10">
-        {bgImage &&  
-          <Image
-            src={bgImage}
-            alt="Hero Background"
-            fill
-            className="object-cover"
-            priority
-          />
-        }
-      </div>
+    image.url ||
+    image.source_url ||
+    image.src ||
+    image.sizes?.full ||
+    image.sizes?.large ||
+    image.sizes?.medium_large ||
+    image.media_details?.sizes?.full?.source_url ||
+    image.media_details?.sizes?.large?.source_url ||
+    ""
+  );
+}
 
-      {/* Gradient Overlay */}
-      {/* <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/60 to-black/80 -z-10"></div>
-      <div className="absolute inset-0 -z-10"><Image src={Overlay} alt="Overlay" fill className="object-cover" /></div> */}
+export default function CaseHero({
+  data,
+  lang = DEFAULT_LANG,
+  pageTitle = "",
+  eyebrow = "",
+  scrollTargetId = "about-the-project",
+  showCurrentTitleInBreadcrumb = true,
+  showBreadcrumb = true,
+  showEyebrow = true,
+}) {
+  if (!data) return null;
 
-      {/* HERO TEXT */}
-      <div className="relative min-h-screen web-width px-6 py-16 lg:py-25 h-full flex flex-col items-start justify-end">
-        <div className="md:flex items-end justify-between gap-20">
-          <div className="max-w-[1046px]">
-          {sub_heading && (
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="uppercase subheading-label text-[var(--color-accent)] md:mb-6"
-              dangerouslySetInnerHTML={{ __html: sub_heading }}
+  const backgroundImage = data.background_image;
+  const backgroundUrl = getImageUrl(backgroundImage);
+  const ctaText = data.cta_text || "";
+  const caseStudyLabel =
+    eyebrow || (lang === "sv" ? "Fallstudie" : "Case study");
+  const homeLabel = lang === "sv" ? "Hem" : "Home";
+  const archiveLabel = lang === "sv" ? "Fallstudier" : "Case studies";
+  const scrollToAboutProject = () => {
+    const target = document.getElementById(scrollTargetId);
+    if (!target) return;
+
+    const startPosition = window.scrollY;
+    const targetPosition =
+      target.getBoundingClientRect().top + startPosition - 80;
+    const distance = targetPosition - startPosition;
+    const duration = 900;
+    const startTime = performance.now();
+
+    const animateScroll = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress =
+        progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      window.scrollTo(0, startPosition + distance * easedProgress);
+
+      if (progress < 1) {
+        window.requestAnimationFrame(animateScroll);
+      }
+    };
+
+    window.requestAnimationFrame(animateScroll);
+  };
+
+  if (!backgroundUrl && !pageTitle && !ctaText) {
+    return null;
+  }
+
+  return (
+    <section className="bg-[#F2EBE2]">
+      <div className="web-width mx-auto px-6">
+        <motion.section
+          id="inner-hero"
+          className="relative flex min-h-[320px] items-center justify-center overflow-hidden rounded-[11px] bg-(--color-body) py-10 text-white md:h-[400px] md:py-0"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          {backgroundUrl && (
+            <Image
+              src={backgroundUrl}
+              alt={backgroundImage?.alt || ""}
+              fill
+              sizes="(min-width: 1440px) 1408px, calc(100vw - 48px)"
+              className="object-cover"
+              priority
             />
           )}
-          <h1>
-          <motion.span
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="heading-xl text-white"
-            dangerouslySetInnerHTML={{
-              __html: heading.replace(/<em>(.*?)<\/em>/g, `<em>$1</em>`),
-            }}
-          />
-            <motion.a
-              onClick={(e) => {
-                e.preventDefault();
-                document
-                  .querySelector("#next")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="block md:inline-block w-16 h-16 text-center pt-6 pl-6 rounded-full bg-(--color-accent) translate-y-2 transition-all duration-300 shadow-md hover:translate-y-3.5 cursor-pointer md:ml-8 mt-4 md:mt-0">
-                            <Image src={DownArrow} alt="arrow" width={16} height={16} />
-            </motion.a>
-            </h1>
-        </div>
 
-        {logo && (
-          <div className="bg-(--color-bg) px-3 py-3 rounded-sm mt-12 md:mt-6">
-            <Image src={logo} alt="Case Study Logo" width={150} height={75} className=""/>
+          <div className="absolute inset-0 bg-black/35" />
+
+          <div className="relative z-10 flex w-full min-w-0 flex-col items-center justify-center px-5 text-center sm:px-6">
+            {showEyebrow && (
+              <p className="mb-4 text-[16px] font-light leading-none text-white md:text-[18px]">
+                {caseStudyLabel}
+              </p>
+            )}
+
+            {pageTitle && (
+              <h1
+                className="w-full max-w-[920px] break-words text-[30px] font-[300] leading-[1.15] text-white sm:text-[34px] md:text-[42px] lg:text-[48px]"
+                dangerouslySetInnerHTML={{ __html: pageTitle }}
+              />
+            )}
+
+            {ctaText && (
+              <button
+                type="button"
+                onClick={scrollToAboutProject}
+                className="mt-6 inline-flex max-w-full cursor-pointer items-center justify-center rounded-[50px] bg-(--color-brand) px-7 py-4 text-center text-[16px] leading-tight text-(--color-body) transition-colors duration-300 hover:bg-white sm:px-9"
+              >
+                {ctaText}
+              </button>
+            )}
           </div>
+        </motion.section>
+
+        {showBreadcrumb && (
+          <nav
+            aria-label={lang === "sv" ? "Brödsmulor" : "Breadcrumb"}
+            className="text-[#1E2E31]"
+          >
+            <ol className="web-width mx-auto flex min-h-11 flex-wrap items-center gap-x-2 gap-y-1 py-3 text-[12px] leading-normal font-normal text-[#1E2E31] not-italic">
+              <li>
+                <Link
+                  href={langHome(lang)}
+                  className="transition-colors hover:text-(--color-body)"
+                >
+                  {homeLabel}
+                </Link>
+              </li>
+              <li aria-hidden="true">/</li>
+              <li>{archiveLabel}</li>
+              {pageTitle && showCurrentTitleInBreadcrumb && (
+                <>
+                  <li aria-hidden="true">/</li>
+                  <li
+                    aria-current="page"
+                    className="min-w-0 break-words text-(--color-body)"
+                    dangerouslySetInnerHTML={{ __html: pageTitle }}
+                  />
+                </>
+              )}
+            </ol>
+          </nav>
         )}
-        </div>
       </div>
     </section>
   );

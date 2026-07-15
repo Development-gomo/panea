@@ -1,17 +1,18 @@
-// src/components/sections/case-study/RealtedCase.jsx
 "use client";
 
-import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-
 import ArrowSvg from "../../../../public/right-arrow.svg";
-
 import { DEFAULT_LANG } from "@/config";
 import CaseStudiesSlider from "../home/CaseStudiesSlider";
 
-export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases }) {
+export default function CaseStudySection({
+  data,
+  lang = DEFAULT_LANG,
+  prefetchedCases,
+  currentSlug = "",
+}) {
   const cases = prefetchedCases || [];
 
   const {
@@ -31,7 +32,10 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
   if (!cases.length) return null;
 
   return (
-    <section id="case-section" className="w-full overflow-hidden pt-[60px] pb-0 md:pt-[120px]">
+    <section
+      id="case-study-section"
+      className="w-full overflow-hidden pt-[60px] pb-[60px]"
+    >
       <div className="web-width-sm mx-auto px-6">
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {label && (
@@ -59,11 +63,11 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
 
           {cta_text && ctaUrl && (
             <motion.div
+              className="mt-6"
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
-              className="mt-6"
             >
               <Link
                 href={ctaUrl}
@@ -73,8 +77,8 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
                   {cta_text}
                   <span className="absolute bottom-0 left-0 h-[1px] w-full bg-(--color-dark) transition-all duration-300 ease-out group-hover:w-[calc(100%+22px)]" />
                 </span>
-                <span className="ml-1 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
-                  <Image src={ArrowSvg} alt="arrow" width={13} height={13} />
+                <span className="ml-2 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                  <Image src={ArrowSvg} alt="arrow" width={15} height={15} />
                 </span>
               </Link>
             </motion.div>
@@ -88,7 +92,11 @@ export default function RealtedCase({ data, lang = DEFAULT_LANG, prefetchedCases
         transition={{ duration: 0.6, delay: 0.1 }}
         viewport={{ once: true }}
       >
-        <CaseStudiesSlider cases={cases} lang={lang} />
+        <CaseStudiesSlider
+          cases={cases}
+          lang={lang}
+          excludeSlug={currentSlug}
+        />
       </motion.div>
     </section>
   );
