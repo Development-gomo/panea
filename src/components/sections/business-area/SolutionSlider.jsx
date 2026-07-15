@@ -121,7 +121,7 @@ function SolutionSlideCard({ solution, lang }) {
   const shortDescription = details.short_description || solution?.acf?.short_description || "";
   const hoverText = details.hover_text || "";
   const buttons = getButtons(details.button_row);
-  const fallbackHref = solution?.slug ? langHref(`/solution/${solution.slug}`, lang) : "";
+  const fallbackHref = solution?.slug ? langHref(`/${solution.slug}`, lang) : "";
   const exploreLabel = EXPLORE_LABELS[lang] || EXPLORE_LABELS.en;
   const allButtons = [
     ...buttons,

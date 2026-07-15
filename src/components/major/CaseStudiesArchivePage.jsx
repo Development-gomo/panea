@@ -11,6 +11,7 @@ import {
   getCaseStudyTypes,
   getMenu,
   getPageBySlug,
+  getTranslationBySlug,
   getThemeOptions,
 } from "@/lib/api";
 import { notFound } from "next/navigation";
@@ -18,7 +19,24 @@ import { notFound } from "next/navigation";
 export const CASES_PAGE_SLUG = "cases";
 
 export async function getCaseStudiesArchivePage(lang = DEFAULT_LANG) {
-  return getPageBySlug(CASES_PAGE_SLUG, lang);
+  const directPage = await getPageBySlug(CASES_PAGE_SLUG, lang);
+
+  if (directPage && (!directPage.lang || directPage.lang === lang)) {
+    return directPage;
+  }
+
+  if (lang === DEFAULT_LANG) return directPage;
+
+  const translation = await getTranslationBySlug(
+    CASES_PAGE_SLUG,
+    DEFAULT_LANG,
+    lang,
+    "page"
+  );
+
+  if (!translation?.slug) return null;
+
+  return getPageBySlug(translation.slug, lang);
 }
 
 function findHeroBanner(value) {

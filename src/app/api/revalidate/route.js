@@ -8,8 +8,8 @@ import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 const POST_TYPE_PREFIX = {
   page:       "",            // /en/about-us
   pages:      "",
-  solution:   "losningar",   // /losningar/planning
-  solutions:  "losningar",
+  solution:   "",
+  solutions:  "",
   business_area:  "",
   business_areas: "",
   case_study: "case",        // /en/case/project-x
@@ -49,12 +49,9 @@ export async function POST(req) {
     }
 
     const postPrefix = lang === "en" ? "article" : "artiklar";
-    const solutionPrefix = lang === "en" ? "solution" : "losningar";
     const localizedPrefix = ["post", "posts"].includes(postType)
       ? postPrefix
-      : ["solution", "solutions"].includes(postType)
-        ? solutionPrefix
-        : prefix;
+      : prefix;
     const langPrefix = lang === DEFAULT_LANG ? "" : `/${lang}`;
     const path = localizedPrefix
       ? `${langPrefix}/${localizedPrefix}/${slug}`

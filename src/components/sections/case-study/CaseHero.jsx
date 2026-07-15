@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { DEFAULT_LANG, langHome } from "@/config";
+import { DEFAULT_LANG, langHome, langHref } from "@/config";
 
 function getImageUrl(image) {
   if (!image) return "";
@@ -138,7 +138,14 @@ export default function CaseHero({
                 </Link>
               </li>
               <li aria-hidden="true">/</li>
-              <li>{archiveLabel}</li>
+              <li>
+                <Link
+                  href={langHref("/cases/", lang)}
+                  className="transition-colors hover:text-(--color-body)"
+                >
+                  {archiveLabel}
+                </Link>
+              </li>
               {pageTitle && showCurrentTitleInBreadcrumb && (
                 <>
                   <li aria-hidden="true">/</li>

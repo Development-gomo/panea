@@ -18,7 +18,7 @@ const CONTENT_TYPES = [
   { endpoint: "/wp/v2/pages",      path: (s) => `/${s}`,            priority: 0.8, changeFrequency: "monthly", skip: new Set(["frontpage"]) },
   {
     endpoint: "/wp/v2/solutions",
-    path: (s, lang) => `/${lang === "en" ? "solution" : "losningar"}/${s}`,
+    path: (s) => `/${s}`,
     priority: 0.8,
     changeFrequency: "monthly",
   },

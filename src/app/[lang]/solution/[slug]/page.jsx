@@ -48,7 +48,7 @@ export default async function SolutionSinglePage({ params }) {
         lang={lang}
         currentSlug={slug}
         entryType="solutions"
-        pathPrefix={{ sv: "losningar", en: "solution" }}
+        pathPrefix=""
         entryId={solution?.id}
         prefetchedMenu={menu}
         prefetchedOptions={themeOptions?.header || {}}

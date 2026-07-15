@@ -274,11 +274,17 @@ export default function Header({
     async function fetchAltLangUrl() {
       try {
         const altLang = SUPPORTED_LANGS.filter((l) => l !== lang)[0];
-        const fallbackUrl =
-          currentSlug === "cart" ? langHref("/cart", altLang) : langHome(altLang);
+        const fixedLocalizedRoutes = {
+          cart: "/cart",
+          cases: "/cases",
+        };
+        const fixedRoute = fixedLocalizedRoutes[currentSlug];
+        const fallbackUrl = fixedRoute
+          ? langHref(fixedRoute, altLang)
+          : langHome(altLang);
 
         // Use entryId for dynamic translation lookup if available
-        if (entryId) {
+        if (entryId && !fixedRoute) {
           const translations = await getEntryTranslations(entryId, entryType, lang);
 
           if (translations && translations[altLang]?.slug) {
@@ -304,9 +310,13 @@ export default function Header({
 
       } catch (error) {
         const altLang = SUPPORTED_LANGS.filter((l) => l !== lang)[0];
-        setAltLangUrl(
-          currentSlug === "cart" ? langHref("/cart", altLang) : langHome(altLang)
-        );
+        const fixedRoute =
+          currentSlug === "cart"
+            ? "/cart"
+            : currentSlug === "cases"
+              ? "/cases"
+              : "";
+        setAltLangUrl(fixedRoute ? langHref(fixedRoute, altLang) : langHome(altLang));
       }
     }
 
