@@ -181,8 +181,8 @@ export default function ContactForm({
         key: "your-email",
         type: "email",
         required: true,
-        label: lang === "sv" ? "E-postadress" : "Email address",
-        placeholder: lang === "sv" ? "E-postadress" : "Email address",
+        label: lang === "sv" ? "Emailadress" : "Email address",
+        placeholder: lang === "sv" ? "Emailadress" : "Email address",
       };
 
       setSchema({
