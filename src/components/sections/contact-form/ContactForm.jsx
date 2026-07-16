@@ -176,6 +176,33 @@ export default function ContactForm({
   useEffect(() => {
     let alive = true;
 
+    if (variant === "footer") {
+      const footerField = {
+        key: "your-email",
+        type: "email",
+        required: true,
+        label: lang === "sv" ? "E-postadress" : "Email address",
+        placeholder: lang === "sv" ? "E-postadress" : "Email address",
+      };
+
+      setSchema({
+        fields: [footerField],
+        hidden: {
+          _wpcf7: String(formId),
+          _wpcf7_locale: lang === "sv" ? "sv_SE" : "en_US",
+          _wpcf7_unit_tag: `wpcf7-f${formId}-o1`,
+          _wpcf7_container_post: "0",
+          wpml_language: lang,
+        },
+      });
+      setValues({ [footerField.key]: "" });
+      setState({ loading: false, submitting: false, ok: false, msg: "" });
+
+      return () => {
+        alive = false;
+      };
+    }
+
     (async () => {
       try {
         setState({ loading: true, submitting: false, ok: false, msg: "" });
@@ -202,7 +229,7 @@ export default function ContactForm({
     return () => {
       alive = false;
     };
-  }, [formId, lang]);
+  }, [formId, lang, variant]);
 
   function setValue(key, val) {
     setValues((p) => ({ ...p, [key]: val }));
@@ -319,6 +346,59 @@ export default function ContactForm({
         Loading form…
       </div>
     );
+
+  if (variant === "footer") {
+    const emailField =
+      fields.find((field) => field.type === "email") || fields[0];
+    const emailError = emailField ? errors[emailField.key] : "";
+
+    return (
+      <form onSubmit={onSubmit} className={className} noValidate>
+        <div
+          className={`mt-10 flex items-center justify-between border-b pb-4 ${
+            emailError ? "border-red-300" : "border-white/20"
+          }`}
+        >
+          {emailField && (
+            <>
+              <label htmlFor="footer-contact-email" className="sr-only">
+                {emailField.label}
+              </label>
+              <input
+                id="footer-contact-email"
+                name={emailField.key}
+                type="email"
+                autoComplete="email"
+                required
+                value={values[emailField.key] || ""}
+                onChange={(event) => setValue(emailField.key, event.target.value)}
+                placeholder={emailField.placeholder}
+                className="w-full bg-transparent text-white outline-none placeholder:text-white"
+              />
+            </>
+          )}
+          <button
+            type="submit"
+            disabled={state.submitting}
+            aria-label={lang === "sv" ? "Prenumerera" : "Subscribe"}
+            className="ml-4 cursor-pointer text-2xl text-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            →
+          </button>
+        </div>
+
+        {(emailError || state.msg) && (
+          <p
+            role="status"
+            aria-live="polite"
+            className={`mt-3 text-sm ${state.ok ? "text-[#B8D1D1]" : "text-red-300"}`}
+          >
+            {emailError || state.msg}
+          </p>
+        )}
+      </form>
+    );
+  }
 
   return (
     <form

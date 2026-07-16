@@ -2,7 +2,13 @@
 
 import React from "react";
 import { getThemeOptions } from "@/lib/api";
-import { DEFAULT_LANG, langHref } from "@/config";
+import { DEFAULT_LANG } from "@/config";
+import ContactForm from "@/components/sections/contact-form/ContactForm";
+
+const FOOTER_FORM_IDS = {
+  sv: 2453,
+  en: 2454,
+};
 
 // Helpers
 function stripHtml(text = "") {
@@ -203,14 +209,11 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                     {footer_column_5.column_five_heading}
                   </h3>
                 )}
-                <div className="mt-10 border-b border-white/20 flex items-center justify-between pb-4">
-                  <input
-                    type="email"
-                    placeholder="Email address"
-                    className="bg-transparent outline-none text-white placeholder:text-white w-full"
-                  />
-                  <button className="ml-4 text-2xl text-white">→</button>
-                </div>
+                <ContactForm
+                  formId={FOOTER_FORM_IDS[lang] || FOOTER_FORM_IDS[DEFAULT_LANG]}
+                  lang={lang}
+                  variant="footer"
+                />
               </div>
 
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 mt-8">
