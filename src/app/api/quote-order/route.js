@@ -154,9 +154,41 @@ export async function POST(request) {
     );
   }
 
+  // Orders created directly in the "pending" state do not pass through the
+  // status transition used by WooCommerce's transactional email hooks. Move
+  // the new quote to "on-hold" after creation so the admin new-order email
+  // and the customer's on-hold email are triggered by WooCommerce.
+  const emailResponse = await fetch(`${WP_BASE}/wc/v3/orders/${data.id}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status: "on-hold" }),
+    cache: "no-store",
+  });
+
+  const updatedOrder = await emailResponse.json().catch(() => ({}));
+
+  if (!emailResponse.ok) {
+    console.error("Quote order created, but its email status transition failed", {
+      orderId: data?.id,
+      status: emailResponse.status,
+      message: updatedOrder?.message,
+    });
+
+    return NextResponse.json({
+      orderId: data?.id,
+      orderKey: data?.order_key,
+      status: data?.status,
+      warning:
+        "Your quote request was created, but the notification email could not be triggered. Please contact us with your order number.",
+    });
+  }
+
   return NextResponse.json({
-    orderId: data?.id,
-    orderKey: data?.order_key,
-    status: data?.status,
+    orderId: updatedOrder?.id || data?.id,
+    orderKey: updatedOrder?.order_key || data?.order_key,
+    status: updatedOrder?.status || data?.status,
   });
 }

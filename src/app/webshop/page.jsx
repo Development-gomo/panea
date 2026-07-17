@@ -36,10 +36,18 @@ function collectWebshopTeamMemberIds(page) {
     .filter(Boolean);
 }
 
+async function getWebshopPage(lang) {
+  const localizedSlug = lang === "sv" ? "webbshop" : "webshop";
+  const page = await getPageBySlug(localizedSlug, lang);
+
+  // Keep supporting the previous CMS slug while translated content catches up.
+  return page || getPageBySlug("webshop", lang);
+}
+
 export default async function WebshopRoute() {
   const lang = DEFAULT_LANG;
   const [page, menu, themeOptions, products, categories, brands] = await Promise.all([
-    getPageBySlug("webshop", lang),
+    getWebshopPage(lang),
     getMenu(lang),
     getThemeOptions(lang),
     getAllProducts(lang),
@@ -78,7 +86,7 @@ export default async function WebshopRoute() {
 }
 
 export async function generateMetadata() {
-  const page = await getPageBySlug("webshop", DEFAULT_LANG);
+  const page = await getWebshopPage(DEFAULT_LANG);
 
   return buildMetadataFromYoast(page, {
     fallbackTitle: "Webshop | panea",

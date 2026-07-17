@@ -103,11 +103,27 @@ const nextConfig = {
         destination: "/en/:slug",
         permanent: true,
       },
+      {
+        source: "/webshop",
+        destination: "/webbshop",
+        permanent: true,
+      },
+      {
+        source: "/product/:slug",
+        destination: "/:slug/",
+        permanent: true,
+      },
+      {
+        source: "/en/product/:slug",
+        destination: "/en/:slug/",
+        permanent: true,
+      },
     ];
   },
 
   async rewrites() {
     return [
+      { source: "/webbshop", destination: "/webshop" },
       { source: "/artiklar/:slug", destination: `/${DEFAULT_LANG}/post/:slug` },
       { source: "/en/article/:slug", destination: "/en/post/:slug" },
       // Pass-throughs for each non-default language (prevents catch-all rewrite below from grabbing them)

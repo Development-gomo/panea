@@ -270,6 +270,9 @@ export default function QuoteCartPage({
           ? `Thank you. Your quote request has been submitted. Order #${data.orderId}.`
           : "Thank you. Your quote request has been submitted."
       );
+      if (data?.warning) {
+        setSubmitError(data.warning);
+      }
     } catch (error) {
       setSubmitError(error?.message || "Unable to submit your quote request.");
     } finally {

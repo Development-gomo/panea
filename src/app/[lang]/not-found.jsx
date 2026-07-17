@@ -16,15 +16,15 @@ export default async function LangScopedNotFound() {
   // Language-specific messages
   const messages = {
     en: {
-      title: "The page you're looking for doesn't exist.",
+      title: "Unfortunately, the content you were looking for is not available.",
       description:
-        "It might have been removed, renamed, or is temporarily unavailable. Please double-check the URL or head back to the homepage.",
+        "Unfortunately, the content you were looking for is not available. Try searching for it? For best results: Double-check the spelling\nTry similar keywords\nFeel free to use more than one search term.",
       buttonText: "Go to Homepage",
     },
     sv: {
-      title: "Sidan du letar efter finns inte.",
+      title: "Tyvärr, innehållet du försökte finna är inte tillgängligt.",
       description:
-        "Den kan ha tagits bort, bytt namn eller är tillfälligt otillgänglig. Kontrollera URL:en eller gå tillbaka till startsidan.",
+        "Tyvärr, innehållet du försökte hitta är inte tillgängligt. Försök att hitta det genom att göra en sökning? För bästa resultat: Dubbelkolla stavningen\nProva liknande sökord\nAnvänd gärna mer än ett sökord",
       buttonText: "Gå till Startsidan",
     },
   };
@@ -37,7 +37,9 @@ export default async function LangScopedNotFound() {
       <main className="min-h-[60vh] flex flex-col items-center justify-center gap-6 px-4 py-16 text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-gray-500">404</p>
         <h1 className="text-4xl font-semibold">{currentMessages.title}</h1>
-        <p className="text-gray-600 max-w-xl">{currentMessages.description}</p>
+        <p className="max-w-xl whitespace-pre-line text-gray-600">
+          {currentMessages.description}
+        </p>
         <Link
           href={langHome(lang)}
           className="inline-flex rounded-[50px] bg-(--color-body) px-9 py-3.5 text-[16px] leading-none text-white transition-colors duration-300 hover:bg-white hover:text-(--color-body)"

@@ -16,6 +16,9 @@ import {
   getProductBrands,
   getProductCategories,
   getTeamMembersByIds,
+  getProductBySlug,
+  getRelatedProducts,
+  getTestimonialsByIds,
 } from "@/lib/api";
 import { resolveParams } from "@/lib/params";
 import PageBuilder from "@/components/major/PageBuilder";
@@ -24,6 +27,7 @@ import CaseStudyBuilder from "@/components/major/CasestudyBuilder";
 import SolutionBuilder from "@/components/major/SolutionBuilder";
 import GenericPageBuilder from "@/components/major/GenericPageBuilder";
 import WebshopPage from "@/components/product/webshop/WebshopPage";
+import { ProductPage } from "@/components/product";
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
 import { buildMetadataFromYoast } from "@/lib/seo";
@@ -150,45 +154,93 @@ function InsightPostPage({ post }) {
   );
 }
 
+function getProductAcf(product) {
+  return {
+    ...(product?.acf || {}),
+    ...(product?.acf_fields || {}),
+    ...(product?.advanced_custom_fields || {}),
+    ...(product?.meta?.acf || {}),
+  };
+}
+
+function collectProductRelationIds(product, layouts, field) {
+  const builder = getProductAcf(product).product_page_builder;
+  if (!Array.isArray(builder)) return [];
+
+  return builder
+    .filter((block) => layouts.includes(block?.acf_fc_layout))
+    .flatMap((block) => normalizeSelectedPosts(block[field]))
+    .map((item) => (typeof item === "object" ? item?.ID || item?.id : item))
+    .filter(Boolean);
+}
+
 export default async function SinglePage({ params }) {
   const resolved = await params;
   const parsed = resolveParams(resolved);
 
   const lang = parsed?.lang || DEFAULT_LANG;
   const slug = parsed?.slug;
+  const isWebshopSlug =
+    slug === "webshop" || (lang === "sv" && slug === "webbshop");
 
   if (!slug) notFound();
 
-  const [data, businessArea, caseStudy, solution, post, menu, themeOptions, products, productCategories, productBrands] = await Promise.all([
+  const [data, businessArea, caseStudy, solution, product, post, menu, themeOptions, products, productCategories, productBrands] = await Promise.all([
     getPageBySlug(slug, lang),
     getBusinessAreaBySlug(slug, lang),
     getCaseStudyBySlug(slug, lang),
     getSolutionBySlug(slug, lang),
-    getPostBySlug(slug, lang),
+    getProductBySlug(slug, lang),
     getMenu(lang),
     getThemeOptions(lang),
-    slug === "webshop" ? getAllProducts(lang) : null,
-    slug === "webshop" ? getProductCategories(lang) : null,
-    slug === "webshop" ? getProductBrands(lang) : null,
+    isWebshopSlug ? getAllProducts(lang) : null,
+    isWebshopSlug ? getProductCategories(lang) : null,
+    isWebshopSlug ? getProductBrands(lang) : null,
   ]);
 
-  const entry = data || businessArea || caseStudy || solution || post;
+  const entry = data || businessArea || caseStudy || solution || product || post;
   if (!entry) notFound();
 
   const isBusinessArea = !data && !!businessArea;
   const isCaseStudy = !data && !businessArea && !!caseStudy;
   const isSolution = !data && !businessArea && !caseStudy && !!solution;
-  const isPost = !data && !businessArea && !caseStudy && !solution && !!post;
+  const isProduct = !data && !businessArea && !caseStudy && !solution && !!product && !!post;
   const acf = entry?.acf || {};
   const businessAreaSections = isBusinessArea ? getBusinessAreaSections(acf) : null;
   const genericSections = Array.isArray(acf.generic_page_builder)
     ? acf.generic_page_builder
     : acf.page_builder;
   const webshopTeamMemberIds =
-    slug === "webshop" && data ? collectWebshopTeamMemberIds(data) : [];
+    isWebshopSlug && data ? collectWebshopTeamMemberIds(data) : [];
   const prefetchedWebshopTeamMembers = webshopTeamMemberIds.length
     ? await getTeamMembersByIds(webshopTeamMemberIds, lang)
     : [];
+  const productTestimonialIds = isProduct
+    ? collectProductRelationIds(
+        product,
+        ["testimonial", "testimonials", "testimonial_slider"],
+        "clients_testimonial"
+      )
+    : [];
+  const productTeamMemberIds = isProduct
+    ? collectProductRelationIds(
+        product,
+        ["contact_form_section", "contact_form", "team_member_section"],
+        "select_team_members"
+      )
+    : [];
+  const [relatedProducts, prefetchedTestimonials, prefetchedProductTeamMembers] =
+    isProduct
+      ? await Promise.all([
+          getRelatedProducts(product, lang),
+          productTestimonialIds.length
+            ? getTestimonialsByIds(productTestimonialIds, lang)
+            : [],
+          productTeamMemberIds.length
+            ? getTeamMembersByIds(productTeamMemberIds, lang)
+            : [],
+        ])
+      : [[], [], []];
 
   return (
     <>
@@ -196,7 +248,9 @@ export default async function SinglePage({ params }) {
         lang={lang}
         currentSlug={slug}
         entryType={
-          isCaseStudy
+          isProduct
+            ? "product"
+            : isCaseStudy
             ? "case_study"
             : isSolution
               ? "solutions"
@@ -212,7 +266,15 @@ export default async function SinglePage({ params }) {
         logoUrl={themeOptions?.header?.logo_light?.url || ""}
       />
       <main>
-        {isCaseStudy ? (
+        {isProduct ? (
+          <ProductPage
+            product={product}
+            lang={lang}
+            relatedProducts={relatedProducts}
+            prefetchedTestimonials={prefetchedTestimonials}
+            prefetchedTeamMembers={prefetchedProductTeamMembers}
+          />
+        ) : isCaseStudy ? (
           <CaseStudyBuilder
             sections={caseStudy?.acf?.case_study_builder}
             lang={lang}
@@ -227,7 +289,7 @@ export default async function SinglePage({ params }) {
           />
         ) : isPost ? (
           <InsightPostPage post={post} lang={lang} />
-        ) : slug === "webshop" && data ? (
+        ) : isWebshopSlug && data ? (
           <WebshopPage
             page={data}
             products={products || []}
@@ -260,11 +322,11 @@ export async function generateMetadata({ params }) {
   const solution = data || businessArea || caseStudy
     ? null
     : await getSolutionBySlug(slug, lang);
-  const post = data || businessArea || caseStudy || solution
+  const product = data || businessArea || caseStudy || solution
     ? null
-    : await getPostBySlug(slug, lang);
+    : await getProductBySlug(slug, lang);
 
-  return buildMetadataFromYoast(data || businessArea || caseStudy || solution || post, {
+  return buildMetadataFromYoast(data || businessArea || caseStudy || solution || product, {
     fallbackTitle: slug ? `${slug} | panea` : "panea",
     lang,
   });

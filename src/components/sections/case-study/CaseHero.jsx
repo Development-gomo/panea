@@ -40,7 +40,7 @@ export default function CaseHero({
   const caseStudyLabel =
     eyebrow || (lang === "sv" ? "Fallstudie" : "Case study");
   const homeLabel = lang === "sv" ? "Hem" : "Home";
-  const archiveLabel = lang === "sv" ? "Fallstudier" : "Case studies";
+  const archiveLabel = lang === "sv" ? "Våra Case" : "Case studies";
   const scrollToAboutProject = () => {
     const target = document.getElementById(scrollTargetId);
     if (!target) return;
