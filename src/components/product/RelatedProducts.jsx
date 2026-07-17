@@ -241,7 +241,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-sm border border-[#C7C0B6] bg-white p-4">
       <Link
-        href={langHref(`/product/${product.slug}`, lang)}
+        href={langHref(`/${product.slug}/`, lang)}
         className="relative mb-5 block aspect-[4/3] w-full"
       >
         {image && (
@@ -283,7 +283,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
             </button>
           )}
           <Link
-            href={langHref(`/product/${product.slug}`, lang)}
+            href={langHref(`/${product.slug}/`, lang)}
             className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#1E2E31] px-4 text-[12px] text-white transition hover:bg-black sm:px-6"
           >
             Read more
