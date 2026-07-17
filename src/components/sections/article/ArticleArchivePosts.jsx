@@ -54,9 +54,7 @@ function getPostCategory(post, categories, fallback) {
 }
 
 function getPostPath(slug, lang) {
-  return lang === DEFAULT_LANG
-    ? `/artiklar/${slug}`
-    : `/${lang}/article/${slug}`;
+  return lang === DEFAULT_LANG ? `/${slug}` : `/${lang}/${slug}`;
 }
 
 function formatPostDate(date, lang) {

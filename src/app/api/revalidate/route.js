@@ -13,8 +13,8 @@ const POST_TYPE_PREFIX = {
   business_area:  "",
   business_areas: "",
   case_study: "",
-  post:       "artiklar",    // /artiklar/my-article
-  posts:      "artiklar",
+  post:       "",            // /my-article
+  posts:      "",
 };
 
 export async function POST(req) {
@@ -48,9 +48,8 @@ export async function POST(req) {
       continue;
     }
 
-    const postPrefix = lang === "en" ? "article" : "artiklar";
     const localizedPrefix = ["post", "posts"].includes(postType)
-      ? postPrefix
+      ? ""
       : prefix;
     const langPrefix = lang === DEFAULT_LANG ? "" : `/${lang}`;
     const path = localizedPrefix

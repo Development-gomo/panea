@@ -4,6 +4,7 @@ import {
   getPageBySlug,
   getBusinessAreaBySlug,
   getCaseStudyBySlug,
+  getPostBySlug,
   getCaseStudies,
   getSolutionBySlug,
   getAllSolutions,
@@ -32,13 +33,16 @@ import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 export const revalidate = 3600;
 
 export async function generateStaticParams() {
-  const [pageResults, businessAreaResults, caseStudyResults, solutionResults] = await Promise.all([
+  const [pageResults, businessAreaResults, caseStudyResults, solutionResults, postResults] = await Promise.all([
     Promise.all(
       SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/pages?per_page=100&lang=${lang}`))
     ),
     Promise.all(SUPPORTED_LANGS.map((lang) => getAllBusinessAreas(lang))),
     Promise.all(SUPPORTED_LANGS.map((lang) => getCaseStudies(lang))),
     Promise.all(SUPPORTED_LANGS.map((lang) => getAllSolutions(lang))),
+    Promise.all(
+      SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/posts?per_page=100&lang=${lang}`))
+    ),
   ]);
 
   const params = SUPPORTED_LANGS.flatMap((lang, i) =>
@@ -47,6 +51,7 @@ export async function generateStaticParams() {
       ...(Array.isArray(businessAreaResults[i]) ? businessAreaResults[i] : []),
       ...(Array.isArray(caseStudyResults[i]) ? caseStudyResults[i] : []),
       ...(Array.isArray(solutionResults[i]) ? solutionResults[i] : []),
+      ...(Array.isArray(postResults[i]) ? postResults[i] : []),
     ].map((entry) => ({ lang, slug: entry.slug }))
   );
 
@@ -94,6 +99,57 @@ function collectWebshopTeamMemberIds(page) {
     .filter(Boolean);
 }
 
+function InsightPostBody({ post }) {
+  const sections = post?.acf?.insight_page_builder;
+  const contentHtml = post?.content?.rendered;
+
+  if (Array.isArray(sections) && sections.length > 0) {
+    return sections.map((block, index) => {
+      if (block?.acf_fc_layout !== "text_editor" || !block?.body_content) {
+        return null;
+      }
+
+      return (
+        <div
+          key={index}
+          className="max-w-none [&>p]:mb-6"
+          dangerouslySetInnerHTML={{ __html: block.body_content }}
+        />
+      );
+    });
+  }
+
+  if (contentHtml) {
+    return (
+      <div
+        className="max-w-none [&>p]:mb-6"
+        dangerouslySetInnerHTML={{ __html: contentHtml }}
+      />
+    );
+  }
+
+  return (
+    <p className="text-center text-gray-500">Content will be available soon.</p>
+  );
+}
+
+function InsightPostPage({ post }) {
+  return (
+    <article className="web-width mx-auto px-6 py-15 md:py-30">
+      {post?.title?.rendered && (
+        <h1
+          className="mb-10 text-center text-4xl font-semibold"
+          dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+        />
+      )}
+
+      <div className="mx-auto max-w-3xl">
+        <InsightPostBody post={post} />
+      </div>
+    </article>
+  );
+}
+
 export default async function SinglePage({ params }) {
   const resolved = await params;
   const parsed = resolveParams(resolved);
@@ -103,11 +159,12 @@ export default async function SinglePage({ params }) {
 
   if (!slug) notFound();
 
-  const [data, businessArea, caseStudy, solution, menu, themeOptions, products, productCategories, productBrands] = await Promise.all([
+  const [data, businessArea, caseStudy, solution, post, menu, themeOptions, products, productCategories, productBrands] = await Promise.all([
     getPageBySlug(slug, lang),
     getBusinessAreaBySlug(slug, lang),
     getCaseStudyBySlug(slug, lang),
     getSolutionBySlug(slug, lang),
+    getPostBySlug(slug, lang),
     getMenu(lang),
     getThemeOptions(lang),
     slug === "webshop" ? getAllProducts(lang) : null,
@@ -115,12 +172,13 @@ export default async function SinglePage({ params }) {
     slug === "webshop" ? getProductBrands(lang) : null,
   ]);
 
-  const entry = data || businessArea || caseStudy || solution;
+  const entry = data || businessArea || caseStudy || solution || post;
   if (!entry) notFound();
 
   const isBusinessArea = !data && !!businessArea;
   const isCaseStudy = !data && !businessArea && !!caseStudy;
   const isSolution = !data && !businessArea && !caseStudy && !!solution;
+  const isPost = !data && !businessArea && !caseStudy && !solution && !!post;
   const acf = entry?.acf || {};
   const businessAreaSections = isBusinessArea ? getBusinessAreaSections(acf) : null;
   const genericSections = Array.isArray(acf.generic_page_builder)
@@ -142,9 +200,11 @@ export default async function SinglePage({ params }) {
             ? "case_study"
             : isSolution
               ? "solutions"
-              : isBusinessArea
-                ? "business_areas"
-                : "pages"
+              : isPost
+                ? "posts"
+                : isBusinessArea
+                  ? "business_areas"
+                  : "pages"
         }
         entryId={entry?.id}
         prefetchedMenu={menu}
@@ -165,6 +225,8 @@ export default async function SinglePage({ params }) {
             lang={lang}
             solutionData={solution?.acf || {}}
           />
+        ) : isPost ? (
+          <InsightPostPage post={post} lang={lang} />
         ) : slug === "webshop" && data ? (
           <WebshopPage
             page={data}
@@ -198,8 +260,11 @@ export async function generateMetadata({ params }) {
   const solution = data || businessArea || caseStudy
     ? null
     : await getSolutionBySlug(slug, lang);
+  const post = data || businessArea || caseStudy || solution
+    ? null
+    : await getPostBySlug(slug, lang);
 
-  return buildMetadataFromYoast(data || businessArea || caseStudy || solution, {
+  return buildMetadataFromYoast(data || businessArea || caseStudy || solution || post, {
     fallbackTitle: slug ? `${slug} | panea` : "panea",
     lang,
   });
