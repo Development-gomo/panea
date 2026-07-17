@@ -185,13 +185,16 @@ export default async function SinglePage({ params }) {
 
   if (!slug) notFound();
 
-  const [data, businessArea, caseStudy, solution, product, post, menu, themeOptions, products, productCategories, productBrands] = await Promise.all([
-    getPageBySlug(slug, lang),
-    getBusinessAreaBySlug(slug, lang),
-    getCaseStudyBySlug(slug, lang),
-    getSolutionBySlug(slug, lang),
-    getProductBySlug(slug, lang),
-    getPostBySlug(slug, lang),
+  // Product pages now live at /:slug, so resolve them first. This avoids
+  // sending a burst of unrelated content-type requests to WordPress for every
+  // product request, which can be rate-limited in production.
+  const product = isWebshopSlug ? null : await getProductBySlug(slug, lang);
+  const [data, businessArea, caseStudy, solution, post, menu, themeOptions, products, productCategories, productBrands] = await Promise.all([
+    product ? null : getPageBySlug(slug, lang),
+    product ? null : getBusinessAreaBySlug(slug, lang),
+    product ? null : getCaseStudyBySlug(slug, lang),
+    product ? null : getSolutionBySlug(slug, lang),
+    product ? null : getPostBySlug(slug, lang),
     getMenu(lang),
     getThemeOptions(lang),
     isWebshopSlug ? getAllProducts(lang) : null,
@@ -291,7 +294,7 @@ export default async function SinglePage({ params }) {
             lang={lang}
             solutionData={solution?.acf || {}}
           />
-        ) : isPost ? (
+        ) : isPost ? (  
           <InsightPostPage post={post} lang={lang} />
         ) : isWebshopSlug && data ? (
           <WebshopPage
