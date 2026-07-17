@@ -2,13 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { DEFAULT_LANG } from "@/config";
 import ArrowSvg from "../../public/right-arrow.svg";
 
 export default function GlobalNotFound() {
   return (
-    <html lang={DEFAULT_LANG}>
-      <body className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white px-4 text-center">
+    <main className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white px-4 text-center">
         <div className="space-y-3">
           <p className="text-sm uppercase tracking-[0.3em] text-gray-500">
             404
@@ -55,8 +53,7 @@ export default function GlobalNotFound() {
                 </span>
               </span>
             </Link>
-      </body>
-    </html>
+    </main>
   );
 }
 

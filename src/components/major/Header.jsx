@@ -158,6 +158,7 @@ export default function Header({
   const previousQuoteCartCountRef = useRef(0);
   const hasLoadedQuoteCartRef = useRef(false);
   const isLoading = !menu;
+  const mainMenu = Array.isArray(menu?.main) ? menu.main : [];
 
   // Only fetch client-side if no prefetched data was provided
   useEffect(() => {
@@ -171,7 +172,7 @@ export default function Header({
         setMenu(menuData);
         setOptions(themeOptions?.header || {});
       } catch {
-        setMenu([]);
+        setMenu({ main: [] });
         setOptions({});
       }
     }
@@ -375,7 +376,7 @@ export default function Header({
               ) : (
                 // REAL MENU
                 <>
-                  {menu.main.map((item) => (
+                  {mainMenu.map((item) => (
                     <li key={item.id} className="relative group">
                       <Link
                         href={langHref(item.url, lang)}

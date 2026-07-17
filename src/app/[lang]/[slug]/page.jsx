@@ -191,6 +191,7 @@ export default async function SinglePage({ params }) {
     getCaseStudyBySlug(slug, lang),
     getSolutionBySlug(slug, lang),
     getProductBySlug(slug, lang),
+    getPostBySlug(slug, lang),
     getMenu(lang),
     getThemeOptions(lang),
     isWebshopSlug ? getAllProducts(lang) : null,
@@ -204,7 +205,10 @@ export default async function SinglePage({ params }) {
   const isBusinessArea = !data && !!businessArea;
   const isCaseStudy = !data && !businessArea && !!caseStudy;
   const isSolution = !data && !businessArea && !caseStudy && !!solution;
-  const isProduct = !data && !businessArea && !caseStudy && !solution && !!product && !!post;
+  const isProduct =
+    !data && !businessArea && !caseStudy && !solution && !!product;
+  const isPost =
+    !data && !businessArea && !caseStudy && !solution && !product && !!post;
   const acf = entry?.acf || {};
   const businessAreaSections = isBusinessArea ? getBusinessAreaSections(acf) : null;
   const genericSections = Array.isArray(acf.generic_page_builder)
@@ -325,8 +329,11 @@ export async function generateMetadata({ params }) {
   const product = data || businessArea || caseStudy || solution
     ? null
     : await getProductBySlug(slug, lang);
+  const post = data || businessArea || caseStudy || solution || product
+    ? null
+    : await getPostBySlug(slug, lang);
 
-  return buildMetadataFromYoast(data || businessArea || caseStudy || solution || product, {
+  return buildMetadataFromYoast(data || businessArea || caseStudy || solution || product || post, {
     fallbackTitle: slug ? `${slug} | panea` : "panea",
     lang,
   });

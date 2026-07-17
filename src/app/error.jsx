@@ -14,8 +14,7 @@ export default function GlobalError({ error, reset }) {
   }, [error]);
 
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white px-4 text-center">
+    <main className="min-h-screen flex flex-col items-center justify-center gap-6 bg-white px-4 text-center">
         <div className="space-y-3">
           <p className="text-sm uppercase tracking-[0.3em] text-gray-500">Error</p>
           <h1 className="text-4xl font-semibold">Something went wrong</h1>
@@ -37,7 +36,6 @@ export default function GlobalError({ error, reset }) {
             Go to Homepage
           </Link>
         </div>
-      </body>
-    </html>
+    </main>
   );
 }
