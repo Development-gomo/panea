@@ -30,9 +30,8 @@ function decodeHtml(value = "") {
 }
 
 function getPostPath(slug, lang) {
-  const prefix = lang === "en" ? "article" : "artiklar";
   const langPrefix = lang === DEFAULT_LANG ? "" : `/${lang}`;
-  return `${langPrefix}/${prefix}/${slug}`;
+  return `${langPrefix}/${slug}`;
 }
 
 function getCategories(post) {

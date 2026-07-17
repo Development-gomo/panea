@@ -26,7 +26,7 @@ const CONTENT_TYPES = [
   { endpoint: "/wp/v2/case_study", path: (s) => `/${s}`,            priority: 0.7, changeFrequency: "monthly" },
   {
     endpoint: "/wp/v2/posts",
-    path: (s, lang) => `/${lang === "en" ? "article" : "artiklar"}/${s}`,
+    path: (s) => `/${s}`,
     priority: 0.6,
     changeFrequency: "weekly",
   },
