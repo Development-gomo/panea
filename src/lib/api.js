@@ -237,14 +237,7 @@ export async function getAllCareers(lang = DEFAULT_LANG) {
     `/wp/v2/career?lang=${lang}&per_page=100&_embed&acf_format=standard`
   );
 
-  if (Array.isArray(careers) && careers.length > 0) return careers;
-
-  // Some CPTs are exposed through REST without being enabled for Polylang.
-  const unfilteredCareers = await fetchWP(
-    "/wp/v2/career?per_page=100&_embed&acf_format=standard"
-  );
-
-  return Array.isArray(unfilteredCareers) ? unfilteredCareers : [];
+  return Array.isArray(careers) ? careers : [];
 }
 
 export async function getTestimonialsByIds(ids = [], lang = DEFAULT_LANG) {

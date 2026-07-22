@@ -91,7 +91,7 @@ export default function VacanciesListing({ data, vacancies = [], lang = "sv" }) 
           )}
         </div>
 
-        {vacancies.length > 0 && (
+        {vacancies.length > 0 ? (
           <div className="mt-12 overflow-hidden rounded-[5px] border border-(--color-body)/15 bg-white/30 md:mt-16">
             {vacancies.map((vacancy, index) => {
               const fields = vacancyFields(vacancy);
@@ -173,6 +173,12 @@ export default function VacanciesListing({ data, vacancies = [], lang = "sv" }) 
                 </article>
               );
             })}
+          </div>
+        ) : (
+          <div className="mt-12 rounded-[5px] border border-(--color-body)/15 bg-white/30 px-6 py-10 text-center text-[15px] font-light text-(--color-body)/75 md:mt-16">
+            {lang === "sv"
+              ? "Det finns inga lediga tjänster just nu."
+              : "No vacancies are available at the moment."}
           </div>
         )}
       </div>
