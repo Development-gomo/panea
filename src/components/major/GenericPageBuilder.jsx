@@ -2,11 +2,13 @@ import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import {
   getAllBusinessAreas,
+  getAllCareers,
   getAllPosts,
   getAllSuppliers,
   getAllTeam,
   getCaseStudies,
   getTeamMembersByIds,
+  getTestimonialsByIds,
 } from "@/lib/api";
 
 const GenericHero = dynamic(() => import("../sections/generic/Hero"));
@@ -38,6 +40,12 @@ const GenericEmployeeListing = dynamic(() =>
 const GenericSupplierListing = dynamic(() =>
   import("../sections/generic/SupplierListing")
 );
+const GenericTestimonialSlider = dynamic(() =>
+  import("../sections/generic/TestimonialSlider")
+);
+const GenericVacanciesListing = dynamic(() =>
+  import("../sections/generic/VacanciesListing")
+);
 
 function selectedPosts(value) {
   if (!value) return [];
@@ -60,9 +68,22 @@ function collectTeamMemberIds(sections) {
     .filter(Boolean);
 }
 
+function collectTestimonialIds(sections) {
+  return sections
+    .filter((block) =>
+      ["testimonial", "testimonials", "testimonial_slider"].includes(
+        block?.acf_fc_layout
+      )
+    )
+    .flatMap((block) => selectedPosts(block.clients_testimonial))
+    .map((item) => Number(postId(item)))
+    .filter(Boolean);
+}
+
 export default async function GenericPageBuilder({
   sections,
   lang = DEFAULT_LANG,
+  imageCtaContainerWidthClass,
 }) {
   if (!sections) return null;
 
@@ -80,7 +101,13 @@ export default async function GenericPageBuilder({
   const needsSuppliers = sectionItems.some(
     (block) => block?.acf_fc_layout === "supplier_listing"
   );
+  const needsVacancies = sectionItems.some((block) =>
+    ["vacancies", "vacancy_listing", "vacancies_listing", "career_listing"].includes(
+      block?.acf_fc_layout
+    )
+  );
   const teamMemberIds = collectTeamMemberIds(sectionItems);
+  const testimonialIds = collectTestimonialIds(sectionItems);
   const [
     prefetchedCases,
     prefetchedBusinessAreas,
@@ -88,6 +115,8 @@ export default async function GenericPageBuilder({
     prefetchedTeamMembers,
     prefetchedEmployees,
     prefetchedSuppliers,
+    prefetchedTestimonials,
+    prefetchedVacancies,
   ] = await Promise.all([
     needsCases ? getCaseStudies(lang) : null,
     needsBusinessAreas ? getAllBusinessAreas(lang) : null,
@@ -95,6 +124,10 @@ export default async function GenericPageBuilder({
     teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : null,
     needsEmployees ? getAllTeam(lang) : null,
     needsSuppliers ? getAllSuppliers(lang) : null,
+    testimonialIds.length
+      ? getTestimonialsByIds(testimonialIds, lang)
+      : null,
+    needsVacancies ? getAllCareers(lang) : null,
   ]);
 
   return (
@@ -130,6 +163,18 @@ export default async function GenericPageBuilder({
           case "faq_section":
             return <GenericFAQ key={i} data={block} lang={lang} />;
 
+          case "testimonial":
+          case "testimonials":
+          case "testimonial_slider":
+            return (
+              <GenericTestimonialSlider
+                key={i}
+                data={block}
+                lang={lang}
+                prefetchedTestimonials={prefetchedTestimonials}
+              />
+            );
+
           case "our_clients":
           case "clients":
             return <GenericOurClients key={i} data={block} lang={lang} />;
@@ -145,7 +190,14 @@ export default async function GenericPageBuilder({
             );
 
           case "image_cta_banner":
-            return <GenericImageCtaBanner key={i} data={block} lang={lang} />;
+            return (
+              <GenericImageCtaBanner
+                key={i}
+                data={block}
+                lang={lang}
+                containerWidthClass={imageCtaContainerWidthClass}
+              />
+            );
 
           case "news_section":
             return (
@@ -196,6 +248,19 @@ export default async function GenericPageBuilder({
                 data={block}
                 lang={lang}
                 suppliers={prefetchedSuppliers}
+              />
+            );
+
+          case "vacancies":
+          case "vacancy_listing":
+          case "vacancies_listing":
+          case "career_listing":
+            return (
+              <GenericVacanciesListing
+                key={i}
+                data={block}
+                lang={lang}
+                vacancies={prefetchedVacancies || []}
               />
             );
 

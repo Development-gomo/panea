@@ -232,6 +232,21 @@ export async function getAllSuppliers(lang = DEFAULT_LANG) {
   return await fetchWP(`/wp/v2/suppliers?lang=${lang}&per_page=100&_embed&acf_format=standard`);
 }
 
+export async function getAllCareers(lang = DEFAULT_LANG) {
+  const careers = await fetchWP(
+    `/wp/v2/career?lang=${lang}&per_page=100&_embed&acf_format=standard`
+  );
+
+  if (Array.isArray(careers) && careers.length > 0) return careers;
+
+  // Some CPTs are exposed through REST without being enabled for Polylang.
+  const unfilteredCareers = await fetchWP(
+    "/wp/v2/career?per_page=100&_embed&acf_format=standard"
+  );
+
+  return Array.isArray(unfilteredCareers) ? unfilteredCareers : [];
+}
+
 export async function getTestimonialsByIds(ids = [], lang = DEFAULT_LANG) {
   const cleanIds = [...new Set(ids.map((id) => Number(id)).filter(Boolean))];
 
@@ -735,8 +750,11 @@ export async function submitCf7Direct(formId, schemaHidden, values) {
   const fd = new FormData();
   Object.entries({ ...(schemaHidden || {}), ...(values || {}) }).forEach(([k, v]) => {
     if (v === undefined || v === null) return;
-    if (Array.isArray(v)) v.forEach((vv) => fd.append(k, String(vv)));
-    else fd.append(k, String(v));
+    if (Array.isArray(v)) {
+      v.forEach((vv) => fd.append(k, vv instanceof Blob ? vv : String(vv)));
+    } else {
+      fd.append(k, v instanceof Blob ? v : String(v));
+    }
   });
 
   const res = await fetch(`${WP_BASE}/contact-form-7/v1/contact-forms/${formId}/feedback`, {

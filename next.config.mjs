@@ -123,6 +123,7 @@ const nextConfig = {
 
   async rewrites() {
     return [
+      { source: "/karriar", destination: "/career" },
       { source: "/webbshop", destination: "/webshop" },
       { source: "/artiklar/:slug", destination: `/${DEFAULT_LANG}/post/:slug` },
       { source: "/en/article/:slug", destination: "/en/post/:slug" },
