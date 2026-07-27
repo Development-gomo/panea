@@ -38,10 +38,7 @@ function collectWebshopTeamMemberIds(page) {
 
 async function getWebshopPage(lang) {
   const localizedSlug = lang === "sv" ? "webbshop" : "webshop";
-  const page = await getPageBySlug(localizedSlug, lang);
-
-  // Keep supporting the previous CMS slug while translated content catches up.
-  return page || getPageBySlug("webshop", lang);
+  return getPageBySlug(localizedSlug, lang);
 }
 
 export default async function WebshopRoute() {

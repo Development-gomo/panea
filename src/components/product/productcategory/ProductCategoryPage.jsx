@@ -24,8 +24,22 @@ function normalizeSelectedPosts(selected) {
   return Array.isArray(selected) ? selected : [selected];
 }
 
+function getPageAcf(page) {
+  return {
+    ...(page?.acf || {}),
+    ...(page?.acf_fields || {}),
+    ...(page?.advanced_custom_fields || {}),
+    ...(page?.meta?.acf || {}),
+  };
+}
+
+async function getWebshopPage(lang) {
+  const localizedSlug = lang === "sv" ? "webbshop" : "webshop";
+  return getPageBySlug(localizedSlug, lang);
+}
+
 function collectWebshopTeamMemberIds(page) {
-  const builder = page?.acf?.webshop_page_builder;
+  const builder = getPageAcf(page).webshop_page_builder;
   if (!Array.isArray(builder)) return [];
 
   return builder
@@ -41,7 +55,7 @@ function collectWebshopTeamMemberIds(page) {
 }
 
 function getWebshopContactForm(page) {
-  const builder = page?.acf?.webshop_page_builder;
+  const builder = getPageAcf(page).webshop_page_builder;
   if (!Array.isArray(builder)) return null;
 
   return (
@@ -52,7 +66,7 @@ function getWebshopContactForm(page) {
 }
 
 function getWebshopHighlightBanner(page) {
-  const builder = page?.acf?.webshop_page_builder;
+  const builder = getPageAcf(page).webshop_page_builder;
   if (!Array.isArray(builder)) return null;
 
   return (
@@ -63,7 +77,7 @@ function getWebshopHighlightBanner(page) {
 }
 
 function getWebshopTeamData(page) {
-  const builder = page?.acf?.webshop_page_builder;
+  const builder = getPageAcf(page).webshop_page_builder;
   if (!Array.isArray(builder)) return null;
 
   return builder.find((block) => block?.acf_fc_layout === "team_member_section") || null;
@@ -76,7 +90,7 @@ export default async function ProductCategoryPage({
   if (!categorySlug) notFound();
 
   const [page, menu, themeOptions, products, categories, brands] = await Promise.all([
-    getPageBySlug("webshop", lang),
+    getWebshopPage(lang),
     getMenu(lang),
     getThemeOptions(lang),
     getAllProducts(lang),
