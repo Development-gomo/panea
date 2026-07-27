@@ -15,6 +15,7 @@ import {
   getAllProducts,
   getProductBrands,
   getProductCategories,
+  getAllPosts,
   getTeamMembersByIds,
   getProductBySlug,
   getRelatedProducts,
@@ -27,8 +28,12 @@ import BusinessAreaBuilder from "@/components/major/BusinessAreaBuilder";
 import CaseStudyBuilder from "@/components/major/CasestudyBuilder";
 import SolutionBuilder from "@/components/major/SolutionBuilder";
 import GenericPageBuilder from "@/components/major/GenericPageBuilder";
+import InsightAudioPlayerClient from "@/components/major/InsightAudioPlayerClient";
 import WebshopPage from "@/components/product/webshop/WebshopPage";
 import { ProductPage } from "@/components/product";
+import BusinessAreaFAQ from "@/components/sections/business-area/FAQ";
+import HomeNews from "@/components/sections/home/HomeNews";
+import ImageCtaBanner from "@/components/sections/home/ImageCtaBanner";
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
 import { buildMetadataFromYoast } from "@/lib/seo";
@@ -43,6 +48,10 @@ import ShareInstagramIcon from "../../../../public/p-share-ig.png";
 import ShareFacebookIcon from "../../../../public/p-share-fb.png";
 import ShareLinkedInIcon from "../../../../public/p-share-ln.png";
 import ShareXIcon from "../../../../public/p-share-x.png";
+import AuthorCallIcon from "../../../../public/p-author-call.png";
+import AuthorEmailIcon from "../../../../public/p-author-email.png";
+import AuthorLinkedInIcon from "../../../../public/p-author-ln.png";
+import AuthorContactArrow from "../../../../public/p-author-contact.png";
 
 export const revalidate = 3600;
 
@@ -114,29 +123,12 @@ function collectWebshopTeamMemberIds(page) {
 }
 
 function InsightPostBody({ post }) {
-  const sections = post?.acf?.insight_page_builder;
   const contentHtml = post?.content?.rendered;
-
-  if (Array.isArray(sections) && sections.length > 0) {
-    return sections.map((block, index) => {
-      if (block?.acf_fc_layout !== "text_editor" || !block?.body_content) {
-        return null;
-      }
-
-      return (
-        <div
-          key={index}
-          className="max-w-none [&>p]:mb-6"
-          dangerouslySetInnerHTML={{ __html: block.body_content }}
-        />
-      );
-    });
-  }
 
   if (contentHtml) {
     return (
       <div
-        className="max-w-none [&>p]:mb-6"
+        className={insightContentClassName}
         dangerouslySetInnerHTML={{ __html: contentHtml }}
       />
     );
@@ -188,13 +180,28 @@ function getPostExcerpt(post) {
   );
 }
 
-function getInsightTextBlocks(post) {
+const insightContentClassName =
+  "insight-wysiwyg max-w-none";
+
+function getInsightFactPointBlocks(post) {
   const sections = post?.acf?.insight_page_builder;
   if (!Array.isArray(sections)) return [];
 
-  return sections.filter(
-    (block) => block?.acf_fc_layout === "text_editor" && block?.body_content
-  );
+  return sections.filter((block) => block?.acf_fc_layout === "fact_points");
+}
+
+function getInsightFaqBlocks(post) {
+  const sections = post?.acf?.insight_page_builder;
+  if (!Array.isArray(sections)) return [];
+
+  return sections.filter((block) => block?.acf_fc_layout === "faq");
+}
+
+function getInsightAuthorBlocks(post) {
+  const sections = post?.acf?.insight_page_builder;
+  if (!Array.isArray(sections)) return [];
+
+  return sections.filter((block) => block?.acf_fc_layout === "select_author");
 }
 
 function getInsightSummaryBlock(post) {
@@ -205,15 +212,7 @@ function getInsightSummaryBlock(post) {
 }
 
 function getInsightContentHtml(post) {
-  const sections = post?.acf?.insight_page_builder;
-  const builderContent = Array.isArray(sections)
-    ? sections
-        .filter((block) => block?.acf_fc_layout === "text_editor")
-        .map((block) => block?.body_content || "")
-        .join(" ")
-    : "";
-
-  return builderContent || post?.content?.rendered || post?.excerpt?.rendered || "";
+  return post?.content?.rendered || post?.excerpt?.rendered || "";
 }
 
 function getReadTime(post, lang) {
@@ -244,6 +243,13 @@ function selectedPost(value) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+function getPostObjectId(value) {
+  const item = selectedPost(value);
+  if (!item) return null;
+  if (typeof item === "string" || typeof item === "number") return Number(item);
+  return Number(item?.ID || item?.id) || null;
+}
+
 function normalizeListItems(value) {
   if (!value) return [];
   const rows = Array.isArray(value) ? value : [value];
@@ -265,6 +271,11 @@ function normalizeListItems(value) {
       );
     })
     .filter(Boolean);
+}
+
+function normalizeRepeaterRows(value) {
+  if (!value) return [];
+  return Array.isArray(value) ? value.filter(Boolean) : [value];
 }
 
 function getFileUrl(file) {
@@ -309,6 +320,79 @@ function getFeaturedImageUrl(image) {
     image?.media_details?.sizes?.large?.source_url ||
     image?.source_url ||
     ""
+  );
+}
+
+function getAuthorAcf(author) {
+  return {
+    ...(author?.acf || {}),
+    ...(author?.acf_fields || {}),
+    ...(author?.advanced_custom_fields || {}),
+  };
+}
+
+function getAuthorTitle(author) {
+  return getPlainText(
+    author?.title?.rendered ||
+      author?.title ||
+      author?.post_title ||
+      author?.name ||
+      ""
+  );
+}
+
+function getImageUrl(image) {
+  if (!image) return "";
+  if (typeof image === "string") return image;
+
+  return (
+    image?.media_details?.sizes?.full?.source_url ||
+    image?.media_details?.sizes?.large?.source_url ||
+    image?.source_url ||
+    image?.url ||
+    ""
+  );
+}
+
+function getAuthorImageUrl(author) {
+  const acf = getAuthorAcf(author);
+
+  return (
+    author?._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
+    getImageUrl(author?.featured_image) ||
+    getImageUrl(author?.featured_image_url) ||
+    getImageUrl(acf.featured_image) ||
+    ""
+  );
+}
+
+function normalizeExternalUrl(url) {
+  if (!url) return "";
+  if (/^https?:\/\//i.test(url)) return url;
+  return `https://${url}`;
+}
+
+function getInsightAuthorIds(post) {
+  return getInsightAuthorBlocks(post)
+    .map((block) => getPostObjectId(block?.author))
+    .filter(Boolean);
+}
+
+function getLatestNewsDetails(themeOptions) {
+  return (
+    themeOptions?.latest_news_details ||
+    themeOptions?.single_post?.latest_news_details ||
+    themeOptions?.single_post_page?.latest_news_details ||
+    null
+  );
+}
+
+function getSinglePostImageCtaBanner(themeOptions) {
+  return (
+    themeOptions?.image_cta_banner ||
+    themeOptions?.single_post?.image_cta_banner ||
+    themeOptions?.single_post_page?.image_cta_banner ||
+    null
   );
 }
 
@@ -450,7 +534,7 @@ function InsightPostHero({ post, lang, featuredImage }) {
       </div>
 
       {imageUrl && (
-        <div className="relative mt-10 aspect-[16/6.9] min-h-[260px] w-full overflow-hidden rounded-[10px] md:mt-12">
+        <div className="relative mb-16 mt-10 aspect-[16/6.9] min-h-[260px] w-full overflow-hidden rounded-[10px] md:mt-12">
           <Image
             src={imageUrl}
             alt={title || "Post featured image"}
@@ -470,29 +554,43 @@ function InsightSummaryCard({ post, lang }) {
   if (!summary) return null;
 
   const summaryTitle = getPlainText(summary.summary_title);
-  const summaryDescription = getPlainText(summary.summary_description);
+  const summaryDescription = summary.summary_description;
   const insightsTitle = getPlainText(summary.key_insights_title);
-  const insightItems = normalizeListItems(summary.key_insight_list);
+  const insightListHtml =
+    typeof summary.key_insight_list === "string" ? summary.key_insight_list : "";
+  const insightItems = insightListHtml
+    ? []
+    : normalizeListItems(summary.key_insight_list);
   const shareLinks = getShareLinks(post, lang);
 
   return (
     <aside className="rounded-[8px] bg-[#BFD9DA] px-7 py-7 text-(--color-body)">
       {summaryTitle && (
-        <h2 className="mb-4 text-[18px] font-normal leading-tight">
+        <h2 className="mb-3 text-[18px] font-normal leading-tight">
           {summaryTitle}
         </h2>
       )}
 
       {summaryDescription && (
-        <p className="text-[14px] leading-[1.55]">{summaryDescription}</p>
+        <div
+          className="insight-summary-richtext mb-10 text-[14px] leading-[1.55]"
+          dangerouslySetInnerHTML={{ __html: summaryDescription }}
+        />
       )}
 
-      {(insightsTitle || insightItems.length > 0) && (
-        <div className="mt-9">
+      {(insightsTitle || insightListHtml || insightItems.length > 0) && (
+        <div>
           {insightsTitle && (
             <h3 className="mb-4 text-[18px] font-normal leading-tight">
               {insightsTitle}
             </h3>
+          )}
+
+          {insightListHtml && (
+            <div
+              className="insight-summary-list text-[13px] leading-[1.5] [&_ol]:m-0 [&_ol]:list-none [&_ol]:p-0 [&_ul]:m-0 [&_ul]:list-none [&_ul]:p-0 [&_li]:border-b [&_li]:border-[rgba(30,46,49,0.30)] [&_li]:py-3 [&_p]:mb-0"
+              dangerouslySetInnerHTML={{ __html: insightListHtml }}
+            />
           )}
 
           {insightItems.length > 0 && (
@@ -500,7 +598,7 @@ function InsightSummaryCard({ post, lang }) {
               {insightItems.map((item, index) => (
                 <li
                   key={`${item}-${index}`}
-                  className="border-b border-[#1E2E31]/20 py-4 first:pt-0 text-[13px] leading-[1.5]"
+                  className="border-b border-[#1E2E31]/30 py-3 text-[13px] leading-[1.5]"
                 >
                   {item}
                 </li>
@@ -522,9 +620,9 @@ function InsightSummaryCard({ post, lang }) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={link.label}
-              className="flex h-8 w-8 items-center justify-center rounded-full transition-opacity hover:opacity-75"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-[#1E2E31] transition-opacity hover:opacity-75"
             >
-              <Image src={link.icon} alt="" width={28} height={28} className="h-7 w-7 object-contain" />
+              <Image src={link.icon} alt="" width={18} height={18} className="h-[18px] w-auto object-contain" />
             </Link>
           ))}
         </div>
@@ -542,36 +640,243 @@ function InsightAudioPlayer({ post, lang }) {
   if (!audioUrl) return null;
 
   return (
-    <section className="rounded-[6px] border border-[#1E2E31]/45 px-5 py-5">
-      <h2 className="mb-4 text-[14px] font-normal leading-tight text-(--color-body)">
-        {lang === DEFAULT_LANG ? "Lyssna på artikeln" : "Listen to this article"}
-      </h2>
-      <audio controls className="w-full">
-        <source src={audioUrl} />
-      </audio>
+    <InsightAudioPlayerClient
+      audioUrl={audioUrl}
+      title={lang === DEFAULT_LANG ? "Lyssna på artikeln" : "Listen to this article"}
+    />
+  );
+}
+
+function InsightFactPoints({ block }) {
+  const title = getPlainText(block?.generic_title);
+  const summary = block?.short_summary;
+  const facts = normalizeRepeaterRows(block?.fact_points_list).filter(
+    (item) =>
+      getPlainText(item?.title) ||
+      getPlainText(item?.description) ||
+      getPlainText(item?.numbers) ||
+      getPlainText(item?.fact_tag_line)
+  );
+
+  if (!title && !summary && facts.length === 0) return null;
+
+  return (
+    <section className="mt-16 rounded-[10px] bg-[#B8D1D1] p-6 text-(--color-body) md:p-10 xl:p-[60px]">
+      <div className="grid items-stretch gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <div className="flex h-full flex-col">
+          {title && (
+            <h2 className="ff-larken mb-5 text-[16px] font-normal leading-[1.3]">
+              {title}
+            </h2>
+          )}
+
+          {summary && (
+            <div
+              className="insight-fact-richtext text-[16px] font-normal leading-[1.55]"
+              dangerouslySetInnerHTML={{ __html: summary }}
+            />
+          )}
+        </div>
+
+        {facts.map((item, index) => {
+          const factTitle = getPlainText(item?.title);
+          const description = item?.description;
+          const numbers = getPlainText(item?.numbers);
+          const tagLine = getPlainText(item?.fact_tag_line);
+
+          return (
+            <article
+              key={`${factTitle || numbers || "fact"}-${index}`}
+              className="flex h-full min-h-[280px] flex-col rounded-[10px] border border-[#1E2E31]/30 p-6"
+            >
+              {factTitle && (
+                <h3 className="mb-4 text-[20px] font-medium leading-[1.25]">
+                  {factTitle}
+                </h3>
+              )}
+
+              {description && (
+                <div
+                  className="insight-fact-richtext text-[16px] font-normal leading-[1.55]"
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
+              )}
+
+              {(numbers || tagLine) && (
+                <div className="mt-auto pt-8">
+                  {numbers && (
+                    <p className="ff-larken mb-2 text-[40px] font-normal leading-none md:text-[48px]">
+                      {numbers}
+                    </p>
+                  )}
+                  {tagLine && (
+                    <p className="text-[14px] font-normal leading-[1.4]">
+                      {tagLine}
+                    </p>
+                  )}
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
     </section>
   );
 }
 
-function InsightPostContent({ post, lang }) {
-  const textBlocks = getInsightTextBlocks(post);
-  const hasSidebar = getInsightSummaryBlock(post) || post?.acf?.upload_audio_file;
+function AuthorContactLink({ icon, href, children }) {
+  if (!children || !href) return null;
 
   return (
-    <section className="web-width-sm mx-auto px-6 py-15 md:py-30">
+    <a
+      href={href}
+      target={href.startsWith("http") ? "_blank" : undefined}
+      rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+      className="group flex items-center gap-4 border-b border-[#F2EBE2]/20 py-4 text-[#F2EBE2]"
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#F2EBE2]">
+        <Image
+          src={icon}
+          alt=""
+          width={16}
+          height={16}
+          className="h-4 w-4 object-contain"
+        />
+      </span>
+      <span className="min-w-0 flex-1 truncate text-[14px] leading-normal">
+        {children}
+      </span>
+      <Image
+        src={AuthorContactArrow}
+        alt=""
+        width={12}
+        height={12}
+        className="h-auto w-3 shrink-0 transition-transform group-hover:translate-x-1"
+      />
+    </a>
+  );
+}
+
+function InsightAuthorSection({ block, authorById, lang }) {
+  const selectedAuthor = selectedPost(block?.author);
+  const authorId = getPostObjectId(block?.author);
+  const author = authorById?.get(authorId) || selectedAuthor;
+
+  if (!author || typeof author === "string" || typeof author === "number") {
+    return null;
+  }
+
+  const acf = getAuthorAcf(author);
+  const name = getAuthorTitle(author);
+  const designation = getPlainText(acf.designation);
+  const aboutAuthor = acf.about_author;
+  const contactNumber = getPlainText(acf.contact_number);
+  const email = getPlainText(acf.email_id);
+  const linkedInUrl = getPlainText(acf.linkedin_url);
+  const imageUrl = getAuthorImageUrl(author);
+  const label = lang === DEFAULT_LANG ? "Om författaren" : "About the author";
+
+  if (
+    !name &&
+    !designation &&
+    !aboutAuthor &&
+    !contactNumber &&
+    !email &&
+    !linkedInUrl &&
+    !imageUrl
+  ) {
+    return null;
+  }
+
+  return (
+    <section className="web-width-sm mx-auto px-6 pt-16">
+      <div className="rounded-[10px] bg-[#1E2E31] p-6 text-[#F2EBE2] md:p-10 xl:p-[60px]">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,7fr)_1px_minmax(260px,3fr)] lg:gap-12">
+          <div className="grid gap-8 md:grid-cols-[200px_minmax(0,1fr)] md:items-start">
+            {imageUrl && (
+              <div className="relative h-[200px] w-[200px] overflow-hidden rounded-[6px]">
+                <Image
+                  src={imageUrl}
+                  alt={name || "Author"}
+                  fill
+                  sizes="200px"
+                  className="object-cover"
+                />
+              </div>
+            )}
+
+            <div>
+              <p className="ff-larken mb-5 text-[16px] font-light leading-normal">
+                {label}
+              </p>
+
+              {name && (
+                <h2 className="mb-1 text-[30px] font-normal leading-[1.2]">
+                  {name}
+                </h2>
+              )}
+
+              {designation && (
+                <p className="mb-5 text-[14px] leading-normal text-[#F2EBE2]/70">
+                  {designation}
+                </p>
+              )}
+
+              {aboutAuthor && (
+                <div
+                  className="insight-author-richtext max-w-[680px] text-[16px] leading-[1.5] text-[#F2EBE2]"
+                  dangerouslySetInnerHTML={{ __html: aboutAuthor }}
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="hidden w-px bg-[#F2EBE2]/30 lg:block" />
+
+          <div className="lg:pl-2">
+            <AuthorContactLink
+              icon={AuthorCallIcon}
+              href={contactNumber ? `tel:${contactNumber.replace(/\s+/g, "")}` : ""}
+            >
+              {contactNumber}
+            </AuthorContactLink>
+
+            <AuthorContactLink
+              icon={AuthorEmailIcon}
+              href={email ? `mailto:${email}` : ""}
+            >
+              {email}
+            </AuthorContactLink>
+
+            <AuthorContactLink
+              icon={AuthorLinkedInIcon}
+              href={normalizeExternalUrl(linkedInUrl)}
+            >
+              {linkedInUrl ? "Linkedin" : ""}
+            </AuthorContactLink>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function InsightPostContent({ post, lang, hasFeaturedImage }) {
+  const factPointBlocks = getInsightFactPointBlocks(post);
+  const hasSidebar = getInsightSummaryBlock(post) || post?.acf?.upload_audio_file;
+  const hasFactPoints = factPointBlocks.length > 0;
+
+  return (
+    <section
+      className={`web-width-sm mx-auto px-6 ${
+        hasFactPoints ? "pb-0" : "pb-15 md:pb-30"
+      } ${
+        hasFeaturedImage ? "pt-0" : "pt-15 md:pt-30"
+      }`}
+    >
       <div className="grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(280px,0.95fr)] lg:items-start">
         <div className="min-w-0">
-          {textBlocks.length > 0 ? (
-            textBlocks.map((block, index) => (
-              <div
-                key={index}
-                className="max-w-none [&>h2]:mb-5 [&>h2]:mt-10 [&>h2:first-child]:mt-0 [&>h2]:text-[28px] [&>h2]:font-normal [&>h2]:leading-tight [&>p]:mb-5 [&>p]:text-[15px] [&>p]:leading-[1.65] [&>ul]:mb-6 [&>ul]:list-disc [&>ul]:pl-5 [&>li]:mb-2"
-                dangerouslySetInnerHTML={{ __html: block.body_content }}
-              />
-            ))
-          ) : (
-            <InsightPostBody post={post} />
-          )}
+          <InsightPostBody post={post} />
         </div>
 
         {hasSidebar && (
@@ -581,16 +886,56 @@ function InsightPostContent({ post, lang }) {
           </div>
         )}
       </div>
+
+      {factPointBlocks.map((block, index) => (
+        <InsightFactPoints key={index} block={block} />
+      ))}
     </section>
   );
 }
 
-function InsightPostPage({ post, lang, featuredImage }) {
+function InsightPostPage({
+  post,
+  lang,
+  featuredImage,
+  authorById,
+  latestNewsDetails,
+  latestPosts,
+  imageCtaBanner,
+}) {
+  const hasFeaturedImage = Boolean(getFeaturedImageUrl(featuredImage));
+  const faqBlocks = getInsightFaqBlocks(post);
+  const authorBlocks = getInsightAuthorBlocks(post);
+
   return (
     <>
       <InsightPostBreadcrumbs post={post} lang={lang} />
       <InsightPostHero post={post} lang={lang} featuredImage={featuredImage} />
-      <InsightPostContent post={post} lang={lang} />
+      <InsightPostContent post={post} lang={lang} hasFeaturedImage={hasFeaturedImage} />
+      {faqBlocks.map((block, index) => (
+        <BusinessAreaFAQ
+          key={index}
+          data={{
+            ...block,
+            faqs: block?.faq_data || [],
+          }}
+          lang={lang}
+        />
+      ))}
+      {authorBlocks.map((block, index) => (
+        <InsightAuthorSection
+          key={index}
+          block={block}
+          authorById={authorById}
+          lang={lang}
+        />
+      ))}
+      <HomeNews
+        data={latestNewsDetails || {}}
+        lang={lang}
+        prefetchedPosts={latestPosts}
+      />
+      <ImageCtaBanner data={imageCtaBanner} lang={lang} />
     </>
   );
 }
@@ -692,6 +1037,21 @@ export default async function SinglePage({ params }) {
   const postFeaturedImage = isPost && post?.featured_media
     ? await getMediaById(post.featured_media)
     : null;
+  const postAuthorIds = isPost ? getInsightAuthorIds(post) : [];
+  const uniquePostAuthorIds = [...new Set(postAuthorIds)];
+  const prefetchedPostAuthors = uniquePostAuthorIds.length
+    ? await fetchWP(
+        `/wp/v2/authors?include=${uniquePostAuthorIds.join(",")}&per_page=${uniquePostAuthorIds.length}&orderby=include&lang=${lang}&_embed&acf_format=standard`
+      )
+    : [];
+  const postAuthorById = new Map(
+    (Array.isArray(prefetchedPostAuthors) ? prefetchedPostAuthors : [])
+      .filter((author) => author?.id)
+      .map((author) => [Number(author.id), author])
+  );
+  const latestPostNews = isPost ? await getAllPosts(lang) : [];
+  const latestNewsDetails = isPost ? getLatestNewsDetails(themeOptions) : null;
+  const imageCtaBanner = isPost ? getSinglePostImageCtaBanner(themeOptions) : null;
 
   return (
     <>
@@ -739,7 +1099,15 @@ export default async function SinglePage({ params }) {
             solutionData={solution?.acf || {}}
           />
         ) : isPost ? (  
-          <InsightPostPage post={post} lang={lang} featuredImage={postFeaturedImage} />
+          <InsightPostPage
+            post={post}
+            lang={lang}
+            featuredImage={postFeaturedImage}
+            authorById={postAuthorById}
+            latestNewsDetails={latestNewsDetails}
+            latestPosts={latestPostNews}
+            imageCtaBanner={imageCtaBanner}
+          />
         ) : isWebshopSlug && data ? (
           <WebshopPage
             page={data}
