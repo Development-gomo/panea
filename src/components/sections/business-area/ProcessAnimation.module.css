@@ -1,0 +1,455 @@
+.section {
+  --process-bg: #f3ebe3;
+  --process-ink: #1e2e31;
+  --process-line: #b9b3a9;
+  --process-border: #c8c2b9;
+  --process-active: #b8d1d1;
+  width: 100%;
+  overflow: hidden;
+  padding: 72px 0 96px;
+  background: var(--process-bg);
+  color: var(--process-ink);
+}
+
+.heading {
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.heading p {
+  margin: 0 0 18px;
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.3;
+}
+
+.heading h2 {
+  margin: 0;
+  font-size: clamp(30px, 3vw, 48px);
+  font-weight: 300;
+  line-height: 1.15;
+}
+
+.stageWrap {
+  position: relative;
+  width: 100%;
+  margin-top: 48px;
+}
+
+.stage {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 1760px;
+  height: 620px;
+  transform-origin: top center;
+}
+
+.rails {
+  position: absolute;
+  inset: 0;
+  width: 1760px;
+  height: 620px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.railBase,
+.railActive,
+.railArrow {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.railBase {
+  stroke: var(--process-line);
+  stroke-width: 1.5;
+  transition: d 620ms cubic-bezier(0.65, 0.02, 0.2, 1);
+}
+
+.railActive {
+  stroke: var(--process-ink);
+  stroke-width: 1.8;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.railArrow {
+  stroke: var(--process-line);
+  stroke-width: 1.5;
+  transition:
+    d 620ms cubic-bezier(0.65, 0.02, 0.2, 1),
+    stroke 220ms ease;
+}
+
+.activeConnector .railActive {
+  animation: drawConnector var(--connector-duration) linear forwards;
+}
+
+.activeConnector .railArrow {
+  stroke: var(--process-ink);
+  transition-delay: var(--arrow-delay);
+}
+
+.row {
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  gap: 64px;
+}
+
+.row1 {
+  top: 0;
+  left: 430px;
+}
+
+.row2 {
+  top: 200px;
+  right: 452px;
+  flex-direction: row-reverse;
+}
+
+.row3 {
+  top: 400px;
+  left: 452px;
+}
+
+.step {
+  flex: 0 0 var(--short-width);
+  width: var(--short-width);
+  transition:
+    width 620ms cubic-bezier(0.65, 0.02, 0.2, 1),
+    flex-basis 620ms cubic-bezier(0.65, 0.02, 0.2, 1);
+}
+
+.activeStep {
+  flex-basis: var(--long-width);
+  width: var(--long-width);
+}
+
+.pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px;
+  overflow: hidden;
+  padding: 0 30px;
+  border: 1.3px solid var(--process-border);
+  border-radius: 999px;
+  background: transparent;
+  transition:
+    background-color 420ms cubic-bezier(0.65, 0.02, 0.2, 1),
+    border-color 420ms cubic-bezier(0.65, 0.02, 0.2, 1);
+}
+
+.activeStep .pill {
+  border-color: transparent;
+  background: var(--process-active);
+}
+
+.icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  object-fit: contain;
+}
+
+.pillContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: max-content;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  white-space: nowrap;
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 24px;
+  transform: translate(-50%, -50%);
+}
+
+.shortContent {
+  opacity: 1;
+  transition: opacity 260ms cubic-bezier(0.65, 0.02, 0.2, 1);
+}
+
+.longContent {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+  transition:
+    clip-path 500ms cubic-bezier(0.65, 0.02, 0.2, 1),
+    opacity 260ms cubic-bezier(0.65, 0.02, 0.2, 1);
+}
+
+.activeStep .shortContent {
+  opacity: 0;
+}
+
+.activeStep .longContent {
+  clip-path: inset(0 0 0 0);
+  opacity: 1;
+}
+
+.stepTrack {
+  position: relative;
+  height: 12px;
+  margin-top: 20px;
+}
+
+.trackBase,
+.trackSolid,
+.trackActive {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  height: 0;
+}
+
+.trackBase {
+  display: flex;
+  height: 1px;
+  align-items: center;
+  gap: 8px;
+  width: 62%;
+}
+
+.edgeDash {
+  width: 5px;
+  height: 1px;
+  flex: 0 0 5px;
+  background: var(--process-line);
+}
+
+.middleDashes {
+  height: 1px;
+  flex: 1 1 auto;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--process-line) 0 14px,
+    transparent 14px 23px
+  );
+}
+
+.trackSolid {
+  right: 0;
+  left: 62%;
+  border-top: 1.8px solid var(--process-line);
+}
+
+.trackActive {
+  right: 0;
+  border-top: 1.8px solid var(--process-ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 620ms cubic-bezier(0.65, 0.02, 0.2, 1);
+}
+
+.trackArrow {
+  position: absolute;
+  top: 0;
+  right: -1px;
+  width: 10px;
+  height: 11px;
+  border-top: 1.8px solid var(--process-line);
+  border-right: 1.8px solid var(--process-line);
+  transform: rotate(45deg);
+  transition: border-color 300ms cubic-bezier(0.65, 0.02, 0.2, 1);
+}
+
+.row2 .trackActive {
+  transform-origin: right center;
+}
+
+.row2 .longContent {
+  clip-path: inset(0 0 0 100%);
+}
+
+.row2 .activeStep .longContent {
+  clip-path: inset(0 0 0 0);
+}
+
+.row2 .trackBase {
+  right: 0;
+  left: auto;
+  width: 62%;
+}
+
+.row2 .trackSolid {
+  right: 62%;
+  left: 0;
+}
+
+.row2 .trackArrow {
+  right: auto;
+  left: -1px;
+  border: 0;
+  border-bottom: 1.8px solid var(--process-line);
+  border-left: 1.8px solid var(--process-line);
+}
+
+.activeStep .trackActive {
+  transform: scaleX(1);
+}
+
+.activeStep .trackArrow {
+  border-color: var(--process-ink);
+  transition-delay: 500ms;
+}
+
+@keyframes drawConnector {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .section {
+    padding: 56px 0 64px;
+  }
+
+  .heading p {
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+
+  .heading h2 {
+    font-size: 30px;
+  }
+
+  .stageWrap {
+    height: auto !important;
+    margin-top: 36px;
+  }
+
+  .stage {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    transform: none !important;
+  }
+
+  .rails {
+    display: none;
+  }
+
+  .row,
+  .row1,
+  .row2,
+  .row3 {
+    position: static;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step,
+  .activeStep {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .pill {
+    width: 100%;
+    height: 72px;
+    padding: 0 20px;
+  }
+
+  .pillContent {
+    max-width: calc(100% - 40px);
+    gap: 12px;
+    font-size: 15px;
+  }
+
+  .icon {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+
+  .row2 .longContent {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .row2 .activeStep .longContent {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .stepTrack {
+    width: 12px;
+    height: 52px;
+    margin: 8px auto;
+  }
+
+  .trackBase {
+    top: 0;
+    left: 50%;
+    display: block;
+    width: 0;
+    height: 40px;
+    border-left: 1px dashed var(--process-line);
+  }
+
+  .trackBase > span,
+  .trackSolid {
+    display: none;
+  }
+
+  .trackActive {
+    top: 0;
+    right: auto;
+    left: 50%;
+    width: 0;
+    height: 40px;
+    border: 0;
+    border-left: 1.8px solid var(--process-ink);
+    transform: scaleY(0);
+    transform-origin: top center;
+  }
+
+  .row2 .trackActive {
+    transform-origin: top center;
+  }
+
+  .activeStep .trackActive {
+    transform: scaleY(1);
+  }
+
+  .trackArrow,
+  .row2 .trackArrow {
+    top: 33px;
+    right: auto;
+    left: 2px;
+    width: 9px;
+    height: 9px;
+    border: 0;
+    border-right: 1.8px solid var(--process-line);
+    border-bottom: 1.8px solid var(--process-line);
+    transform: rotate(45deg);
+  }
+
+  .row3 .step:last-child .stepTrack {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step,
+  .pill,
+  .pillContent,
+  .trackActive,
+  .trackArrow,
+  .railActive,
+  .railArrow {
+    transition: none;
+    animation: none;
+  }
+}

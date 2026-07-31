@@ -24,6 +24,9 @@ const BusinessAreaContactFormSection = dynamic(() =>
 const BusinessAreaCaseStudiesSlider = dynamic(() =>
   import("../sections/business-area/CaseStudiesSlider")
 );
+const BusinessAreaProcessAnimation = dynamic(() =>
+  import("../sections/business-area/ProcessAnimation")
+);
 
 function selectedPosts(value) {
   if (!value) return [];
@@ -339,6 +342,9 @@ export default async function BusinessAreaBuilder({
 
           case "team_member_section":
             return null;
+
+          case "process_animation":
+            return <BusinessAreaProcessAnimation key={i} />;
 
           default:
             return null;
