@@ -119,7 +119,7 @@ function Field({ label, name, type = "text", required = false, textarea = false 
   );
 }
 
-function CartItem({ item, items }) {
+function CartItem({ item, items, lang }) {
   const quantity = Number(item.quantity || 1);
 
   const setQuantity = (nextQuantity) => {
@@ -151,13 +151,13 @@ function CartItem({ item, items }) {
 
         {item.model && (
           <p className="mb-1 text-[12px] leading-4 text-[#596366]">
-            Module: {item.model}
+            {lang === "sv" ? "Modell" : "Model"}: {item.model}
           </p>
         )}
 
         {item.articleNumber && (
           <p className="mb-4 text-[12px] leading-4 text-[#596366]">
-            Article number: {item.articleNumber}
+            {lang === "sv" ? "Artikel" : "Article"}: {item.articleNumber}
           </p>
         )}
 
@@ -193,7 +193,7 @@ function CartItem({ item, items }) {
             onClick={removeItem}
             className="cursor-pointer text-[12px] leading-none text-[#596366] transition hover:text-(--color-body)"
           >
-            Remove
+            {lang === "sv" ? "Ta bort" : "Remove"}
           </button>
         </div>
       </div>
@@ -231,12 +231,17 @@ export default function QuoteCartPage({
     setSubmitError("");
 
     if (items.length === 0) {
-      setSubmitError("Please add at least one product before submitting.");
+      setSubmitError(
+        lang === "sv"
+          ? "Lägg till minst en produkt innan du skickar in."
+          : "Please add at least one product before submitting."
+      );
       return;
     }
 
     const formData = new FormData(formElement);
     const payload = {
+      lang,
       form: {
         name: String(formData.get("name") || ""),
         email: String(formData.get("email") || ""),
@@ -259,7 +264,10 @@ export default function QuoteCartPage({
 
       if (!response.ok) {
         throw new Error(
-          data?.error || "Unable to submit your quote request. Please try again."
+          data?.error ||
+            (lang === "sv"
+              ? "Det gick inte att skicka din offertförfrågan. Försök igen."
+              : "Unable to submit your quote request. Please try again.")
         );
       }
 
@@ -267,14 +275,23 @@ export default function QuoteCartPage({
       formElement.reset();
       setSubmitMessage(
         data?.orderId
-          ? `Thank you. Your quote request has been submitted. Order #${data.orderId}.`
-          : "Thank you. Your quote request has been submitted."
+          ? lang === "sv"
+            ? `Tack. Din offertförfrågan har skickats in. Beställ #${data.orderId}.`
+            : `Thank you. Your quote request has been submitted. Order #${data.orderId}.`
+          : lang === "sv"
+            ? "Tack. Din offertförfrågan har skickats in."
+            : "Thank you. Your quote request has been submitted."
       );
       if (data?.warning) {
         setSubmitError(data.warning);
       }
     } catch (error) {
-      setSubmitError(error?.message || "Unable to submit your quote request.");
+      setSubmitError(
+        error?.message ||
+          (lang === "sv"
+            ? "Det gick inte att skicka din offertförfrågan. Försök igen."
+            : "Unable to submit your quote request. Please try again.")
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -292,7 +309,7 @@ export default function QuoteCartPage({
               href={langHome(lang)}
               className="transition hover:text-(--color-body)"
             >
-              Home
+              {lang === "sv" ? "Hem" : "Home"}
             </Link>
           </li>
           <li aria-hidden="true">/</li>
@@ -301,12 +318,12 @@ export default function QuoteCartPage({
               href={langHref("/webshop", lang)}
               className="transition hover:text-(--color-body)"
             >
-              Webshop
+              {lang === "sv" ? "Webbshop" : "Webshop"}
             </Link>
           </li>
           <li aria-hidden="true">/</li>
           <li className="text-(--color-body)" aria-current="page">
-            Cart
+            {lang === "sv" ? "Vagn" : "Cart"}
           </li>
         </ol>
       </nav>
@@ -315,12 +332,13 @@ export default function QuoteCartPage({
         <section className="mb-6 grid gap-8 lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.85fr)]">
           <div className="flex items-center justify-between gap-4">
             <h1 className="ff-larken text-[32px] font-normal leading-tight text-(--color-body) md:text-[40px]">
-              Items in cart
+              {lang === "sv" ? "Varor i varukorgen" : "Items in cart"}
             </h1>
             {items.length > 0 && (
               <p className="shrink-0 text-right text-[12px] text-[#596366]">
-                {items.length} {items.length === 1 ? "item" : "items"} / Total
-                quantity {totalQuantity}
+                {items.length} {lang === "sv" ? "artiklar" : "items"} /{" "}
+                {lang === "sv" ? "Total kvantitet" : "Total quantity"}{" "}
+                {totalQuantity}
               </p>
             )}
           </div>
@@ -331,19 +349,26 @@ export default function QuoteCartPage({
             {items.length > 0 ? (
               <div className="overflow-hidden rounded-[5px] border border-[#DED8CF]">
                 {items.map((item) => (
-                  <CartItem key={item.id} item={item} items={items} />
+                  <CartItem
+                    key={item.id}
+                    item={item}
+                    items={items}
+                    lang={lang}
+                  />
                 ))}
               </div>
             ) : (
               <div className="rounded-[4px] border border-dashed border-[#C7C0B6] bg-white p-8 text-center">
                 <p className="text-[16px] text-(--color-body)">
-                  Your quotation cart is empty.
+                  {lang === "sv"
+                    ? "Din offertkorg är tom."
+                    : "Your quotation cart is empty."}
                 </p>
                 <Link
                   href={langHref("/webshop", lang)}
                   className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full border border-(--color-body) bg-(--color-body) px-8 text-[13px] text-white transition hover:bg-black"
                 >
-                  Continue shopping
+                  {lang === "sv" ? "Fortsätt handla" : "Continue shopping"}
                 </Link>
               </div>
             )}
@@ -353,7 +378,7 @@ export default function QuoteCartPage({
                 className="group mt-5 ml-auto flex w-fit items-center gap-1.5 whitespace-nowrap text-[12px] text-[#596366]"
               >
                 <span className="border-b border-[#596366] leading-5">
-                  Continue shopping
+                  {lang === "sv" ? "Fortsätt handla" : "Continue shopping"}
                 </span>
                 <span
                   aria-hidden="true"
@@ -367,22 +392,31 @@ export default function QuoteCartPage({
 
           <section className="rounded-[5px] bg-[#183034] p-7 md:p-10 lg:mt-0">
             <h2 className="ff-larken mb-10 text-[28px] font-normal leading-tight text-white">
-              Contact us at Panea
+              {lang === "sv" ? "Kontakta oss på Panea" : "Contact us at Panea"}
             </h2>
 
             <form className="space-y-5" onSubmit={submitRequest}>
-              <Field label="Name" name="name" required />
-              <Field label="Email" name="email" type="email" required />
-              <Field label="Phone" name="phone" type="tel" required />
-              <Field label="Company" name="company" />
-              <Field label="Message" name="message" textarea />
+              <Field
+                label={lang === "sv" ? "Namn" : "Name"}
+                name="name"
+                required
+              />
+
+              <Field label={lang === "sv" ? "E-post" : "Email"} name="email" type="email" required />
+              <Field label={lang === "sv" ? "Telefon" : "Phone"} name="phone" type="tel" required />
+              <Field label= {lang === "sv" ? "Företag" : "Company"} name="company" />
+              <Field label= {lang === "sv" ? "Meddelande" : "Message"} name="message" textarea />
 
               <button
                 type="submit"
                 disabled={isSubmitting}
                 className="mt-3 min-h-11 cursor-pointer rounded-full bg-white px-8 text-[13px] text-[#183034] transition hover:bg-[#F3EDE5] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSubmitting ? "Submitting..." : "Request a quote"}
+                {isSubmitting
+                  ? "Submitting..."
+                  : lang === "sv"
+                    ? "Begär en offert"
+                    : "Request a quote"}
               </button>
 
               {submitMessage && (

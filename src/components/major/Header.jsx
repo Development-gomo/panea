@@ -69,9 +69,20 @@ function MiniCart({ items, lang, onRemove }) {
   return (
     <div className="absolute right-[-18px] top-[calc(100%+10px)] z-[70] w-[calc(100vw-32px)] max-w-[460px] overflow-hidden rounded-[4px] border border-[#C7C0B6] bg-white text-(--color-body) shadow-[0_8px_28px_rgba(0,0,0,0.18)]">
       <div className="flex items-center justify-between bg-[#D2C4B2] px-6 py-3">
-        <h2 className="ff-larken text-[22px] font-normal leading-none">Your Cart</h2>
+        <h2 className="ff-larken text-[22px] font-normal leading-none">
+          {lang === "sv" ? "Din varukorg" : "Your Cart"}
+        </h2>
         <span className="text-[14px] leading-none">
-          ({totalQuantity} {totalQuantity === 1 ? "Item" : "Items"} selected)
+          (
+          {totalQuantity}{" "}
+          {lang === "sv"
+            ? totalQuantity === 1
+              ? "Objekt valt"
+              : "Objekt valda"
+            : totalQuantity === 1
+              ? "Item selected"
+              : "Items selected"}
+          )
         </span>
       </div>
 
@@ -102,12 +113,13 @@ function MiniCart({ items, lang, onRemove }) {
                 </h3>
                 {item.model && (
                   <p className="mt-1 text-[12px] leading-5 text-[#596366]">
-                    Model: {item.model}
+                    {lang === "sv" ? "Modell" : "Model"}: {item.model}
                   </p>
                 )}
                 {item.articleNumber && (
                   <p className="text-[12px] leading-5 text-[#596366]">
-                    Article: {item.articleNumber}
+                    {lang === "sv" ? "Artikel" : "Article"}:{" "}
+                    {item.articleNumber}
                   </p>
                 )}
               </div>
@@ -116,7 +128,9 @@ function MiniCart({ items, lang, onRemove }) {
                 type="button"
                 onClick={() => onRemove(item.id)}
                 className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-[#C7C0B6] bg-[#F8F4EE] text-[18px] leading-none text-(--color-body) transition hover:border-(--color-body) hover:bg-(--color-body) hover:text-white"
-                aria-label={`Remove ${item.productName || "product"}`}
+                aria-label={`${lang === "sv" ? "Ta bort" : "Remove"} ${
+                  item.productName || (lang === "sv" ? "produkt" : "product")
+                }`}
               >
                 &times;
               </button>
@@ -128,7 +142,9 @@ function MiniCart({ items, lang, onRemove }) {
           href={langHref("/cart", lang)}
           className="mt-4 flex min-h-11 w-full items-center justify-center rounded-full border border-(--color-body) bg-(--color-body) px-8 text-[13px] leading-none text-white transition hover:bg-black"
         >
-          View cart to proceed
+          {lang === "sv"
+            ? "Visa varukorgen för att fortsätta"
+            : "View cart to proceed"}
         </Link>
       </div>
     </div>
@@ -538,7 +554,9 @@ export default function Header({
 
                 {emptyCartMessageOpen && (
                   <div className="absolute right-0 top-[calc(100%+18px)] z-[70] w-[260px] rounded-[12px] bg-[#F7F7F7] px-5 py-4 text-center text-[14px] font-semibold text-[#111] shadow-[0_8px_28px_rgba(0,0,0,0.18)]">
-                    No product available
+                    {lang === "sv"
+                      ? "Ingen produkt tillgänglig"
+                      : "No product available"}
                   </div>
                 )}
               </div>

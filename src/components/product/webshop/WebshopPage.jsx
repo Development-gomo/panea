@@ -428,8 +428,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
   const description = toText(
     getField(acf, ["short_information", "short_description", "description"])
   );
-  const quoteLabel =
-    toText(getField(acf, ["request_a_quote_button_label"])) || "Request a quote";
+  const quoteLabel = lang === "sv" ? "Begär en offert" : "Request a quote";
   const productId = String(product?.id || product?.slug || title || "");
   const isInQuoteCart = quoteCartItems.some(
     (item) => item.productId === productId
@@ -488,7 +487,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
               href={langHref("/cart", lang)}
               className="flex mb-3 min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#B8D9DB] px-4 text-[14px] text-[#1E2E31] transition hover:bg-black hover:text-white"
             >
-              View cart
+              {lang === "sv" ? "Visa varukorgen" : "View cart"}
             </Link>
           ) : (
             <button
@@ -503,7 +502,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
             href={langHref(`/${product.slug}/`, lang)}
             className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#1E2E31] px-4 text-[14px] text-white transition hover:bg-black"
           >
-            Read more
+            {lang === "sv" ? "Läs mer" : "Read more"}
           </Link>
         </div>
       </div>
@@ -641,7 +640,7 @@ export default function WebshopPage({
                   : "text-[#1E2E31] hover:bg-white/55"
               }`}
             >
-              All categories
+              {lang === "sv" ? "Alla kategorier" : "All categories"}
             </Link>
 
             {parentCategories.map((category) => (
@@ -667,7 +666,7 @@ export default function WebshopPage({
                   onClick={() => setBrandOpen((open) => !open)}
                   className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[#1E2E31]/20 bg-[#F2EBE2] px-5 text-[14px] leading-none text-[#1E2E31] transition hover:bg-white"
                 >
-                  Brands
+                  {lang === "sv" ? "Varumärken" : "Brands"}
                   {selectedBrandCount > 0 && (
                     <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#1E2E31] px-1.5 text-[11px] leading-none text-white">
                       {selectedBrandCount}
@@ -708,7 +707,9 @@ export default function WebshopPage({
                         })
                       ) : (
                         <p className="px-2 py-2 text-[13px] text-[#1E2E31]/55">
-                          No brands found
+                          {lang === "sv"
+                            ? "Inga varumärken hittades"
+                            : "No brands found"}
                         </p>
                       )}
                     </div>
@@ -722,7 +723,7 @@ export default function WebshopPage({
                   onClick={clearBrands}
                   className="text-[14px] cursor-pointer text-[#1E2E31]/50 transition hover:text-[#1E2E31]"
                 >
-                  Clear all
+                  {lang === "sv" ? "Rensa allt" : "Clear all"}
                 </button>
               )}
             </div>
@@ -740,7 +741,9 @@ export default function WebshopPage({
               </div>
             ) : (
               <div className="rounded-[7px] border border-[#D5CDC1] bg-white p-8 text-center text-[14px] text-[#1E2E31]/70">
-                No products found.
+                {lang === "sv"
+                  ? "Inga produkter hittades."
+                  : "No products found."}
               </div>
             )}
 

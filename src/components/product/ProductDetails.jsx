@@ -273,7 +273,8 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
   const articleNumber = toText(getField(acf, ["article_number"]));
   const shortInformation = toHtml(getField(acf, ["short_information"]));
   const keyFeatures = toHtml(getField(acf, ["key_features"]));
-  const quoteButtonLabel = toText(getField(acf, ["request_a_quote_button_label"]));
+  const quoteButtonLabel =
+    lang === "sv" ? "Begär en offert" : "Request a quote";
   const serviceButtonLabel = toText(getField(acf, ["buy_service_agreements"]));
   const productImage = getProductImage(product);
   const availableModels = getRepeaterItems(acf, "available_models");
@@ -329,7 +330,7 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
 
         {articleNumber && (
           <span className="inline-flex rounded-sm border border-[#C7C0B6] bg-[#F8F4EE] px-3 py-1 text-[11px] leading-none text-[#596366]">
-            Article number - {articleNumber}
+            {lang === "sv" ? "Artikel" : "Article"} - {articleNumber}
           </span>
         )}
       </div>
@@ -378,7 +379,13 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
       {(quoteButtonLabel || serviceButtonLabel) && (
         <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:flex-wrap">
           <ProductButton
-            label={isInQuoteCart ? "View cart" : quoteButtonLabel}
+            label={
+              isInQuoteCart
+                ? lang === "sv"
+                  ? "Visa varukorgen"
+                  : "View cart"
+                : quoteButtonLabel
+            }
             onClick={isInQuoteCart ? undefined : handleQuoteClick}
             href={isInQuoteCart ? "/cart" : ""}
             lang={lang}

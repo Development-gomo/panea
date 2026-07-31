@@ -214,7 +214,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
   const description = toText(
     getField(acf, ["short_information", "short_description", "description"])
   );
-  const quoteLabel = toText(getField(acf, ["request_a_quote_button_label"])) || "Request a quote";
+  const quoteLabel = lang === "sv" ? "Begär en offert" : "Request a quote";
   const productId = String(product?.id || product?.slug || title || "");
   const isInQuoteCart = quoteCartItems.some(
     (item) => item.productId === productId
@@ -271,7 +271,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
               href={langHref("/cart", lang)}
               className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#B8D9DB] px-4 text-[12px] text-[#1E2E31] transition hover:bg-black hover:text-white sm:px-6"
             >
-              View cart
+              {lang === "sv" ? "Visa varukorgen" : "View cart"}
             </Link>
           ) : (
             <button
@@ -286,7 +286,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
             href={langHref(`/${product.slug}/`, lang)}
             className="flex min-h-11 w-full cursor-pointer items-center justify-center rounded-full bg-[#1E2E31] px-4 text-[12px] text-white transition hover:bg-black sm:px-6"
           >
-            Read more
+            {lang === "sv" ? "Läs mer" : "Read more"}
           </Link>
         </div>
       </div>

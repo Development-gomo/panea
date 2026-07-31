@@ -72,6 +72,7 @@ export async function POST(request) {
 
   const form = body?.form || {};
   const items = Array.isArray(body?.items) ? body.items : [];
+  const lang = body?.lang === "sv" ? "sv" : "en";
   const name = toText(form.name);
   const email = toText(form.email);
   const phone = toText(form.phone);
@@ -86,7 +87,12 @@ export async function POST(request) {
 
   if (items.length === 0) {
     return NextResponse.json(
-      { error: "Please add at least one product before submitting." },
+      {
+        error:
+          lang === "sv"
+            ? "Lägg till minst en produkt innan du skickar in."
+            : "Please add at least one product before submitting.",
+      },
       { status: 400 }
     );
   }

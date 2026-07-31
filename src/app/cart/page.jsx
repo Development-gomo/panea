@@ -6,7 +6,7 @@ import { getAllProducts, getMenu, getPageBySlug, getThemeOptions } from "@/lib/a
 import { DEFAULT_LANG } from "@/config";
 
 export const metadata = {
-  title: "Request a quote | panea",
+  title: "Begär en offert | panea",
 };
 
 export default async function CartRoute() {
