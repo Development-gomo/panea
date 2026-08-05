@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import RightArrow from "../../../../public/right-arrow.svg";
-import NumberedListItem from "../../NumberedListItem";
 
 function getImageUrl(image) {
   if (!image) return "";
@@ -145,24 +144,31 @@ export default function ProjectSteps({ data }) {
               {steps.length > 0 && (
                 <div>
                   {steps.map((step, index) => (
-                    <NumberedListItem
+                    <article
                       key={`${step?.title || "step"}-${index}`}
-                      index={index}
+                      className={`grid grid-cols-[28px_minmax(0,1fr)] gap-1 md:grid-cols-[32px_minmax(0,1fr)] ${
+                        index > 0 ? "pt-5" : ""
+                      }`}
                     >
-                      {step?.title && (
-                        <h3 className="ff-larken break-words text-[21px] leading-[1.2] font-light text-(--color-body) sm:text-[24px]">
-                          {step.title}
-                        </h3>
-                      )}
-                      {step?.short_information && (
-                        <div
-                          className="mt-2 break-words font-['Inter'] text-[15px] leading-[1.45] font-normal text-(--color-body) sm:text-[16px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-0"
-                          dangerouslySetInnerHTML={{
-                            __html: step.short_information,
-                          }}
-                        />
-                      )}
-                    </NumberedListItem>
+                      <span className="ff-larken pt-[10px] text-[16px] leading-none font-light text-(--color-body) italic">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <div className="border-b border-[#1E2E31]/20 pb-4">
+                        {step?.title && (
+                          <h3 className="ff-larken break-words text-[21px] leading-[1.2] font-light text-(--color-body) sm:text-[24px]">
+                            {step.title}
+                          </h3>
+                        )}
+                        {step?.short_information && (
+                          <div
+                            className="mt-2 break-words font-['Inter'] text-[15px] leading-[1.45] font-normal text-(--color-body) sm:text-[16px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-0"
+                            dangerouslySetInnerHTML={{
+                              __html: step.short_information,
+                            }}
+                          />
+                        )}
+                      </div>
+                    </article>
                   ))}
                 </div>
               )}
