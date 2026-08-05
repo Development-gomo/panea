@@ -12,6 +12,6 @@ export default function LangSyncer() {
     const lang = SUPPORTED_LANGS.includes(firstSegment) ? firstSegment : DEFAULT_LANG;
     document.documentElement.lang = lang;
   }, [pathname]);
-vtest
+
   return null;
 }
