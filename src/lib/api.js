@@ -2,14 +2,33 @@ import { DEFAULT_LANG } from "@/config";
 import { WP_BASE } from "@/config";
 import { cache } from "react";
 
+// Process-level cache for WP responses. Needed on top of Next's fetch data
+// cache because that cache silently refuses to store responses over 2MB
+// (several of our list endpoints with `_embed` are well past that) — without
+// this, every static page render re-fetches those multi-MB payloads from the
+// WP backend, which is what causes build timeouts on large sites.
+const memoryCache = new Map();
+
 // Deduped fetch: React.cache ensures identical calls within the same
 // server render are only executed once (works across page + generateMetadata).
 const _fetchWP = cache(async function _fetchWP(url, revalidate) {
+  const now = Date.now();
+  const cached = memoryCache.get(url);
+  const isFresh =
+    cached && (revalidate === false || now - cached.time < revalidate * 1000);
+
+  if (isFresh) {
+    return cached.data;
+  }
+
   try {
     const res = await fetch(url, { next: { revalidate } });
-    return await res.json();
+    const data = await res.json();
+    memoryCache.set(url, { data, time: now });
+    return data;
   } catch {
-    return null;
+    // Serve stale data on transient failure rather than nothing.
+    return cached ? cached.data : null;
   }
 });
 
