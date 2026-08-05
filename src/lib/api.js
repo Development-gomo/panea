@@ -21,15 +21,24 @@ const _fetchWP = cache(async function _fetchWP(url, revalidate) {
     return cached.data;
   }
 
-  try {
-    const res = await fetch(url, { next: { revalidate } });
-    const data = await res.json();
-    memoryCache.set(url, { data, time: now });
-    return data;
-  } catch {
-    // Serve stale data on transient failure rather than nothing.
-    return cached ? cached.data : null;
+  // A single transient failure (timeout, bot-protection challenge page, etc.)
+  // must not silently render an empty page section — retry a couple of times
+  // before giving up.
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const res = await fetch(url, { next: { revalidate } });
+      const data = await res.json();
+      memoryCache.set(url, { data, time: now });
+      return data;
+    } catch {
+      if (attempt < 2) {
+        await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+      }
+    }
   }
+
+  // Serve stale data on persistent failure rather than nothing.
+  return cached ? cached.data : null;
 });
 
 // Generic fetch helper with ISR revalidation (60s by default).

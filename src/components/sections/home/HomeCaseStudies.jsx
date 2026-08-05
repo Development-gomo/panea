@@ -16,7 +16,7 @@ export default function HomeCaseStudies({
   lang = DEFAULT_LANG,
   prefetchedCases,
 }) {
-  const cases = prefetchedCases || [];
+  const cases = (prefetchedCases || []).slice(0, 8);
 
   const {
     text_above_title,
