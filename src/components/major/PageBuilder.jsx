@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
-import { getAllBusinessAreas, getCaseStudies, getAllPosts, getAllTeam, getThemeOptions } from "@/lib/api";
+import { getAllBusinessAreas, getCaseStudies, getRecentCaseStudies, getAllPosts, getAllTeam, getThemeOptions } from "@/lib/api";
 
 const Hero = dynamic(() => import("../sections/home/HomeHero"));
 const HomeCounter = dynamic(() => import("../sections/home/HomeCounter"));
@@ -26,12 +26,15 @@ const BusinessTabs = dynamic(() => import("../sections/home/BusinessTabs"));
 async function prefetchSectionData(sections, lang) {
   if (!sections) return {};
 
-  const needs = { businessAreas: false, cases: false, posts: false, team: false, clients: false };
+  const needs = { businessAreas: false, cases: false, caseListing: false, posts: false, team: false, clients: false };
 
   for (const block of sections) {
     if (block.acf_fc_layout === "business_tabs") needs.businessAreas = true;
     if (block.acf_fc_layout === "casestudies_section") needs.cases = true;
-    if (block.acf_fc_layout === "case_study_listing") needs.cases = true;
+    if (block.acf_fc_layout === "case_study_listing") {
+      needs.cases = true;
+      needs.caseListing = true;
+    }
     if (block.acf_fc_layout === "news_section") needs.posts = true;
     if (block.acf_fc_layout === "team_section") needs.team = true;
     if (block.acf_fc_layout === "clients_slider_section") needs.clients = true;
@@ -39,7 +42,11 @@ async function prefetchSectionData(sections, lang) {
 
   const [businessAreas, cases, posts, team, themeOpts] = await Promise.all([
     needs.businessAreas ? getAllBusinessAreas(lang) : null,
-    needs.cases ? getCaseStudies(lang) : null,
+    needs.cases
+      ? needs.caseListing
+        ? getCaseStudies(lang)
+        : getRecentCaseStudies(lang)
+      : null,
     needs.posts ? getAllPosts(lang) : null,
     needs.team ? getAllTeam(lang) : null,
     needs.clients ? getThemeOptions(lang) : null,

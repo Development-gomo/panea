@@ -4,7 +4,7 @@ import Header from "@/components/major/Header";
 import CaseStudyBuilder from "@/components/major/CasestudyBuilder";
 import Footer from "@/components/major/Footer";
 import { resolveParams } from "@/lib/params";
-import { getCaseStudyBySlug, getCaseStudies, getMenu, getThemeOptions } from "@/lib/api";
+import { getCaseStudyBySlug, getCaseStudySlugs, getMenu, getThemeOptions } from "@/lib/api";
 import { buildMetadataFromYoast } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
@@ -13,7 +13,7 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const results = await Promise.all(
-    SUPPORTED_LANGS.map((lang) => getCaseStudies(lang))
+    SUPPORTED_LANGS.map((lang) => getCaseStudySlugs(lang))
   );
   return SUPPORTED_LANGS.flatMap((lang, i) =>
     (Array.isArray(results[i]) ? results[i] : []).map((c) => ({ lang, slug: c.slug }))

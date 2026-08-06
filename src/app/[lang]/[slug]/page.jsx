@@ -5,7 +5,7 @@ import {
   getBusinessAreaBySlug,
   getCaseStudyBySlug,
   getPostBySlug,
-  getCaseStudies,
+  getCaseStudySlugs,
   getSolutionBySlug,
   getAllSolutions,
   fetchWP,
@@ -61,7 +61,7 @@ export async function generateStaticParams() {
       SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/pages?per_page=100&lang=${lang}`))
     ),
     Promise.all(SUPPORTED_LANGS.map((lang) => getAllBusinessAreas(lang))),
-    Promise.all(SUPPORTED_LANGS.map((lang) => getCaseStudies(lang))),
+    Promise.all(SUPPORTED_LANGS.map((lang) => getCaseStudySlugs(lang))),
     Promise.all(SUPPORTED_LANGS.map((lang) => getAllSolutions(lang))),
     Promise.all(
       SUPPORTED_LANGS.map((lang) => fetchWP(`/wp/v2/posts?per_page=100&lang=${lang}`))

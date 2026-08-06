@@ -1,7 +1,7 @@
 // src/components/major/CasestudyBuilder.jsx
 
 import { DEFAULT_LANG } from "@/config";
-import { getCaseStudies, getTestimonialsByIds } from "@/lib/api";
+import { getRecentCaseStudies, getTestimonialsByIds } from "@/lib/api";
 import CaseHero from "../sections/case-study/CaseHero";
 import AboutTheProject from "../sections/case-study/AboutTheProject";
 import ProjectSteps from "../sections/case-study/ProjectSteps";
@@ -61,7 +61,7 @@ export default async function CaseStudyBuilder({
   );
   const testimonialIds = collectTestimonialIds(sections);
   const [prefetchedCases, prefetchedTestimonials] = await Promise.all([
-    needsCases ? getCaseStudies(lang) : [],
+    needsCases ? getRecentCaseStudies(lang) : [],
     testimonialIds.length ? getTestimonialsByIds(testimonialIds, lang) : [],
   ]);
   const galleryIndex = sections.findIndex(

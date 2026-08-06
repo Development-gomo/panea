@@ -4,7 +4,7 @@ import { ProductPage } from "@/components/product";
 import { resolveParams } from "@/lib/params";
 import {
   getProductBySlug,
-  getAllProducts,
+  getProductSlugs,
   getMenu,
   getRelatedProducts,
   getTeamMembersByIds,
@@ -66,7 +66,7 @@ function collectProductTeamMemberIds(product) {
 
 export async function generateStaticParams() {
   const results = await Promise.all(
-    SUPPORTED_LANGS.map((lang) => getAllProducts(lang))
+    SUPPORTED_LANGS.map((lang) => getProductSlugs(lang))
   );
 
   return SUPPORTED_LANGS.flatMap((lang, i) =>

@@ -6,7 +6,7 @@ import {
   getAllPosts,
   getAllSuppliers,
   getAllTeam,
-  getCaseStudies,
+  getRecentCaseStudies,
   getTeamMembersByIds,
   getTestimonialsByIds,
 } from "@/lib/api";
@@ -118,7 +118,7 @@ export default async function GenericPageBuilder({
     prefetchedTestimonials,
     prefetchedVacancies,
   ] = await Promise.all([
-    needsCases ? getCaseStudies(lang) : null,
+    needsCases ? getRecentCaseStudies(lang) : null,
     needsBusinessAreas ? getAllBusinessAreas(lang) : null,
     needsPosts ? getAllPosts(lang) : null,
     teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : null,

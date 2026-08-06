@@ -33,8 +33,12 @@ function decodeHtml(value = "") {
 }
 
 function getCaseImage(item) {
+  const media = item?._embedded?.["wp:featuredmedia"]?.[0];
+
   return (
-    item?._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
+    media?.media_details?.sizes?.large?.source_url ||
+    media?.media_details?.sizes?.medium_large?.source_url ||
+    media?.source_url ||
     item?.acf?.featured_image?.url ||
     item?.acf?.image?.url ||
     ""
@@ -59,19 +63,19 @@ function getCaseExcerpt(item) {
 
 function ExploreIcon() {
   return (
-    <span className="relative h-[14px] w-[14px] shrink-0 transition-transform duration-300 group-hover/cta:translate-x-1">
+    <span className="relative h-[12px] w-[13px] shrink-0 transition-transform duration-300 group-hover/cta:translate-x-1">
       <Image
         src={PExplore}
         alt=""
-        width={14}
-        height={14}
+        width={13}
+        height={12}
         className="absolute inset-0 transition-opacity duration-300 group-hover/cta:opacity-0"
       />
       <Image
         src={PExploreHover}
         alt=""
-        width={14}
-        height={14}
+        width={13}
+        height={12}
         className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover/cta:opacity-100"
       />
     </span>
@@ -84,9 +88,15 @@ export default function CaseStudiesSlider({
   className = "",
   excludeSlug = "",
 }) {
-  const visibleCases = excludeSlug
-    ? cases.filter((item) => item?.slug !== excludeSlug)
-    : cases;
+  const visibleCases = cases
+    .filter((item) => !excludeSlug || item?.slug !== excludeSlug)
+    .sort((a, b) => {
+      const aDate = Date.parse(a?.date || "") || 0;
+      const bDate = Date.parse(b?.date || "") || 0;
+
+      return bDate - aDate;
+    })
+    .slice(0, 8);
 
   if (!visibleCases.length) return null;
 
@@ -126,6 +136,7 @@ export default function CaseStudiesSlider({
                     src={image}
                     alt={title}
                     fill
+                    unoptimized
                     sizes="(max-width: 767px) calc(100vw - 48px), 440px"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />

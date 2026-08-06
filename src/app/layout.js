@@ -1,26 +1,9 @@
 import "./globals.css";
-import { Instrument_Sans, Tinos } from "next/font/google";
 import { DEFAULT_LANG } from "@/config";
 import { headers } from "next/headers";
 import NextTopLoader from "nextjs-toploader";
 import LangSyncer from "@/components/LangSyncer";
 // import Script from "next/script"; // uncomment when adding tracking scripts
-
-const instrumentSans = Instrument_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-instrument-sans",
-  style: ["normal", "italic"],
-  display: "swap",
-});
-
-const tinos = Tinos({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-tinos",
-  style: ["normal", "italic"],
-  display: "swap",
-});
 
 export default async function RootLayout({ children }) {
   // Read lang set by middleware (src/middleware.js) so <html lang> is correct
@@ -29,7 +12,7 @@ export default async function RootLayout({ children }) {
   const lang = h.get("x-lang") || DEFAULT_LANG;
 
   return (
-    <html lang={lang} className={`${instrumentSans.variable} ${tinos.variable}`} suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <head>
         {/* ── Cookiebot ── add data-cbid and uncomment when live
         <Script
