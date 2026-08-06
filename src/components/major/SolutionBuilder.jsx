@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import {
   getAllBusinessAreas,
-  getCaseStudies,
+  getRecentCaseStudies,
   getTeamMembersByIds,
   getTestimonialsByIds,
 } from "@/lib/api";
@@ -78,7 +78,7 @@ export default async function SolutionBuilder({
     prefetchedTestimonials,
     prefetchedTeamMembers,
   ] = await Promise.all([
-    needsCases ? getCaseStudies(lang) : null,
+    needsCases ? getRecentCaseStudies(lang) : null,
     needsBusinessAreas ? getAllBusinessAreas(lang) : null,
     testimonialIds.length ? getTestimonialsByIds(testimonialIds, lang) : null,
     teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : null,

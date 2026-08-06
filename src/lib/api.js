@@ -47,6 +47,23 @@ export function fetchWP(endpoint, { revalidate = 60 } = {}) {
   return _fetchWP(url, revalidate);
 }
 
+async function fetchAllWP(endpoint, { perPage = 20 } = {}) {
+  const items = [];
+  const separator = endpoint.includes("?") ? "&" : "?";
+
+  for (let page = 1; page <= 100; page += 1) {
+    const pageItems = await fetchWP(
+      `${endpoint}${separator}per_page=${perPage}&page=${page}`
+    );
+
+    if (!Array.isArray(pageItems) || pageItems.length === 0) break;
+    items.push(...pageItems);
+    if (pageItems.length < perPage) break;
+  }
+
+  return items;
+}
+
 // Pages
 async function getSingleEntry(endpoint, slug, lang = DEFAULT_LANG) {
   if (!slug) return null;
@@ -239,7 +256,19 @@ export async function getAllBusinessAreas(lang = DEFAULT_LANG) {
 }
 
 export async function getCaseStudies(lang = DEFAULT_LANG) {
-  return await fetchWP(`/wp/v2/case_study?lang=${lang}&per_page=100&_embed`);
+  return await fetchAllWP(`/wp/v2/case_study?lang=${lang}&_embed`);
+}
+
+export async function getRecentCaseStudies(lang = DEFAULT_LANG) {
+  return await fetchWP(
+    `/wp/v2/case_study?lang=${lang}&per_page=8&orderby=date&order=desc&_embed`
+  );
+}
+
+export async function getCaseStudySlugs(lang = DEFAULT_LANG) {
+  return await fetchWP(
+    `/wp/v2/case_study?lang=${lang}&per_page=100&_fields=slug`
+  );
 }
 
 export async function getCaseStudyTypes(lang = DEFAULT_LANG) {
@@ -251,8 +280,8 @@ export async function getCaseStudyTypes(lang = DEFAULT_LANG) {
 export async function getCaseStudiesByType(typeId, lang = DEFAULT_LANG) {
   if (!typeId) return [];
 
-  return await fetchWP(
-    `/wp/v2/case_study?lang=${lang}&per_page=100&case_study_type=${typeId}&_embed`
+  return await fetchAllWP(
+    `/wp/v2/case_study?lang=${lang}&case_study_type=${typeId}&_embed`
   );
 }
 
@@ -287,12 +316,12 @@ export async function getArticleArchivePosts(lang = DEFAULT_LANG) {
 
   for (let page = 1; page <= 100; page += 1) {
     const pagePosts = await fetchWP(
-      `/wp/v2/posts?lang=${lang}&per_page=100&page=${page}&orderby=date&order=desc&_embed`
+      `/wp/v2/posts?lang=${lang}&per_page=50&page=${page}&orderby=date&order=desc&_embed`
     );
 
     if (!Array.isArray(pagePosts) || pagePosts.length === 0) break;
     posts.push(...pagePosts);
-    if (pagePosts.length < 100) break;
+    if (pagePosts.length < 50) break;
   }
 
   return posts;
@@ -338,17 +367,24 @@ export async function getAllProducts(lang = DEFAULT_LANG) {
     });
   };
 
-  const products = await fetchWP(
-    `/wp/v2/product?lang=${lang}&per_page=100&_embed&acf_format=standard`
+  const products = await fetchAllWP(
+    `/wp/v2/product?lang=${lang}&_embed&acf_format=standard`
   );
-  if (Array.isArray(products)) return mergeStoreImages(products);
+  if (products.length > 0) return mergeStoreImages(products);
 
-  const fallbackProducts = await fetchWP(
-    `/wp/v2/products?lang=${lang}&per_page=100&_embed&acf_format=standard`
+  const fallbackProducts = await fetchAllWP(
+    `/wp/v2/products?lang=${lang}&_embed&acf_format=standard`
   );
-  return Array.isArray(fallbackProducts)
+  return fallbackProducts.length > 0
     ? mergeStoreImages(fallbackProducts)
     : [];
+}
+
+export async function getProductSlugs(lang = DEFAULT_LANG) {
+  return await fetchAllWP(
+    `/wp/v2/product?lang=${lang}&_fields=slug`,
+    { perPage: 100 }
+  );
 }
 
 export async function getProductCategories(lang = DEFAULT_LANG, options = {}) {

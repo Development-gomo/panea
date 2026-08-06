@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import {
   getAllSolutions,
-  getCaseStudies,
+  getRecentCaseStudies,
   getTeamMembersByIds,
   getTestimonialsByIds,
 } from "@/lib/api";
@@ -225,7 +225,7 @@ export default async function BusinessAreaBuilder({
     prefetchedTeamMembers,
   ] = await Promise.all([
     needsSolutions ? getAllSolutions(lang) : [],
-    needsCases ? getCaseStudies(lang) : null,
+    needsCases ? getRecentCaseStudies(lang) : null,
     testimonialIds.length ? getTestimonialsByIds(testimonialIds, lang) : null,
     teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : null,
   ]);

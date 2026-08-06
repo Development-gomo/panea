@@ -49,7 +49,9 @@ export default async function sitemap() {
   for (const type of CONTENT_TYPES) {
     const results = await Promise.all(
       SUPPORTED_LANGS.map((lang) =>
-        fetchWP(`${type.endpoint}?per_page=100&lang=${lang}`)
+        fetchWP(
+          `${type.endpoint}?per_page=100&lang=${lang}&_fields=slug,modified,date,meta`
+        )
       )
     );
 
