@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import NumberedListItem from "../NumberedListItem";
 
 function stripHtml(value = "") {
   return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
@@ -261,11 +262,28 @@ function DownloadRows({ rows }) {
   );
 }
 
+function OverviewFeatures({ rows }) {
+  return (
+    <div className="w-full min-w-0">
+      {rows.map((feature, index) => (
+        <NumberedListItem key={`${feature}-${index}`} index={index}>
+          <p className="break-words font-['Inter'] text-[15px] leading-[1.45] font-normal text-(--color-body) sm:text-[16px]">
+            {feature}
+          </p>
+        </NumberedListItem>
+      ))}
+    </div>
+  );
+}
+
 function buildTabs(product) {
   const acf = getProductAcf(product);
   const productTabs = getProductTabsGroup(acf);
 
   const overview = getGroupedField(acf, productTabs, "product_overview");
+  const overviewFeatures = getRepeaterItems(acf, productTabs, "overview_features")
+    .map((row) => toText(row?.features ?? row))
+    .filter(Boolean);
   const specifications = getRepeaterItems(acf, productTabs, "product_spefications");
   const downloads = getRepeaterItems(acf, productTabs, "downloadable_material");
 
@@ -276,9 +294,18 @@ function buildTabs(product) {
           label: "Overview",
           content: (
             <div
-              className="body-text max-w-4xl [&>h2]:mb-4 [&>h2]:text-[20px] [&>h2]:font-semibold [&>p]:mb-6 [&>p:last-child]:mb-0"
-              dangerouslySetInnerHTML={{ __html: toHtml(overview) }}
-            />
+              className={
+                overviewFeatures.length > 0
+                  ? "grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12 lg:gap-[80px]"
+                  : "w-full"
+              }
+            >
+              <div
+                className="body-text min-w-0 [&>h2]:mb-4 [&>h2]:text-[20px] [&>h2]:font-semibold [&>p]:mb-6 [&>p:last-child]:mb-0"
+                dangerouslySetInnerHTML={{ __html: toHtml(overview) }}
+              />
+              {overviewFeatures.length > 0 && <OverviewFeatures rows={overviewFeatures} />}
+            </div>
           ),
         }
       : null,
