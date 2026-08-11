@@ -2,18 +2,67 @@
 
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ArrowSvg from "../../../public/right-arrow.svg";
 import DownSvg from "../../../public/down-arrow.svg";
 import ArrowSvgB from "../../../public/right-arrow-black.png";
 import CartSvg from "../../../public/cart-icon.svg";
+import MegaMenu from "./MegaMenu";
 import { getMenu, getThemeOptions, getEntryTranslations } from "@/lib/api";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
 
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
 const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
+
+function getMenuItemKey(item) {
+  const rawUrl = typeof item?.url === "string" ? item.url.trim() : "";
+  const titleKey = String(item?.title || "").trim().toLocaleLowerCase();
+
+  // WordPress menu headings commonly share a non-navigable placeholder URL.
+  // They are distinct items and must be compared by title instead.
+  if (!rawUrl || rawUrl === "#" || /^javascript:/i.test(rawUrl)) {
+    return `title:${titleKey}`;
+  }
+
+  try {
+    const url = new URL(rawUrl, "https://panea.local");
+    const pathname = url.pathname.replace(/\/+$/, "") || "/";
+    return `url:${pathname}${url.search}${url.hash}`;
+  } catch {
+    return `url:${rawUrl.replace(/\/+$/, "")}`;
+  }
+}
+
+function mergeMenuItems(...sources) {
+  const merged = [];
+  const indexByKey = new Map();
+
+  sources.flat().forEach((item) => {
+    if (!item) return;
+
+    const key = getMenuItemKey(item);
+    const existingIndex = indexByKey.get(key);
+
+    if (existingIndex === undefined) {
+      indexByKey.set(key, merged.length);
+      merged.push({
+        ...item,
+        children: mergeMenuItems(item.children || []),
+      });
+      return;
+    }
+
+    const existing = merged[existingIndex];
+    merged[existingIndex] = {
+      ...existing,
+      children: mergeMenuItems(existing.children || [], item.children || []),
+    };
+  });
+
+  return merged;
+}
 
 function getFixedLocalizedRoute(slug, lang) {
   if (slug === "cart") return langHref("/cart", lang);
@@ -55,6 +104,23 @@ function CartIcon() {
       aria-hidden="true"
       className="block shrink-0"
     />
+  );
+}
+
+function HamburgerIcon() {
+  return (
+    <svg
+      width="28"
+      height="18"
+      viewBox="0 0 28 18"
+      fill="none"
+      aria-hidden="true"
+      className="block max-w-none shrink-0"
+    >
+      <rect x="0" y="1" width="18" height="2" rx="1" fill="#1E2E31" />
+      <rect x="0" y="8" width="28" height="2" rx="1" fill="#1E2E31" />
+      <rect x="0" y="15" width="18" height="2" rx="1" fill="#1E2E31" />
+    </svg>
   );
 }
 
@@ -163,6 +229,7 @@ export default function Header({
 }) {
   const [menu, setMenu] = useState(prefetchedMenu);
   const [options, setOptions] = useState(prefetchedOptions);
+  const [socialMedia, setSocialMedia] = useState([]);
   const [altLangUrl, setAltLangUrl] = useState(langHome(SUPPORTED_LANGS.filter((l) => l !== lang)[0]));
   const [scrolled, setScrolled] = useState(false);
   const [quoteCartCount, setQuoteCartCount] = useState(0);
@@ -174,7 +241,18 @@ export default function Header({
   const previousQuoteCartCountRef = useRef(0);
   const hasLoadedQuoteCartRef = useRef(false);
   const isLoading = !menu;
-  const mainMenu = Array.isArray(menu?.main) ? menu.main : [];
+  const mainMenu = useMemo(
+    () => (Array.isArray(menu?.main) ? menu.main : []),
+    [menu]
+  );
+  const megaMenu = useMemo(
+    () => (Array.isArray(menu?.mega_menu) ? menu.mega_menu : []),
+    [menu]
+  );
+  const mobileMenu = useMemo(
+    () => mergeMenuItems(mainMenu, megaMenu),
+    [mainMenu, megaMenu]
+  );
 
   // Only fetch client-side if no prefetched data was provided
   useEffect(() => {
@@ -194,6 +272,28 @@ export default function Header({
     }
     loadData();
   }, [lang, prefetchedMenu]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSocialMedia() {
+      try {
+        const themeOptions = await getThemeOptions(lang);
+        const rows = themeOptions?.footer?.footer_column_5?.social_media;
+
+        if (!cancelled) {
+          setSocialMedia(Array.isArray(rows) ? rows : []);
+        }
+      } catch {
+        if (!cancelled) setSocialMedia([]);
+      }
+    }
+
+    loadSocialMedia();
+    return () => {
+      cancelled = true;
+    };
+  }, [lang]);
 
   // scroll listener for sticky animation
   useEffect(() => {
@@ -282,6 +382,8 @@ export default function Header({
   // Mobile menu state
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState(null);
+  const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const closeMegaMenu = useCallback(() => setMegaMenuOpen(false), []);
 
   const [langOpen, setLangOpen] = useState(false);
   const langRef = React.useRef(null);
@@ -565,28 +667,60 @@ export default function Header({
               <button
                 type="button"
                 aria-label="Open menu"
-                onClick={() => setMobileOpen(true)}
-                className="inline-flex h-[25px] w-[25px] items-center justify-center text-(--color-body)"
+                aria-expanded={megaMenuOpen}
+                disabled={megaMenu.length === 0}
+                onClick={() => {
+                  if (megaMenu.length > 0) setMegaMenuOpen(true);
+                }}
+                className="inline-flex h-[25px] w-[25px] cursor-pointer items-center justify-center text-(--color-body)"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="14" viewBox="0 0 20 14" fill="none" aria-hidden="true">
-                  <path d="M1 1h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M1 7h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M1 13h18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <HamburgerIcon />
               </button>
             </>
           )}
         </nav>
 
-        {/* MOBILE MENU BUTTON */}
-        <button
-          className={`lg:hidden text-3xl transition-colors ${
-            scrolled ? "text-(--color-body)" : "text-(--color-body)"
-          }`}
-          onClick={() => setMobileOpen(true)}
-        >
-          ☰
-        </button>
+        {/* MOBILE ACTIONS */}
+        <div className="flex items-center gap-5 lg:hidden">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={handleCartIconClick}
+              className="relative inline-flex h-[27px] w-[25px] cursor-pointer items-start justify-center pt-[2px] text-(--color-body)"
+              aria-label={lang === "sv" ? "Varukorg" : "Cart"}
+            >
+              <CartIcon />
+              {quoteCartHydrated && quoteCartCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1E2E31] px-1 text-[10px] leading-none text-white">
+                  {quoteCartCount}
+                </span>
+              )}
+            </button>
+
+            {emptyCartMessageOpen && (
+              <div className="absolute right-0 top-[calc(100%+18px)] z-[70] w-[260px] rounded-[12px] bg-[#F7F7F7] px-5 py-4 text-center text-[14px] font-semibold text-[#111] shadow-[0_8px_28px_rgba(0,0,0,0.18)]">
+                {lang === "sv"
+                  ? "Ingen produkt tillgänglig"
+                  : "No product available"}
+              </div>
+            )}
+          </div>
+
+          <button
+            type="button"
+            aria-label="Open menu"
+            aria-expanded={mobileOpen}
+            className={`cursor-pointer text-3xl transition-colors ${
+              scrolled ? "text-(--color-body)" : "text-(--color-body)"
+            }`}
+            onClick={() => {
+              setEmptyCartMessageOpen(false);
+              setMobileOpen(true);
+            }}
+          >
+            <HamburgerIcon />
+          </button>
+        </div>
         {/* MOBILE SLIDE-IN MENU */}
         {mobileOpen && (
           <div className="fixed h-[100vh] inset-0 z-[60] bg-black/60 backdrop-blur-sm lg:hidden" onClick={() => { setMobileOpen(false); setOpenSubmenu(null); }}>
@@ -609,11 +743,11 @@ export default function Header({
               <div className="relative flex-1 overflow-hidden px-6">
                 {/* MAIN MENU PANEL */}
                 <div
-                  className={`absolute inset-0 flex flex-col gap-5 transition-transform duration-300 ${
+                  className={`absolute inset-0 flex flex-col gap-5 overflow-y-auto pb-6 transition-transform duration-300 ${
                     openSubmenu ? "-translate-x-full" : "translate-x-0"
                   }`}
                 >
-                  {menu?.main?.map((item) => {
+                  {mobileMenu.map((item) => {
                     const hasChildren = item.children?.length > 0;
 
                     const parentHref = langHref(item.url, lang);
@@ -658,13 +792,13 @@ export default function Header({
                 </div>
 
                 {/* SUBMENU PANEL */}
-                {menu?.main?.map((item) => {
+                {mobileMenu.map((item) => {
                   if (openSubmenu !== item.id) return null;
 
                   return (
                     <div
                       key={`submenu-${item.id}`}
-                      className="absolute inset-0 flex flex-col gap-5 transition-transform duration-300 translate-x-0 px-6"
+                      className="absolute inset-0 flex flex-col gap-5 overflow-y-auto pb-6 transition-transform duration-300 translate-x-0 px-6"
                     >
                       {/* Back */}
                       <button
@@ -784,6 +918,15 @@ export default function Header({
           </div>
         )}
       </div>
+      {megaMenu.length > 0 && (
+        <MegaMenu
+          items={megaMenu}
+          socialMedia={socialMedia}
+          lang={lang}
+          open={megaMenuOpen}
+          onClose={closeMegaMenu}
+        />
+      )}
     </header>
   );
 }
