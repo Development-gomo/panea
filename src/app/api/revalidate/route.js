@@ -1,6 +1,6 @@
 // src/app/api/revalidate/route.js
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 
@@ -31,10 +31,27 @@ export async function POST(req) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { slug, postType = "page" } = body;
+  const { slug, postType = "page", lang: requestedLang } = body;
+  const isMenuUpdate = ["menu", "nav_menu", "nav_menu_item"].includes(postType);
 
-  if (!slug) {
+  if (!slug && !isMenuUpdate) {
     return NextResponse.json({ error: "Missing slug" }, { status: 400 });
+  }
+
+  if (isMenuUpdate) {
+    const languages = SUPPORTED_LANGS.includes(requestedLang)
+      ? [requestedLang]
+      : SUPPORTED_LANGS;
+    const revalidated = languages.map((lang) => {
+      const tag = `menu-${lang}`;
+      revalidateTag(tag, { expire: 0 });
+      return tag;
+    });
+
+    return NextResponse.json({
+      revalidated,
+      timestamp: new Date().toISOString(),
+    });
   }
 
   const prefix = POST_TYPE_PREFIX[postType] ?? postType;

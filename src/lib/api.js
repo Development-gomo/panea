@@ -11,9 +11,14 @@ const memoryCache = new Map();
 
 // Deduped fetch: React.cache ensures identical calls within the same
 // server render are only executed once (works across page + generateMetadata).
-const _fetchWP = cache(async function _fetchWP(url, revalidate) {
+const _fetchWP = cache(async function _fetchWP(
+  url,
+  revalidate,
+  tagsKey = "",
+  useMemoryCache = true
+) {
   const now = Date.now();
-  const cached = memoryCache.get(url);
+  const cached = useMemoryCache ? memoryCache.get(url) : null;
   const isFresh =
     cached && (revalidate === false || now - cached.time < revalidate * 1000);
 
@@ -26,9 +31,12 @@ const _fetchWP = cache(async function _fetchWP(url, revalidate) {
   // before giving up.
   for (let attempt = 0; attempt < 3; attempt += 1) {
     try {
-      const res = await fetch(url, { next: { revalidate } });
+      const tags = tagsKey ? tagsKey.split(",") : [];
+      const res = await fetch(url, { next: { revalidate, tags } });
       const data = await res.json();
-      memoryCache.set(url, { data, time: now });
+      if (useMemoryCache) {
+        memoryCache.set(url, { data, time: now });
+      }
       return data;
     } catch {
       if (attempt < 2) {
@@ -42,9 +50,13 @@ const _fetchWP = cache(async function _fetchWP(url, revalidate) {
 });
 
 // Generic fetch helper with ISR revalidation (60s by default).
-export function fetchWP(endpoint, { revalidate = 60 } = {}) {
+export function fetchWP(
+  endpoint,
+  { revalidate = 60, tags = [], useMemoryCache = true } = {}
+) {
   const url = `${WP_BASE}${endpoint.startsWith("/") ? "" : "/"}${endpoint}`;
-  return _fetchWP(url, revalidate);
+  const tagsKey = [...new Set(tags)].sort().join(",");
+  return _fetchWP(url, revalidate, tagsKey, useMemoryCache);
 }
 
 async function fetchAllWP(endpoint, { perPage = 20 } = {}) {
@@ -198,9 +210,13 @@ export async function getMediaById(id) {
   }
 }
 
-// Menus — cache for 1 hour (menus rarely change)
+// Menus use targeted invalidation, with five minutes as a webhook-failure fallback.
 export async function getMenu(lang = DEFAULT_LANG) {
-  const menu = await fetchWP(`/myroutes/v1/menus?lang=${lang}`, { revalidate: 3600 });
+  const menu = await fetchWP(`/myroutes/v1/menus?lang=${lang}`, {
+    revalidate: 300,
+    tags: [`menu-${lang}`],
+    useMemoryCache: false,
+  });
   return menu;
 }
 
