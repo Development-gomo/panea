@@ -9,6 +9,7 @@ import {
   getRecentCaseStudies,
   getTeamMembersByIds,
   getTestimonialsByIds,
+  getThemeOptions,
 } from "@/lib/api";
 
 const GenericHero = dynamic(() => import("../sections/generic/Hero"));
@@ -45,6 +46,9 @@ const GenericTestimonialSlider = dynamic(() =>
 );
 const GenericVacanciesListing = dynamic(() =>
   import("../sections/generic/VacanciesListing")
+);
+const ProcessAnimation = dynamic(() =>
+  import("../sections/business-area/ProcessAnimation")
 );
 
 function selectedPosts(value) {
@@ -106,6 +110,9 @@ export default async function GenericPageBuilder({
       block?.acf_fc_layout
     )
   );
+  const needsProcessAnimation = sectionItems.some(
+    (block) => block?.acf_fc_layout === "process_animation"
+  );
   const teamMemberIds = collectTeamMemberIds(sectionItems);
   const testimonialIds = collectTestimonialIds(sectionItems);
   const [
@@ -117,6 +124,7 @@ export default async function GenericPageBuilder({
     prefetchedSuppliers,
     prefetchedTestimonials,
     prefetchedVacancies,
+    themeOptions,
   ] = await Promise.all([
     needsCases ? getRecentCaseStudies(lang) : null,
     needsBusinessAreas ? getAllBusinessAreas(lang) : null,
@@ -128,6 +136,7 @@ export default async function GenericPageBuilder({
       ? getTestimonialsByIds(testimonialIds, lang)
       : null,
     needsVacancies ? getAllCareers(lang) : null,
+    needsProcessAnimation ? getThemeOptions(lang) : null,
   ]);
 
   return (
@@ -261,6 +270,14 @@ export default async function GenericPageBuilder({
                 data={block}
                 lang={lang}
                 vacancies={prefetchedVacancies || []}
+              />
+            );
+
+          case "process_animation":
+            return (
+              <ProcessAnimation
+                key={i}
+                processSteps={themeOptions?.process_steps}
               />
             );
 

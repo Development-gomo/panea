@@ -229,7 +229,10 @@ export async function getFooterWidgets(lang = DEFAULT_LANG) {
 // Theme options (logo, colours, socials) — cache for 24 hours
 export async function getThemeOptions(lang = DEFAULT_LANG) {
   try {
-    const options = await fetchWP(`/panea/v1/theme-options?lang=${lang}`, { revalidate: 86400 });
+    const options = await fetchWP(
+      `/panea/v1/theme-options?lang=${lang}&cache_version=process-journey-1`,
+      { revalidate: 86400 }
+    );
     if (!options) {
       return { header: {}, footer: {} };
     }

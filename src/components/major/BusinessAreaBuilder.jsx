@@ -207,6 +207,7 @@ export default async function BusinessAreaBuilder({
   sections,
   lang = DEFAULT_LANG,
   businessAreaData = {},
+  processSteps = [],
 }) {
   if (!sections) return null;
   const sectionItems = Array.isArray(sections) ? sections : [sections];
@@ -344,7 +345,12 @@ export default async function BusinessAreaBuilder({
             return null;
 
           case "process_animation":
-            return <BusinessAreaProcessAnimation key={i} />;
+            return (
+              <BusinessAreaProcessAnimation
+                key={i}
+                processSteps={processSteps}
+              />
+            );
 
           default:
             return null;

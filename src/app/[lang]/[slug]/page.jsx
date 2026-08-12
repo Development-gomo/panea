@@ -1118,7 +1118,12 @@ export default async function SinglePage({ params }) {
             prefetchedTeamMembers={prefetchedWebshopTeamMembers}
           />
         ) : isBusinessArea ? (
-          <BusinessAreaBuilder sections={businessAreaSections} lang={lang} businessAreaData={businessArea}/>
+          <BusinessAreaBuilder
+            sections={businessAreaSections}
+            lang={lang}
+            businessAreaData={businessArea}
+            processSteps={themeOptions?.process_steps}
+          />
         ) : Array.isArray(acf.generic_page_builder) ? (
           <GenericPageBuilder sections={genericSections} lang={lang} />
         ) : (

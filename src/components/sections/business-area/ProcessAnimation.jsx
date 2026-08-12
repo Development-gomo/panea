@@ -4,76 +4,49 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./ProcessAnimation.module.css";
 
-const STEPS = [
+const STEP_STRUCTURE = [
   {
     id: "needs",
     row: 1,
-    icon: "/p-icon-consultation.png",
-    short: "Consultation",
-    long: "Needs analysis and initial meeting",
     shortWidth: 250,
     longWidth: 430,
   },
   {
     id: "design",
     row: 1,
-    icon: "/p-icon-design.png",
-    short: "Design",
-    long: "Design drawings and visuals",
     shortWidth: 250,
     longWidth: 360,
   },
   {
     id: "quote",
     row: 2,
-    icon: "/p-icon-quotation.png",
-    short: "Quotation",
-    long: "Quotation and cost breakdown",
     shortWidth: 250,
     longWidth: 390,
   },
   {
     id: "execution",
     row: 2,
-    icon: "/p-icon-execution.png",
-    short: "Execution",
-    long: "Execution and production",
     shortWidth: 250,
     longWidth: 350,
   },
   {
     id: "delivery",
     row: 3,
-    icon: "/p-icon-delivery.png",
-    short: "Delivery",
-    long: "Delivery to your site",
     shortWidth: 250,
     longWidth: 310,
   },
   {
     id: "handover",
     row: 3,
-    icon: "/p-icon-handover.png",
-    short: "Handover",
-    long: "Handover and installation",
     shortWidth: 250,
     longWidth: 365,
   },
   {
     id: "follow",
     row: 3,
-    icon: "/p-icon-followup.png",
-    short: "Follow up",
-    long: "Follow up and aftercare",
     shortWidth: 250,
     longWidth: 340,
   },
-];
-
-const ROWS = [
-  STEPS.filter((step) => step.row === 1),
-  STEPS.filter((step) => step.row === 2),
-  STEPS.filter((step) => step.row === 3),
 ];
 
 const SEQUENCE = [
@@ -91,6 +64,18 @@ const SEQUENCE = [
 
 const MOBILE_SEQUENCE = SEQUENCE.filter((item) => item.type === "step");
 
+function getImageUrl(image) {
+  if (typeof image === "string") return image;
+
+  return (
+    image?.url ||
+    image?.sizes?.medium ||
+    image?.sizes?.thumbnail ||
+    image?.source_url ||
+    ""
+  );
+}
+
 function Step({ step, active }) {
   return (
     <div
@@ -102,23 +87,27 @@ function Step({ step, active }) {
     >
       <div className={styles.pill}>
         <span className={`${styles.pillContent} ${styles.shortContent}`}>
-          <Image
-            className={styles.icon}
-            src={step.icon}
-            alt=""
-            width={32}
-            height={32}
-          />
+          {step.icon && (
+            <Image
+              className={styles.icon}
+              src={step.icon}
+              alt=""
+              width={32}
+              height={32}
+            />
+          )}
           <span>{step.short}</span>
         </span>
         <span className={`${styles.pillContent} ${styles.longContent}`}>
-          <Image
-            className={styles.icon}
-            src={step.icon}
-            alt=""
-            width={32}
-            height={32}
-          />
+          {step.icon && (
+            <Image
+              className={styles.icon}
+              src={step.icon}
+              alt=""
+              width={32}
+              height={32}
+            />
+          )}
           <span>{step.long}</span>
         </span>
       </div>
@@ -172,7 +161,7 @@ function Connector({
   );
 }
 
-export default function BusinessAreaProcessAnimation() {
+export default function BusinessAreaProcessAnimation({ processSteps = [] }) {
   const wrapRef = useRef(null);
   const [scale, setScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
@@ -180,6 +169,21 @@ export default function BusinessAreaProcessAnimation() {
   const [sequenceIndex, setSequenceIndex] = useState(0);
   const activeSequence = isMobile ? MOBILE_SEQUENCE : SEQUENCE;
   const current = activeSequence[sequenceIndex] || activeSequence[0];
+  const steps = STEP_STRUCTURE.map((step, index) => {
+    const content = processSteps[index] || {};
+
+    return {
+      ...step,
+      icon: getImageUrl(content.step_icon),
+      short: content.normal_text || "",
+      long: content.animation_text || "",
+    };
+  });
+  const rows = [
+    steps.filter((step) => step.row === 1),
+    steps.filter((step) => step.row === 2),
+    steps.filter((step) => step.row === 3),
+  ];
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 767px)");
@@ -300,7 +304,7 @@ export default function BusinessAreaProcessAnimation() {
               />
             </svg>
 
-            {ROWS.map((row, rowIndex) => (
+            {rows.map((row, rowIndex) => (
               <div
                 className={`${styles.row} ${styles[`row${rowIndex + 1}`]}`}
                 key={rowIndex}
