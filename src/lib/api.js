@@ -7,7 +7,33 @@ import { cache } from "react";
 // (several of our list endpoints with `_embed` are well past that) — without
 // this, every static page render re-fetches those multi-MB payloads from the
 // WP backend, which is what causes build timeouts on large sites.
+//
+// Bounded LRU: on Vercel each function instance is short-lived so an
+// unbounded Map never mattered, but on a long-running Node server every
+// distinct URL (every slug, every paginated list page) would accumulate
+// forever and eventually exhaust memory. Capping at MAX_CACHE_ENTRIES and
+// evicting the least-recently-used entry keeps memory bounded regardless of
+// how long the process stays up.
+const MAX_CACHE_ENTRIES = 500;
 const memoryCache = new Map();
+
+function readMemoryCache(url) {
+  const entry = memoryCache.get(url);
+  if (!entry) return null;
+  // Re-insert to mark as most-recently-used (Map preserves insertion order).
+  memoryCache.delete(url);
+  memoryCache.set(url, entry);
+  return entry;
+}
+
+function writeMemoryCache(url, entry) {
+  memoryCache.delete(url);
+  memoryCache.set(url, entry);
+  if (memoryCache.size > MAX_CACHE_ENTRIES) {
+    const oldestKey = memoryCache.keys().next().value;
+    memoryCache.delete(oldestKey);
+  }
+}
 
 // Deduped fetch: React.cache ensures identical calls within the same
 // server render are only executed once (works across page + generateMetadata).
@@ -18,7 +44,7 @@ const _fetchWP = cache(async function _fetchWP(
   useMemoryCache = true
 ) {
   const now = Date.now();
-  const cached = useMemoryCache ? memoryCache.get(url) : null;
+  const cached = useMemoryCache ? readMemoryCache(url) : null;
   const isFresh =
     cached && (revalidate === false || now - cached.time < revalidate * 1000);
 
@@ -35,7 +61,7 @@ const _fetchWP = cache(async function _fetchWP(
       const res = await fetch(url, { next: { revalidate, tags } });
       const data = await res.json();
       if (useMemoryCache) {
-        memoryCache.set(url, { data, time: now });
+        writeMemoryCache(url, { data, time: now });
       }
       return data;
     } catch {
