@@ -1140,20 +1140,27 @@ export async function generateMetadata({ params }) {
   const parsed = resolveParams(resolved);
   const lang = parsed?.lang || DEFAULT_LANG;
   const slug = parsed?.slug;
-  const data = await getPageBySlug(slug, lang);
-  const businessArea = data ? null : await getBusinessAreaBySlug(slug, lang);
-  const caseStudy = data || businessArea ? null : await getCaseStudyBySlug(slug, lang);
-  const solution = data || businessArea || caseStudy
+  const isWebshopSlug =
+    slug === "webshop" || (lang === "sv" && slug === "webbshop");
+
+  // Content-type priority must match SinglePage() above exactly — product
+  // is resolved first there, so it must win here too. Otherwise a slug that
+  // collides between a product and another content type would render the
+  // product's page while reporting a different content type's SEO tags.
+  const product = isWebshopSlug ? null : await getProductBySlug(slug, lang);
+  const data = product ? null : await getPageBySlug(slug, lang);
+  const businessArea = product || data ? null : await getBusinessAreaBySlug(slug, lang);
+  const caseStudy = product || data || businessArea
+    ? null
+    : await getCaseStudyBySlug(slug, lang);
+  const solution = product || data || businessArea || caseStudy
     ? null
     : await getSolutionBySlug(slug, lang);
-  const product = data || businessArea || caseStudy || solution
-    ? null
-    : await getProductBySlug(slug, lang);
-  const post = data || businessArea || caseStudy || solution || product
+  const post = product || data || businessArea || caseStudy || solution
     ? null
     : await getPostBySlug(slug, lang);
 
-  return buildMetadataFromYoast(data || businessArea || caseStudy || solution || product || post, {
+  return buildMetadataFromYoast(product || data || businessArea || caseStudy || solution || post, {
     fallbackTitle: slug ? `${slug} | panea` : "panea",
     lang,
   });

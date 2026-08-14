@@ -12,9 +12,11 @@ import CartSvg from "../../../public/cart-icon.svg";
 import MegaMenu from "./MegaMenu";
 import { getMenu, getThemeOptions, getEntryTranslations } from "@/lib/api";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
-
-const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
-const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
+import {
+  QUOTE_CART_UPDATED_EVENT,
+  getQuoteCartItems,
+  saveQuoteCartItems,
+} from "@/lib/quoteCart";
 
 function getMenuItemKey(item) {
   const rawUrl = typeof item?.url === "string" ? item.url.trim() : "";
@@ -70,28 +72,14 @@ function getFixedLocalizedRoute(slug, lang) {
   if (["artiklar", "article"].includes(slug)) {
     return lang === DEFAULT_LANG ? "/artiklar" : `/${lang}/article`;
   }
+  if (["karriar", "career"].includes(slug)) {
+    return lang === DEFAULT_LANG ? "/karriar" : `/${lang}/career`;
+  }
+  if (["webbshop", "webshop"].includes(slug)) {
+    return lang === DEFAULT_LANG ? "/webbshop" : `/${lang}/webshop`;
+  }
 
   return "";
-}
-
-function getQuoteCartItems() {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const items = JSON.parse(
-      window.localStorage.getItem(QUOTE_CART_STORAGE_KEY) || "[]"
-    );
-    return Array.isArray(items) ? items : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveQuoteCartItems(items) {
-  window.localStorage.setItem(QUOTE_CART_STORAGE_KEY, JSON.stringify(items));
-  window.dispatchEvent(
-    new CustomEvent(QUOTE_CART_UPDATED_EVENT, { detail: { items } })
-  );
 }
 
 function CartIcon() {
@@ -257,20 +245,28 @@ export default function Header({
   // Only fetch client-side if no prefetched data was provided
   useEffect(() => {
     if (prefetchedMenu) return;
+    let cancelled = false;
+
     async function loadData() {
       try {
         const [menuData, themeOptions] = await Promise.all([
           getMenu(lang),
           getThemeOptions(lang),
         ]);
+        if (cancelled) return;
         setMenu(menuData);
         setOptions(themeOptions?.header || {});
       } catch {
+        if (cancelled) return;
         setMenu({ main: [] });
         setOptions({});
       }
     }
     loadData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [lang, prefetchedMenu]);
 
   useEffect(() => {
@@ -400,6 +396,8 @@ export default function Header({
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
     async function fetchAltLangUrl() {
       try {
         const altLang = SUPPORTED_LANGS.filter((l) => l !== lang)[0];
@@ -411,6 +409,7 @@ export default function Header({
         // Use entryId for dynamic translation lookup if available
         if (entryId && !fixedRoute) {
           const translations = await getEntryTranslations(entryId, entryType, lang);
+          if (cancelled) return;
 
           if (translations && translations[altLang]?.slug) {
             const translatedSlug = translations[altLang].slug;
@@ -434,6 +433,7 @@ export default function Header({
         setAltLangUrl(fallbackUrl);
 
       } catch (error) {
+        if (cancelled) return;
         const altLang = SUPPORTED_LANGS.filter((l) => l !== lang)[0];
         const fixedRoute = getFixedLocalizedRoute(currentSlug, altLang);
         setAltLangUrl(fixedRoute || langHome(altLang));
@@ -443,6 +443,10 @@ export default function Header({
     if (entryId || (currentSlug && currentSlug !== "/")) {
       fetchAltLangUrl();
     }
+
+    return () => {
+      cancelled = true;
+    };
   }, [lang, currentSlug, entryType, pathPrefix, entryId]);
 
   return (

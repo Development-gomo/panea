@@ -4,42 +4,16 @@ import { Fragment, useMemo, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { DEFAULT_LANG, langHref } from "@/config";
+import {
+  subscribeQuoteCart,
+  getQuoteCartSnapshot,
+  getServerQuoteCartSnapshot,
+  parseQuoteCartItems,
+  saveQuoteCartItems,
+} from "@/lib/quoteCart";
 import DownArrow from "../../../../public/down-arrow.svg";
 
 const PRODUCTS_PER_PAGE = 12;
-const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
-const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
-
-function parseQuoteCartItems(value) {
-  try {
-    const items = JSON.parse(value || "[]");
-    return Array.isArray(items) ? items : [];
-  } catch {
-    return [];
-  }
-}
-
-function subscribeQuoteCart(callback) {
-  if (typeof window === "undefined") return () => {};
-
-  const handleUpdate = () => callback();
-  window.addEventListener(QUOTE_CART_UPDATED_EVENT, handleUpdate);
-  window.addEventListener("storage", handleUpdate);
-
-  return () => {
-    window.removeEventListener(QUOTE_CART_UPDATED_EVENT, handleUpdate);
-    window.removeEventListener("storage", handleUpdate);
-  };
-}
-
-function getQuoteCartSnapshot() {
-  if (typeof window === "undefined") return "[]";
-  return window.localStorage.getItem(QUOTE_CART_STORAGE_KEY) || "[]";
-}
-
-function getServerQuoteCartSnapshot() {
-  return "[]";
-}
 
 function stripHtml(value = "") {
   return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
@@ -302,13 +276,6 @@ function PaginationArrow({ direction = "prev" }) {
         fill="#1E2E31"
       />
     </svg>
-  );
-}
-
-function saveQuoteCartItems(items) {
-  window.localStorage.setItem(QUOTE_CART_STORAGE_KEY, JSON.stringify(items));
-  window.dispatchEvent(
-    new CustomEvent(QUOTE_CART_UPDATED_EVENT, { detail: { items } })
   );
 }
 

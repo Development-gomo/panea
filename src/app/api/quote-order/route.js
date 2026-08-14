@@ -1,6 +1,51 @@
 import { NextResponse } from "next/server";
 import { WP_BASE } from "@/config";
 
+// ─── Basic per-IP rate limiting ────────────────────────────────────────────
+// This endpoint is publicly reachable and creates a real WooCommerce order
+// (and triggers customer/admin emails) on every successful call, so it needs
+// some abuse protection. A fixed-window counter is enough to stop naive
+// scripted flooding without external infrastructure. The map is capped and
+// swept on every request so it can't grow unbounded on a long-running server.
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const RATE_LIMIT_MAX_REQUESTS = 5;
+const RATE_LIMIT_MAX_TRACKED_IPS = 5000;
+const rateLimitHits = new Map();
+
+function getClientIp(request) {
+  const forwardedFor = request.headers.get("x-forwarded-for");
+  if (forwardedFor) return forwardedFor.split(",")[0].trim();
+  return request.headers.get("x-real-ip") || "unknown";
+}
+
+function isRateLimited(ip) {
+  const now = Date.now();
+
+  // Sweep expired entries so the map doesn't grow forever.
+  for (const [key, entry] of rateLimitHits) {
+    if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+      rateLimitHits.delete(key);
+    }
+  }
+
+  const entry = rateLimitHits.get(ip);
+
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+    // If the sweep above still leaves us over capacity (e.g. many distinct
+    // IPs within one window), drop the oldest tracked entry rather than
+    // growing past the cap.
+    if (rateLimitHits.size >= RATE_LIMIT_MAX_TRACKED_IPS) {
+      const oldestKey = rateLimitHits.keys().next().value;
+      rateLimitHits.delete(oldestKey);
+    }
+    rateLimitHits.set(ip, { windowStart: now, count: 1 });
+    return false;
+  }
+
+  entry.count += 1;
+  return entry.count > RATE_LIMIT_MAX_REQUESTS;
+}
+
 function toText(value) {
   if (value === undefined || value === null || value === false) return "";
   return String(value).trim();
@@ -62,6 +107,13 @@ function buildCustomerNote(form, items) {
 }
 
 export async function POST(request) {
+  if (isRateLimited(getClientIp(request))) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 }
+    );
+  }
+
   let body;
 
   try {

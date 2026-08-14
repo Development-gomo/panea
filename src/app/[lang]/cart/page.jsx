@@ -21,7 +21,9 @@ export default async function LangCartRoute({ params }) {
   const resolved = resolveParams(await params);
   const lang = resolved?.lang || DEFAULT_LANG;
 
-  if (!SUPPORTED_LANGS.includes(lang)) notFound();
+  // Default language is served by the root /cart page (see src/app/cart/page.jsx).
+  // Without this guard, /sv/cart would duplicate /cart as a second live URL.
+  if (!SUPPORTED_LANGS.includes(lang) || lang === DEFAULT_LANG) notFound();
 
   const [menu, themeOptions, cartPage, relatedProducts] = await Promise.all([
     getMenu(lang),

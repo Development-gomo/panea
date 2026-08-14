@@ -9,14 +9,18 @@ import { notFound } from "next/navigation";
 export const revalidate = 3600;
 
 export function generateStaticParams() {
-  return SUPPORTED_LANGS.map((lang) => ({ lang }));
+  return SUPPORTED_LANGS.filter((lang) => lang !== DEFAULT_LANG).map((lang) => ({
+    lang,
+  }));
 }
 
 async function getLanguage(params) {
   const resolved = resolveParams(await params);
   const lang = resolved?.lang || DEFAULT_LANG;
 
-  if (!SUPPORTED_LANGS.includes(lang)) notFound();
+  // Default language is served by the root /cases page (see src/app/cases/page.jsx).
+  // Without this guard, /sv/cases would duplicate /cases as a second live URL.
+  if (!SUPPORTED_LANGS.includes(lang) || lang === DEFAULT_LANG) notFound();
   return lang;
 }
 

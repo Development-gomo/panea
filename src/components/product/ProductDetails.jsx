@@ -4,9 +4,14 @@ import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import ProductTitle from "./ProductTitle";
 import { DEFAULT_LANG, langHref } from "@/config";
-
-const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
-const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
+import {
+  getQuoteCartItems,
+  subscribeQuoteCart,
+  getQuoteCartSnapshot,
+  getServerQuoteCartSnapshot,
+  parseQuoteCartItems,
+  saveQuoteCartItems,
+} from "@/lib/quoteCart";
 
 function stripHtml(value = "") {
   return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
@@ -171,57 +176,6 @@ function getRepeaterItems(acf, fieldName) {
   }
 
   return toText(value) ? [toText(value)] : [];
-}
-
-function getQuoteCartItems() {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const items = JSON.parse(
-      window.localStorage.getItem(QUOTE_CART_STORAGE_KEY) || "[]"
-    );
-    return Array.isArray(items) ? items : [];
-  } catch {
-    return [];
-  }
-}
-
-function parseQuoteCartItems(value) {
-  try {
-    const items = JSON.parse(value || "[]");
-    return Array.isArray(items) ? items : [];
-  } catch {
-    return [];
-  }
-}
-
-function subscribeQuoteCart(callback) {
-  if (typeof window === "undefined") return () => {};
-
-  const handleUpdate = () => callback();
-  window.addEventListener(QUOTE_CART_UPDATED_EVENT, handleUpdate);
-  window.addEventListener("storage", handleUpdate);
-
-  return () => {
-    window.removeEventListener(QUOTE_CART_UPDATED_EVENT, handleUpdate);
-    window.removeEventListener("storage", handleUpdate);
-  };
-}
-
-function getQuoteCartSnapshot() {
-  if (typeof window === "undefined") return "[]";
-  return window.localStorage.getItem(QUOTE_CART_STORAGE_KEY) || "[]";
-}
-
-function getServerQuoteCartSnapshot() {
-  return "[]";
-}
-
-function saveQuoteCartItems(items) {
-  window.localStorage.setItem(QUOTE_CART_STORAGE_KEY, JSON.stringify(items));
-  window.dispatchEvent(
-    new CustomEvent(QUOTE_CART_UPDATED_EVENT, { detail: { items } })
-  );
 }
 
 function ProductButton({
