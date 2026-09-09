@@ -39,8 +39,15 @@ export default function HomeHero({ data }) {
           ) : null}
         </div>
 
-        {/* Subtle gradient: dark at top, transparent in middle, slightly dark at bottom */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/30 -z-10" />
+        {/* Dark video overlay; retain the gradient for the image fallback */}
+        <div
+          aria-hidden="true"
+          className={`absolute inset-0 pointer-events-none -z-10 ${
+            bgVideo
+              ? "bg-[#222222]/30"
+              : "bg-gradient-to-b from-black/40 via-transparent to-black/30"
+          }`}
+        />
 
         {/* 3-ROW LAYOUT */}
         <div className="relative flex flex-col items-center justify-between w-full min-h-[50vh] md:min-h-[clamp(480px,86svh,100svh)]">
