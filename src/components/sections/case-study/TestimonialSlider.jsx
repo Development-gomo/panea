@@ -51,6 +51,8 @@ export default function CaseStudyTestimonialSlider({
   data,
   prefetchedTestimonials = [],
 }) {
+  return null;
+
   const { text_above_title, title } = data || {};
   const testimonial = resolveTestimonial(
     data?.clients_testimonial,

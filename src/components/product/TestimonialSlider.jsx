@@ -65,6 +65,8 @@ export default function ProductTestimonialSlider({
   data,
   prefetchedTestimonials = [],
 }) {
+  return null;
+
   const { text_above_title, title } = data || {};
   const testimonials = mergeTestimonials(
     selectedPosts(data?.clients_testimonial),

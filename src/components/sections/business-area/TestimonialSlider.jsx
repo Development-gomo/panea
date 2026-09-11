@@ -76,8 +76,11 @@ function mergeTestimonials(selected, fetched) {
 }
 
 export default function BusinessAreaTestimonialSlider({ data, prefetchedTestimonials = [] }) {
-  const { text_above_title, title } = data || {};
   const sliderSideOffset = useSliderSideOffset();
+
+  return null;
+
+  const { text_above_title, title } = data || {};
   const testimonials = mergeTestimonials(
     selectedPosts(data?.clients_testimonial),
     prefetchedTestimonials
