@@ -15,6 +15,7 @@ const LABELS = {
   en: {
     readMore: "View case",
     caseStudy: "Case study",
+    noResults: "No case studies found.",
     previous: "Previous page",
     next: "Next page",
     all: "All",
@@ -22,6 +23,7 @@ const LABELS = {
   sv: {
     readMore: "Läs ärendet",
     caseStudy: "Fallstudie",
+    noResults: "Inga fallstudier hittades.",
     previous: "Föregående sida",
     next: "Nästa sida",
     all: "Alla",
@@ -207,8 +209,6 @@ export default function CaseStudyArchiveCases({
     });
   };
 
-  if (!cases.length) return null;
-
   return (
     <section
       id="case-archive-grid"
@@ -255,8 +255,9 @@ export default function CaseStudyArchiveCases({
           </div>
         )}
 
-        <div className="grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {visibleCases.map((caseStudy, index) => {
+        {cases.length > 0 ? (
+          <div className="grid grid-cols-1 justify-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {visibleCases.map((caseStudy, index) => {
             const titleText = decodeHtml(
               stripHtml(caseStudy?.title?.rendered || caseStudy?.title || "")
             );
@@ -316,8 +317,13 @@ export default function CaseStudyArchiveCases({
                 </Link>
               </motion.article>
             );
-          })}
-        </div>
+            })}
+          </div>
+        ) : (
+          <p className="py-12 text-center text-[18px] text-(--color-body)">
+            {labels.noResults}
+          </p>
+        )}
 
         {totalPages > 1 && (
           <nav
