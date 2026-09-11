@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DEFAULT_LANG, langHref } from "@/config";
 import DownArrow from "../../../../public/down-arrow.svg";
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 const PRODUCTS_PER_PAGE = 12;
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
@@ -39,10 +40,6 @@ function getQuoteCartSnapshot() {
 
 function getServerQuoteCartSnapshot() {
   return "[]";
-}
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
 }
 
 function toText(value) {

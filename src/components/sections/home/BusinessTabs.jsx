@@ -11,6 +11,7 @@ import PRightArrow from "../../../../public/p-right-arrow.svg";
 import PExplore from "../../../../public/p-explore.svg";
 import PExploreHover from "../../../../public/p-explore-hover.svg";
 import LogoWhite from "../../../../public/logowhite.png";
+import { decodeHtml } from "@/lib/htmlText";
 
 const AUTO_ROTATE_DELAY = 5000;
 const CTA_LABELS = {
@@ -29,17 +30,6 @@ function getImageUrl(item) {
     item?.image_url ||
     null
   );
-}
-
-function decodeHtml(value = "") {
-  return String(value)
-    .replace(/&#038;/g, "&")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
 }
 
 function getTitle(item) {

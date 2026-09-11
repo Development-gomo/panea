@@ -10,6 +10,7 @@ import QuoteImage from "../../../../public/quote-image.svg";
 
 import "swiper/css";
 import "swiper/css/pagination";
+import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
 function useSliderSideOffset() {
   const [offset, setOffset] = useState(24);
@@ -36,21 +37,6 @@ function selectedPosts(value) {
 
 function postId(item) {
   return typeof item === "object" ? item?.ID || item?.id : item;
-}
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>/g, "").trim();
-}
-
-function decodeHtml(value = "") {
-  return String(value)
-    .replace(/&#038;/g, "&")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
 }
 
 function getTitle(item) {

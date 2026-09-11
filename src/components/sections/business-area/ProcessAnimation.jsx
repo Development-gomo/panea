@@ -3,6 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./ProcessAnimation.module.css";
+import { DEFAULT_LANG } from "@/config";
+
+const HEADING_TEXT = {
+  en: {
+    subHeading: "Your customer journey with Panea",
+    heading: "The Panea way of working",
+  },
+  sv: {
+    subHeading: "Paneas arbetssätt",
+    heading: "Från första idé till färdig miljö.",
+  },
+};
 
 const STEP_STRUCTURE = [
   {
@@ -161,7 +173,11 @@ function Connector({
   );
 }
 
-export default function BusinessAreaProcessAnimation({ processSteps = [] }) {
+export default function BusinessAreaProcessAnimation({
+  processSteps = [],
+  lang = DEFAULT_LANG,
+}) {
+  const heading = HEADING_TEXT[lang] || HEADING_TEXT[DEFAULT_LANG];
   const wrapRef = useRef(null);
   const [scale, setScale] = useState(1);
   const [isMobile, setIsMobile] = useState(false);
@@ -241,8 +257,8 @@ export default function BusinessAreaProcessAnimation({ processSteps = [] }) {
     <section className={styles.section}>
       <div className="web-width-sm mx-auto px-6">
         <div className={styles.heading}>
-          <p className="ff-larken">Your customer journey with Panea</p>
-          <h2>The Panea way of working</h2>
+          <p className="ff-larken">{heading.subHeading}</p>
+          <h2>{heading.heading}</h2>
         </div>
 
         <div

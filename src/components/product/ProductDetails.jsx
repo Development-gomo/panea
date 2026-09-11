@@ -4,13 +4,10 @@ import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import ProductTitle from "./ProductTitle";
 import { DEFAULT_LANG, langHref } from "@/config";
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
 const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
-}
 
 function getProductAcf(product) {
   return {

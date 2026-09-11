@@ -2,10 +2,7 @@
 
 import { useMemo, useState } from "react";
 import NumberedListItem from "../NumberedListItem";
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
-}
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 function getProductAcf(product) {
   return {

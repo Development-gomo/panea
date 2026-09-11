@@ -4,19 +4,12 @@ import React from "react";
 import { getThemeOptions } from "@/lib/api";
 import { DEFAULT_LANG } from "@/config";
 import ContactForm from "@/components/sections/contact-form/ContactForm";
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 const FOOTER_FORM_IDS = {
   sv: 2453,
   en: 2454,
 };
-
-// Helpers
-function stripHtml(text = "") {
-  return text
-    .replace(/<[^>]*>?/gm, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
 function extractLinksFromHtml(html) {
   if (!html) return [];
