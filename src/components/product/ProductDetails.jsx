@@ -387,7 +387,7 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
             href={isInQuoteCart ? "/cart" : ""}
             lang={lang}
           />
-          <ProductButton label={serviceButtonLabel} variant="secondary" />
+         
         </div>
       )}
       {quoteMessage && (
