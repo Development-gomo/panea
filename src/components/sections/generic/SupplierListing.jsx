@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { DEFAULT_LANG } from "@/config";
+import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
 const SUPPLIERS_PER_PAGE = 16;
 
@@ -12,21 +13,6 @@ const VISIT_LABELS = {
   en: "Visit website",
   sv: "Besök webbplatsen",
 };
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>/g, "").trim();
-}
-
-function decodeHtml(value = "") {
-  return String(value)
-    .replace(/&#038;/g, "&")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
-}
 
 function getTitle(item) {
   return decodeHtml(stripHtml(item?.title?.rendered || item?.title || item?.post_title || ""));

@@ -1,11 +1,7 @@
 // src/lib/seo.js
 
 import { DEFAULT_LANG, LOCALE_MAP } from "@/config";
-
-function stripHtml(raw) {
-  if (!raw) return "";
-  return raw.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
-}
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 function mapOgImages(images = []) {
   if (!Array.isArray(images)) return undefined;

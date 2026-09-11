@@ -6,6 +6,7 @@ import {
   getTeamMembersByIds,
   getTestimonialsByIds,
 } from "@/lib/api";
+import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
 const BusinessAreaHero = dynamic(() => import("../sections/business-area/Hero"));
 const BusinessAreaCounterSection = dynamic(() => import("../sections/business-area/CounterSection"));
@@ -79,21 +80,6 @@ function slugFromUrl(value = "") {
     .split("/")
     .filter(Boolean);
   return parts[parts.length - 1] || "";
-}
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>/g, "").trim();
-}
-
-function decodeHtml(value = "") {
-  return String(value)
-    .replace(/&#038;/g, "&")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
 }
 
 function normalizeText(value = "") {
@@ -349,6 +335,7 @@ export default async function BusinessAreaBuilder({
               <BusinessAreaProcessAnimation
                 key={i}
                 processSteps={processSteps}
+                lang={lang}
               />
             );
 

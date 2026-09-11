@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { DEFAULT_LANG, langHome, langHref } from "@/config";
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
-}
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 function getTitle(entry) {
   return stripHtml(entry?.title?.rendered || entry?.title || entry?.name);

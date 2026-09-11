@@ -8,13 +8,10 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { DEFAULT_LANG, langHref } from "@/config";
 import "swiper/css";
 import "swiper/css/pagination";
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
 const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
-}
 
 function parseQuoteCartItems(value) {
   try {

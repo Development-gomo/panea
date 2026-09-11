@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { DEFAULT_LANG, langHome, langHref } from "@/config";
-
-function stripHtml(value = "") {
-  return value.replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
-}
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 export default function ProductBreadcrumbs({ product, lang = DEFAULT_LANG }) {
   const productName = stripHtml(product?.title?.rendered);

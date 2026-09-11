@@ -1,10 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { DEFAULT_LANG, langHref } from "@/config";
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
-}
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 function toText(value) {
   if (value === undefined || value === null || value === false) return "";

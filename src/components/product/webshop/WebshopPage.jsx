@@ -7,6 +7,7 @@ import { DEFAULT_LANG, langHref } from "@/config";
 import DownArrow from "../../../../public/down-arrow.svg";
 import WebshopHighlightBanner from "./HighlightBanner";
 import WebshopContactFormSection from "./ContactFormSection";
+import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
 
 const heroImage =
   "https://backend.panea.se/wp-content/uploads/2026/05/solution-banner-img.jpg";
@@ -44,10 +45,6 @@ function getQuoteCartSnapshot() {
 
 function getServerQuoteCartSnapshot() {
   return "[]";
-}
-
-function stripHtml(value = "") {
-  return String(value).replace(/<[^>]*>?/gm, "").replace(/\s+/g, " ").trim();
 }
 
 function toText(value) {

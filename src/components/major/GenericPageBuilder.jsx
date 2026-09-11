@@ -278,6 +278,7 @@ export default async function GenericPageBuilder({
               <ProcessAnimation
                 key={i}
                 processSteps={themeOptions?.process_steps}
+                lang={lang}
               />
             );
 
