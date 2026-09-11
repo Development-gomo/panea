@@ -163,15 +163,21 @@
   top: 50%;
   left: 50%;
   display: flex;
-  width: max-content;
+  width: calc(100% - 60px);
+  max-width: calc(100% - 60px);
   align-items: center;
   justify-content: center;
   gap: 16px;
-  white-space: nowrap;
+  text-align: center;
   font-size: 18px;
   font-weight: 300;
   line-height: 24px;
   transform: translate(-50%, -50%);
+}
+
+.pillContent > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .shortContent {
@@ -364,6 +370,7 @@
   }
 
   .pillContent {
+    width: calc(100% - 40px);
     max-width: calc(100% - 40px);
     gap: 12px;
     font-size: 15px;
