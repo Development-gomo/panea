@@ -75,6 +75,8 @@ function SupplierCard({ supplier, lang = DEFAULT_LANG, index }) {
   const websiteUrl = getWebsiteUrl(supplier);
   const buttonText = VISIT_LABELS[lang] || VISIT_LABELS.en;
 
+  const imageSrc = image || "/placeholder.jpg";
+
   return (
     <motion.article
       className="flex h-full flex-col overflow-hidden rounded-[10px] border border-[#CFC7BA] bg-white p-6"
@@ -84,15 +86,13 @@ function SupplierCard({ supplier, lang = DEFAULT_LANG, index }) {
       viewport={{ once: true }}
     >
       <div className="relative mb-4 aspect-[1.6/1] overflow-hidden rounded-[4px] bg-white">
-        {image ? (
-          <Image
-            src={image}
-            alt={title || "Supplier"}
-            fill
-            sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 25vw"
-            className="object-contain"
-          />
-        ) : null}
+        <Image
+          src={imageSrc}
+          alt={title || "Supplier"}
+          fill
+          sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) 50vw, 25vw"
+          className="object-contain"
+        />
       </div>
 
       {title && (
