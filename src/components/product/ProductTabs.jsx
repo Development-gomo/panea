@@ -324,12 +324,18 @@ function buildTabs(product) {
 }
 
 export default function ProductTabs({ product }) {
-  const tabs = useMemo(() => buildTabs(product), [product]);
+  const tabs = useMemo(() => {
+    const allTabs = buildTabs(product);
+
+    return allTabs.filter((_, index) => index !== 1);
+  }, [product]);
+
   const [activeTab, setActiveTab] = useState(tabs[0]?.id);
 
   if (tabs.length === 0) return null;
 
-  const activeContent = tabs.find((tab) => tab.id === activeTab)?.content || tabs[0].content;
+  const activeContent =
+    tabs.find((tab) => tab.id === activeTab)?.content || tabs[0].content;
 
   return (
     <section className="bg-[#F2EBE2]">
@@ -349,6 +355,7 @@ export default function ProductTabs({ product }) {
                   }`}
                 >
                   {tab.label}
+
                   {isActive && (
                     <span className="absolute bottom-0 left-5 right-5 h-px bg-(--color-body) sm:left-8 sm:right-8" />
                   )}
