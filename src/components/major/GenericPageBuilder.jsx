@@ -50,6 +50,9 @@ const GenericVacanciesListing = dynamic(() =>
 const ProcessAnimation = dynamic(() =>
   import("../sections/business-area/ProcessAnimation")
 );
+const GenericContactPageSection = dynamic(() =>
+  import("../sections/generic/ContactPageSection")
+);
 
 function selectedPosts(value) {
   if (!value) return [];
@@ -281,6 +284,23 @@ export default async function GenericPageBuilder({
                 lang={lang}
               />
             );
+
+          case "contact_page-form":
+            return (
+              <GenericContactPageSection
+                key={i}
+                data={block}
+                locationData={
+                  sectionItems[i + 1]?.acf_fc_layout === "contact_page-location"
+                    ? sectionItems[i + 1]
+                    : null
+                }
+                lang={lang}
+              />
+            );
+
+          case "contact_page-location":
+            return null;
 
           default:
             return null;
