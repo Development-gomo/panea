@@ -104,7 +104,7 @@ export default function GenericContactPageSection({ data, locationData, lang }) 
                 variant="solution"
                 showTitle
                 formTitle={cform_title}
-                submitLabel="Submit form"
+                submitLabel={lang === "sv" ? "Skicka förfrågan" : "Submit form"}
               />
             </motion.div>
           )}

@@ -6,7 +6,7 @@
   --process-active: #b8d1d1;
   width: 100%;
   overflow: hidden;
-  padding: 72px 0 96px;
+  padding: 120px 0 0 0;
   background: var(--process-bg);
   color: var(--process-ink);
 }

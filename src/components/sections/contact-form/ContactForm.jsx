@@ -2,11 +2,13 @@
 
 import { DEFAULT_LANG } from "@/config";
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   getCf7FormSchema,
   submitCf7Direct,
   submitCf7FormProxy,
 } from "@/lib/api";
+import NewsletterIcon from "../../../../public/newsletter-icon.svg";
 
 function parsePipeOption(value = "") {
   const text = String(value);
@@ -381,9 +383,15 @@ export default function ContactForm({
             type="submit"
             disabled={state.submitting}
             aria-label={lang === "sv" ? "Prenumerera" : "Subscribe"}
-            className="ml-4 cursor-pointer text-2xl text-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="ml-4 shrink-0 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
           >
-            →
+            <Image
+              src={NewsletterIcon}
+              alt=""
+              width={14}
+              height={14}
+              className="h-[14px] w-[14px]"
+            />
           </button>
         </div>
 

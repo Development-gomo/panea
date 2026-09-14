@@ -92,7 +92,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                     {footer_column_1.column_one_heading}
                   </h4>
                 )}
-                <ul className="space-y-3 text-sm text-[#F2EBE2] text-[16px] font-normal leading-normal">
+                <ul className="space-y-3 text-sm text-[#F2EBE2] text-[16px] font-light leading-normal">
                   {footer_column_1?.links?.map((item, index) => (
                     <li key={index}>
                       <a
@@ -113,7 +113,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                     {footer_column_2.column_two_heading}
                   </h4>
                 )}
-                <ul className="space-y-3 text-sm text-[#F2EBE2] text-[16px] font-normal leading-normal">
+                <ul className="space-y-3 text-sm text-[#F2EBE2] text-[16px] font-light leading-normal">
                   {footer_column_2?.links?.map((item, index) => (
                     <li key={index}>
                       <a
@@ -134,7 +134,7 @@ export default async function Footer({ lang = DEFAULT_LANG }) {
                     {footer_column_3.column_three_heading}
                   </h4>
                 )}
-                <ul className="space-y-3 text-sm text-[#F2EBE2] text-[16px] font-normal leading-normal">
+                <ul className="space-y-3 text-sm text-[#F2EBE2] text-[16px] font-light leading-normal">
                   {footer_column_3?.links?.map((item, index) => (
                     <li key={index}>
                       <a

@@ -101,7 +101,9 @@ export default function ProductFAQ({ data }) {
               >
                 <button
                   type="button"
-                  className="flex w-full cursor-pointer items-center gap-6 py-6 text-left md:gap-16"
+                  className={`flex w-full cursor-pointer items-center gap-6 pt-6 text-left md:gap-16 ${
+                    isOpen ? "pb-3" : "pb-6"
+                  }`}
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   aria-expanded={isOpen}
                   aria-controls={answerId}

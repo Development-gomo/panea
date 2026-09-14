@@ -28,7 +28,7 @@ export default function ProductWhyChooseUs({ data, lang = DEFAULT_LANG }) {
           className="rounded-[11px] overflow-hidden"
           style={{ backgroundColor: bgColor }}
         >
-          <div className="flex flex-col items-center text-center px-6 pt-12 md:pt-20 pb-10 md:pb-14">
+          <div className="flex flex-col items-center text-center px-6 pt-12 md:pt-20 pb-10 md:pb-16">
             {text_above_title && (
               <motion.p
                 className="text-(--color-body) leading-normal mb-4 ff-larken text-[16px] font-light"
@@ -114,7 +114,7 @@ export default function ProductWhyChooseUs({ data, lang = DEFAULT_LANG }) {
                         </div>
                       )}
 
-                      <div className="mt-[105px]">
+                      <div className="mt-[40px] md:mt-[105px]">
                         {feature.title && (
                           <h3 className="text-(--color-body) text-xl font-medium mb-3">
                             {feature.title}

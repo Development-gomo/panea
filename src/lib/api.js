@@ -185,9 +185,19 @@ export async function getProductBySlug(slug, lang = DEFAULT_LANG) {
     : product;
 }
 
+// Team member order is controlled in WP admin via the "Post Types Order"
+// plugin, which stores the drag-and-drop order in menu_order. Reordering
+// doesn't go through a single page/slug (employee_listing can appear on any
+// page), so this is invalidated by tag rather than path, and — like the
+// menu — bypasses the memory cache so a revalidate is never masked by it.
 export async function getAllTeam(lang = DEFAULT_LANG) {
   return await fetchWP(
-    `/wp/v2/team?per_page=100&_embed&lang=${lang}`
+    `/wp/v2/team?per_page=100&orderby=menu_order&order=asc&_embed&lang=${lang}`,
+    {
+      revalidate: 300,
+      tags: [`team-${lang}`],
+      useMemoryCache: false,
+    }
   );
 }
 

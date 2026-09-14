@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Pagination } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import PExplore from "../../../../public/p-explore.svg";
@@ -91,11 +91,12 @@ export default function CaseStudiesSlider({
   return (
     <div className={`panea-case-slider-shell w-full ${className}`}>
       <Swiper
-        modules={[Pagination]}
+        modules={[Pagination, Autoplay]}
         className="panea-case-study-slider"
         slidesPerView="auto"
         spaceBetween={12}
         pagination={{ clickable: true }}
+        autoplay={{ delay: 2000, disableOnInteraction: false }}
         breakpoints={{
           768: { spaceBetween: 14 },
           1024: { spaceBetween: 16 },

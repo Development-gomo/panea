@@ -19,6 +19,18 @@ function getButtons(rows) {
     .filter((button) => button.text && button.url);
 }
 
+function getIconDescriptionItems(rows) {
+  if (!Array.isArray(rows)) return [];
+
+  return rows
+    .map((row) => ({
+      iconUrl: getImageUrl(row?.icon),
+      iconAlt: row?.icon?.alt || "",
+      text: row?.one_line_text || "",
+    }))
+    .filter((item) => item.iconUrl || item.text);
+}
+
 export default function BusinessAreaHighlightBanner({ data }) {
   if (!data) return null;
 
@@ -27,6 +39,7 @@ export default function BusinessAreaHighlightBanner({ data }) {
   const backgroundUrl = getImageUrl(backgroundImage);
   const logoUrl = getImageUrl(logo);
   const buttons = getButtons(data.button_row);
+  const iconDescriptionItems = getIconDescriptionItems(data.icon_and_description);
 
   if (!backgroundUrl && !data.title && !data.description && !logoUrl) return null;
 
@@ -34,7 +47,7 @@ export default function BusinessAreaHighlightBanner({ data }) {
     <section className="w-full pt-[60px] pb-0 md:pt-[120px]">
       <div className="web-width-sm mx-auto px-6">
         <motion.div
-          className="relative overflow-hidden rounded-[10px] bg-(--color-body) px-8 py-10 text-white md:px-[60px] md:py-[80px]"
+          className="relative overflow-hidden rounded-[10px] bg-(--color-body) px-8 py-10 text-[#F2EBE2] md:px-[60px] md:py-[80px]"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
@@ -72,9 +85,33 @@ export default function BusinessAreaHighlightBanner({ data }) {
 
             {data.description && (
               <div
-                className="mt-2 max-w-[500px] text-[15px] font-light leading-[1.45] text-white/85 md:text-[16px] [&_p]:mb-0"
+                className="mt-2 max-w-[500px] text-[15px] font-light leading-[1.45] text-[#F2EBE2]/85 md:text-[16px] [&_p]:mb-0"
                 dangerouslySetInnerHTML={{ __html: data.description }}
               />
+            )}
+
+            {iconDescriptionItems.length > 0 && (
+              <div className="mt-6 flex flex-col gap-2">
+                {iconDescriptionItems.map((item, index) => (
+                  <div key={index} className="flex items-center gap-4">
+                    {item.iconUrl && (
+                      <Image
+                        src={item.iconUrl}
+                        alt={item.iconAlt}
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 shrink-0 object-contain"
+                      />
+                    )}
+                    {item.text && (
+                      <div
+                        className="text-[15px] font-light leading-[1.45] text-[#F2EBE2] md:text-[16px] [&_p]:mb-0"
+                        dangerouslySetInnerHTML={{ __html: item.text }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
 
             {buttons.length > 0 && (
