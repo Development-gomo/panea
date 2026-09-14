@@ -33,8 +33,9 @@ export async function POST(req) {
 
   const { slug, postType = "page", lang: requestedLang } = body;
   const isMenuUpdate = ["menu", "nav_menu", "nav_menu_item"].includes(postType);
+  const isTeamUpdate = ["team", "team_member", "team_members"].includes(postType);
 
-  if (!slug && !isMenuUpdate) {
+  if (!slug && !isMenuUpdate && !isTeamUpdate) {
     return NextResponse.json({ error: "Missing slug" }, { status: 400 });
   }
 
@@ -44,6 +45,22 @@ export async function POST(req) {
       : SUPPORTED_LANGS;
     const revalidated = languages.map((lang) => {
       const tag = `menu-${lang}`;
+      revalidateTag(tag, { expire: 0 });
+      return tag;
+    });
+
+    return NextResponse.json({
+      revalidated,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  if (isTeamUpdate) {
+    const languages = SUPPORTED_LANGS.includes(requestedLang)
+      ? [requestedLang]
+      : SUPPORTED_LANGS;
+    const revalidated = languages.map((lang) => {
+      const tag = `team-${lang}`;
       revalidateTag(tag, { expire: 0 });
       return tag;
     });

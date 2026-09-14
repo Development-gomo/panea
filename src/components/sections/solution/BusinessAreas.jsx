@@ -203,7 +203,7 @@ export default function SolutionBusinessAreas({
                       aria-pressed={isActive}
                     >
                       <span
-                        className={`ff-larken text-[25px] font-normal leading-[1.3] transition-colors duration-300 md:text-[31px] lg:text-[42px] ${
+                        className={`ff-larken text-[25px] font-300 leading-[1.3] transition-colors duration-300 md:text-[31px] lg:text-[42px] ${
                           isActive
                             ? "text-white"
                             : "text-white/45 group-hover:text-white/75"
@@ -239,8 +239,8 @@ export default function SolutionBusinessAreas({
               />
             )}
 
-            <div className="absolute right-5 top-5 h-8 w-8">
-              <Image src={LogoWhite} alt="" fill sizes="32px" className="object-contain" />
+            <div className="absolute right-5 top-5 h-20 w-20">
+              <Image src={LogoWhite} alt="" fill sizes="80px" className="object-contain" />
             </div>
 
             <div className="absolute inset-x-0 bottom-0 text-white">

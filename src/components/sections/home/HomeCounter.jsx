@@ -141,7 +141,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
         {/* BOTTOM — counters row */}
         {counters.length > 0 && (
           <>
-            <div className="counter-grid">
+            <div className="counter-grid ff-larken">
               {counters.map((item, i) => (
                 <motion.div
                   key={i}
@@ -157,7 +157,7 @@ export default function HomeCounter({ data, lang = DEFAULT_LANG }) {
                       {item.suffix && <span>{item.suffix}</span>}
                     </p>
                     {item.short_text && (
-                      <p className="mt-4 text-base text-left text-(--color-body) font-light">{item.short_text}</p>
+                      <p className="mt-3 text-base text-left text-(--color-body) font-light">{item.short_text}</p>
                     )}
                   </div>
                 </motion.div>

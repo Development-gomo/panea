@@ -169,7 +169,7 @@ function SolutionSlideCard({ solution, lang }) {
             <Link
               key={`${button.text}-${index}`}
               href={button.url}
-              className={`group/cta inline-flex min-h-[50px] items-center justify-center gap-2 border-white/15 px-5 py-4 text-[14px] leading-none text-white/85 transition-colors duration-300 hover:bg-[#F2EBE2] hover:text-[#1E2E31] sm:px-6 sm:text-[16px] ${
+              className={`group/cta inline-flex min-h-[50px] items-center justify-center gap-2 border-white/15 px-5 py-4 text-[14px] leading-none text-white/85 transition-colors duration-300 hover:border hover:border-[#1E2E31]/30 hover:bg-[#F2EBE2] hover:text-[#1E2E31] sm:px-6 sm:text-[16px] ${
                 index > 0 || button.isMain ? "border-l" : ""
               }`}
             >

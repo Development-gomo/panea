@@ -277,7 +277,7 @@ export default function SolutionContactFormSection({
                 variant="solution"
                 showTitle
                 formTitle={contact_form_title}
-                submitLabel="Submit form"
+                submitLabel={lang === "sv" ? "Skicka förfrågan" : "Submit form"}
               />
             </motion.div>
           )}

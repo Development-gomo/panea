@@ -30,7 +30,7 @@ export default function WhyChooseUs({ data, lang = DEFAULT_LANG }) {
         >
 
           {/* TOP — label + title + CTA */}
-          <div className="flex flex-col items-center text-center px-6 pt-12 md:pt-20 pb-10 md:pb-14">
+          <div className="flex flex-col items-center text-center px-6 pt-12 md:pt-20 pb-10 md:pb-16">
             {text_above_title && (
               <motion.p
                 className="text-(--color-body) leading-normal mb-4 ff-larken text-[16px] font-light"
@@ -121,8 +121,8 @@ export default function WhyChooseUs({ data, lang = DEFAULT_LANG }) {
                         </div>
                       )}
 
-                      {/* 130px gap between icon and content */}
-                      <div className="mt-[130px]">
+                      {/* 105px gap between icon and content */}
+                      <div className="mt-[40px] md:mt-[105px]">
                         {feature.title && (
                           <h3 className="text-(--color-body) text-xl font-normal mb-3">
                             {feature.title}

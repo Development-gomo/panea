@@ -283,7 +283,7 @@ export default function WebshopContactFormSection({
                 lang={lang}
                 variant="solution"
                 showTitle
-                submitLabel="Submit form"
+                submitLabel={lang === "sv" ? "Skicka förfrågan" : "Submit form"}
               />
             </motion.div>
           )}

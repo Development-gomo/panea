@@ -27,7 +27,7 @@ export default function BusinessAreaWhyChooseUs({ data, lang = DEFAULT_LANG }) {
           className="overflow-hidden rounded-[11px]"
           style={{ backgroundColor: bgColor }}
         >
-          <div className="flex flex-col items-center px-6 pt-12 pb-10 text-center md:pt-20 md:pb-14">
+          <div className="flex flex-col items-center px-6 pt-12 pb-10 text-center md:pt-20 md:pb-16">
             {text_above_title && (
               <motion.p
                 className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
@@ -113,7 +113,7 @@ export default function BusinessAreaWhyChooseUs({ data, lang = DEFAULT_LANG }) {
                         </div>
                       )}
 
-                      <div className="mt-[105px]">
+                      <div className="mt-[40px] md:mt-[105px]">
                         {feature.title && (
                           <h3 className="mb-3 text-xl font-medium text-(--color-body)">
                             {feature.title}
