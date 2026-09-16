@@ -70,16 +70,13 @@ export default function WebshopHighlightBanner({
 
           <div className="relative z-10 mx-auto flex max-w-[980px] flex-col items-center text-center">
             {logoUrl && (
-              <div className="relative mb-7 overflow-hidden">
-                <Image
-                  src={logoUrl}
-                  alt={logo?.alt || ""}
-                  width={58}
-                  height={58}
-                  className="h-auto w-[46px] md:w-[58px]"
-                />
-                <div className="pointer-events-none absolute inset-0 bg-black/20" />
-              </div>
+              <Image
+                src={logoUrl}
+                alt={logo?.alt || ""}
+                width={logo?.width || 80}
+                height={logo?.height || 60}
+                className="mb-7 h-auto w-[80px] object-contain"
+              />
             )}
 
             {data.title && (

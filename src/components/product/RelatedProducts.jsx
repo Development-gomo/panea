@@ -9,6 +9,7 @@ import { DEFAULT_LANG, langHref } from "@/config";
 import "swiper/css";
 import "swiper/css/pagination";
 import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
+import RightArrow from "../../../public/right-arrow.svg";
 
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
 const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
@@ -357,11 +358,16 @@ export default function RelatedProducts({
           {webshopLinkText && (
             <Link
               href={langHref(webshopLink, lang)}
-              className="mt-4 inline-flex cursor-pointer items-center text-[12px] leading-5 text-[#1E2E31] underline underline-offset-4"
+              className="group mt-4 inline-flex cursor-pointer items-center text-[12px] leading-5 text-[#1E2E31] transition-all"
             >
-              {webshopLinkText}
-              <span aria-hidden="true" className="ml-1">
-                -&gt;
+              {/* Text with underline that extends toward the arrow on hover */}
+              <span className="relative pb-[2px]">
+                {webshopLinkText}
+                <span className="absolute bottom-0 left-0 h-[1px] w-full bg-(--color-dark) transition-all duration-300 ease-out group-hover:w-[calc(100%+22px)]" />
+              </span>
+              {/* Arrow — always visible, shifts right on hover */}
+              <span className="ml-2 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                <Image src={RightArrow} alt="arrow" width={17} height={17} />
               </span>
             </Link>
           )}
@@ -378,10 +384,10 @@ export default function RelatedProducts({
             900: { slidesPerView: 3, spaceBetween: 20 },
             1200: { slidesPerView: 4, spaceBetween: 24 },
           }}
-          className="related-products-swiper !overflow-visible [&_.swiper-pagination]:!relative [&_.swiper-pagination]:!bottom-auto [&_.swiper-pagination]:!mt-10 [&_.swiper-pagination]:!flex [&_.swiper-pagination]:!items-center [&_.swiper-pagination]:!justify-center [&_.swiper-pagination-bullet]:!mx-1 [&_.swiper-pagination-bullet]:!h-2 [&_.swiper-pagination-bullet]:!w-2 [&_.swiper-pagination-bullet]:!bg-[#1E2E31] [&_.swiper-pagination-bullet]:!opacity-100 [&_.swiper-pagination-bullet-active]:!h-4 [&_.swiper-pagination-bullet-active]:!w-4"
+          className="related-products-swiper !overflow-visible [&_.swiper-pagination]:!relative [&_.swiper-pagination]:!bottom-auto [&_.swiper-pagination]:!mt-10 [&_.swiper-pagination]:!flex [&_.swiper-pagination]:!items-center [&_.swiper-pagination]:!justify-center [&_.swiper-pagination-bullet]:!mx-1 [&_.swiper-pagination-bullet]:!h-2 [&_.swiper-pagination-bullet]:!w-2 [&_.swiper-pagination-bullet]:!bg-[#1E2E31] [&_.swiper-pagination-bullet]:!opacity-100 [&_.swiper-pagination-bullet-active]:!h-4 [&_.swiper-pagination-bullet-active]:!w-4 [&_.swiper-wrapper]:!items-stretch"
         >
           {displayedProducts.map((relatedProduct) => (
-            <SwiperSlide key={relatedProduct.id} className="h-auto">
+            <SwiperSlide key={relatedProduct.id} className="!h-auto">
               <ProductCard
                 product={relatedProduct}
                 lang={lang}

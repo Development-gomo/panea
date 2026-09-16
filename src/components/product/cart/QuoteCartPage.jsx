@@ -6,6 +6,7 @@ import Link from "next/link";
 import { DEFAULT_LANG, langHome, langHref } from "@/config";
 import RelatedProducts from "@/components/product/RelatedProducts";
 import WebshopHighlightBanner from "@/components/product/webshop/HighlightBanner";
+import RightArrow from "../../../../public/right-arrow.svg";
 
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
 const QUOTE_CART_UPDATED_EVENT = "panea:quote-cart-updated";
@@ -218,10 +219,6 @@ export default function QuoteCartPage({
     () => parseQuoteCartItems(quoteCartSnapshot),
     [quoteCartSnapshot]
   );
-  const totalQuantity = items.reduce(
-    (total, item) => total + Number(item.quantity || 1),
-    0
-  );
   const highlightBanner = getCartHighlightBanner(page);
 
   const submitRequest = async (event) => {
@@ -323,22 +320,20 @@ export default function QuoteCartPage({
           </li>
           <li aria-hidden="true">/</li>
           <li className="text-(--color-body)" aria-current="page">
-            {lang === "sv" ? "Vagn" : "Cart"}
+            {lang === "sv" ? "Varukorg" : "Cart"}
           </li>
         </ol>
       </nav>
 
       <section className="web-width mx-auto px-6 py-12 md:py-16">
         <section className="mb-6 grid gap-8 lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.85fr)]">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-2">
             <h1 className="ff-larken text-[32px] font-normal leading-tight text-(--color-body) md:text-[40px]">
               {lang === "sv" ? "Varor i varukorgen" : "Items in cart"}
             </h1>
             {items.length > 0 && (
-              <p className="shrink-0 text-right text-[12px] text-[#596366]">
-                {items.length} {lang === "sv" ? "artiklar" : "items"} /{" "}
-                {lang === "sv" ? "Total kvantitet" : "Total quantity"}{" "}
-                {totalQuantity}
+              <p className="text-[12px] text-[#596366]">
+                {items.length} {lang === "sv" ? "artiklar" : "items"}
               </p>
             )}
           </div>
@@ -368,23 +363,23 @@ export default function QuoteCartPage({
                   href={langHref("/webshop", lang)}
                   className="mt-5 inline-flex min-h-11 items-center justify-center rounded-full border border-(--color-body) bg-(--color-body) px-8 text-[13px] text-white transition hover:bg-black"
                 >
-                  {lang === "sv" ? "Fortsätt handla" : "Continue shopping"}
+                  {lang === "sv" ? "Lägg till fler produkter" : "Continue shopping"}
                 </Link>
               </div>
             )}
             {items.length > 0 && (
               <Link
                 href={langHref("/webshop", lang)}
-                className="group mt-5 ml-auto flex w-fit items-center gap-1.5 whitespace-nowrap text-[12px] text-[#596366]"
+                className="group mt-5 ml-auto inline-flex w-fit items-center whitespace-nowrap text-xs font-normal text-(--color-body) transition-all"
               >
-                <span className="border-b border-[#596366] leading-5">
-                  {lang === "sv" ? "Fortsätt handla" : "Continue shopping"}
+                {/* Text with underline that extends toward the arrow on hover */}
+                <span className="relative pb-[2px]">
+                  {lang === "sv" ? "Lägg till fler produkter" : "Continue shopping"}
+                  <span className="absolute bottom-0 left-0 h-[1px] w-full bg-(--color-dark) transition-all duration-300 ease-out group-hover:w-[calc(100%+22px)]" />
                 </span>
-                <span
-                  aria-hidden="true"
-                  className="transition-transform group-hover:translate-x-1"
-                >
-                  →
+                {/* Arrow — always visible, shifts right on hover */}
+                <span className="ml-2 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
+                  <Image src={RightArrow} alt="arrow" width={17} height={17} />
                 </span>
               </Link>
             )}
@@ -392,7 +387,7 @@ export default function QuoteCartPage({
 
           <section className="rounded-[5px] bg-[#183034] p-7 md:p-10 lg:mt-0">
             <h2 className="ff-larken mb-10 text-[28px] font-normal leading-tight text-white">
-              {lang === "sv" ? "Kontakta oss på Panea" : "Contact us at Panea"}
+              {lang === "sv" ? "Kontakta oss på Panea för offert" : "Contact us at Panea"}
             </h2>
 
             <form className="space-y-5" onSubmit={submitRequest}>
