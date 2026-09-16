@@ -125,7 +125,7 @@ function ContactLink({ href, children }) {
   return (
     <Link
       href={href}
-      className="group flex items-center justify-between gap-3 border-t border-[#1E2E31]/12 px-4 py-4 text-[14px] font-medium leading-tight text-(--color-body) transition-opacity hover:opacity-70"
+      className="group flex items-center justify-between gap-3 border-t border-[#1E2E31]/12 mx-4 py-4 text-[14px] font-medium leading-tight text-(--color-body) opacity-70 transition-opacity hover:opacity-100"
     >
       <span className="min-w-0 break-words">{children}</span>
       <Image
@@ -182,7 +182,7 @@ function EmployeeCard({ member, index }) {
 
       <div className="flex flex-1 flex-col px-4 py-5">
         {title && (
-          <h3 className="mb-2 text-[22px] font-normal leading-tight text-(--color-body)">
+          <h3 className="mb-2 text-[24px] font-light leading-tight text-(--color-body)">
             {title}
           </h3>
         )}
@@ -198,7 +198,7 @@ function EmployeeCard({ member, index }) {
             {businessAreas.map((area, areaIndex) => (
               <span
                 key={`${area}-${areaIndex}`}
-                className="rounded-[4px] border border-[#1E2E31]/25 px-3 py-1 text-[12px] leading-none text-(--color-body)"
+                className="rounded-[4px] border border-[#1E2E31]/25 px-3 py-[7px] text-[12px] leading-none text-(--color-body)"
               >
                 {area}
               </span>

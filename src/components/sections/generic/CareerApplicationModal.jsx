@@ -130,7 +130,7 @@ export default function CareerApplicationModal({
     }
   }
 
-  const inputClass = "h-10 w-full rounded-[4px] border border-(--color-body)/18 bg-transparent px-4 text-[13px] outline-none transition-colors placeholder:text-(--color-body)/60 focus:border-(--color-body)/45";
+  const inputClass = "h-10 w-full rounded-[4px] border border-(--color-body)/18 bg-transparent px-4 text-[13px] outline-none transition-colors placeholder:text-(--color-body)/60 focus:border-(--color-body)/45 ";
 
   return (
     <div
@@ -145,19 +145,19 @@ export default function CareerApplicationModal({
         tabIndex={-1}
         className="relative my-auto w-full max-w-[600px] rounded-[14px] bg-[#F8F5EF] px-6 py-10 text-(--color-body) shadow-2xl outline-none md:px-8 md:py-8"
       >
-        <button type="button" onClick={onClose} aria-label={isSv ? "Stäng" : "Close"} className="absolute right-5 top-5 flex h-9 w-9 cursor-pointer items-center justify-center text-[30px] font-light leading-none">
+        <button type="button" onClick={onClose} aria-label={isSv ? "Stäng" : "Close"} className="absolute right-5 top-5 flex h-9 w-9 cursor-pointer items-center justify-center text-[40px] font-light leading-none">
           ×
         </button>
 
-        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#C85A22]">
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#C85A22] text-center">
           {textAboveTitle}
         </p>
-        <h2 className="ff-larken mt-5 text-[28px] font-normal leading-tight md:text-[28px]">
+        <h2 className="text-center ff-larken mt-5 text-[28px] font-normal leading-tight md:text-[28px]">
           {title}
         </h2>
         {shortInformation ? (
           <div
-            className="mt-3 text-[12px] leading-[1.5] [&_a]:underline [&_p]:mb-2 [&_p:last-child]:mb-0"
+            className="text-center mt-3 text-[12px] leading-[1.5] [&_a]:underline [&_p]:mb-2 [&_p:last-child]:mb-0"
             dangerouslySetInnerHTML={{ __html: shortInformation }}
           />
         ) : (
@@ -170,7 +170,22 @@ export default function CareerApplicationModal({
           <label className="mb-2 block text-[12px] font-medium">
             {isSv ? "Tjänsten du är intresserad av" : "Job title you are interested in"}
           </label>
-          <select className={inputClass} value={selectedJob} onChange={(event) => setSelectedJob(event.target.value)} required>
+          <select
+            className={inputClass}
+            style={{
+              paddingRight: "34px",
+              appearance: "none",
+              WebkitAppearance: "none",
+              MozAppearance: "none",
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%231E2E31' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")",
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 10px center",
+            }}
+            value={selectedJob}
+            onChange={(event) => setSelectedJob(event.target.value)}
+            required
+          >
             {vacancies.map((vacancy) => {
               const title = vacancyTitle(vacancy);
               return <option key={vacancy.id || title} value={title}>{title}</option>;
@@ -231,7 +246,7 @@ export default function CareerApplicationModal({
             <span className="relative top-[2px]">{isSv ? "Jag accepterar att informationen jag lämnar behandlas och lagras av Panea." : "I accept that the information I provide will be processed and stored by Panea."}</span>
           </label>
 
-          <button type="submit" disabled={status.submitting || !schema} className="mt-7 min-w-[130px] cursor-pointer rounded-[4px] bg-(--color-body) px-7 py-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-white disabled:cursor-not-allowed disabled:opacity-50">
+          <button type="submit" disabled={status.submitting || !schema} className="mt-7 min-w-[130px] cursor-pointer rounded-[4px] bg-(--color-body) px-7 py-4 text-[14px] font-semibold tracking-[0.08em] text-white disabled:cursor-not-allowed disabled:opacity-50">
             {status.submitting ? (isSv ? "Skickar…" : "Sending…") : isSv ? "Skicka" : "Send"}
           </button>
 

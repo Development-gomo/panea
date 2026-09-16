@@ -413,6 +413,12 @@ h6 {
 .insight-summary-list p {
   margin-bottom: 0 !important;
 }
+.ProcessAnimation-module__VBTR6W__section + section {
+  padding-top: 50px !important;
+}
+#career-page-content form select{
+padding-left: 14px !important;
+}
 
 @media (max-width: 767px) {
   .insight-wysiwyg h1,
