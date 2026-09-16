@@ -35,7 +35,7 @@ export default function ProductOurApproach({ data }) {
 
   return (
     <section className="w-full pt-[60px] pb-[60px]">
-      <div className="web-width mx-auto">
+      <div className="web-width-sm mx-auto">
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {text_above_title && (
             <motion.p

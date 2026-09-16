@@ -344,10 +344,10 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
   };
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-[7px] border border-[#CFC7BA] bg-white p-4">
+    <article className="flex h-full flex-col overflow-hidden rounded-[10px] border border-[#CFC7BA] bg-white p-4">
       <Link
         href={langHref(`/${product.slug}/`, lang)}
-        className="relative mb-8 block aspect-[4/3] w-full"
+        className="relative mb-10 block aspect-[4/3] w-full"
       >
         {image ? (
           <Image
@@ -384,7 +384,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
             <button
               type="button"
               onClick={addToQuoteCart}
-              className="min-h-11 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[14px] text-[#1E2E31] transition hover:bg-black hover:text-white"
+              className="min-h-11 mb-2 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[14px] text-[#1E2E31] transition hover:bg-black hover:text-white"
             >
               {quoteLabel}
             </button>
@@ -486,7 +486,7 @@ export default function ProductCategoryProductsSection({
           <aside className="self-start overflow-hidden rounded-[4px] border border-[#D5CDC1] bg-[#F2EBE2]">
             <Link
               href={langHref("/webshop", lang)}
-              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-6 text-left text-[16px] transition ${
+              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-6 text-left text-[16px] font-normal transition ${
                 !activeCategory
                   ? "text-[#1E2E31]"
                   : "text-[#1E2E31] hover:bg-white/55"
@@ -586,7 +586,7 @@ export default function ProductCategoryProductsSection({
             </div>
 
             {visibleProducts.length > 0 ? (
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {visibleProducts.map((product) => (
                   <ProductCard
                     key={product.id}

@@ -128,7 +128,7 @@ export default function CaseHero({
             aria-label={lang === "sv" ? "Brödsmulor" : "Breadcrumb"}
             className="text-[#1E2E31]"
           >
-            <ol className="web-width mx-auto flex min-h-11 flex-wrap items-center gap-x-2 gap-y-1 py-3 text-[12px] leading-normal font-normal text-[#1E2E31] not-italic">
+            <ol className="web-width-sm mx-auto flex min-h-11 flex-wrap items-center gap-x-2 gap-y-1 py-3 text-[12px] leading-normal font-normal text-[#1E2E31] not-italic">
               <li>
                 <Link
                   href={langHome(lang)}

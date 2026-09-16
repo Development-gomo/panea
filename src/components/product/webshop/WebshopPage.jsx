@@ -453,7 +453,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
     <article className="flex h-full flex-col overflow-hidden rounded-[10px] border border-[#CFC7BA] bg-white p-4">
       <Link
         href={langHref(`/${product.slug}/`, lang)}
-        className="relative mb-8 block aspect-[4/3] w-full"
+        className="relative mb-10 block aspect-[4/3] w-full"
       >
         {image ? (
           <Image
@@ -490,7 +490,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
             <button
               type="button"
               onClick={addToQuoteCart}
-              className="mb-3 min-h-11 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[14px] text-[#1E2E31] transition hover:bg-black hover:text-white"
+              className="mb-2 min-h-11 w-full cursor-pointer rounded-full bg-[#B8D9DB] px-4 text-[14px] text-[#1E2E31] transition hover:bg-black hover:text-white"
             >
               {quoteLabel}
             </button>
@@ -631,7 +631,7 @@ export default function WebshopPage({
           <aside className="overflow-hidden rounded-[4px] border border-[#D5CDC1] bg-[#F2EBE2] self-start">
             <Link
               href={langHref("/webshop", lang)}
-              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[16px] transition ${
+              className={`flex min-h-[62px] w-full cursor-pointer items-center border-b border-[#D5CDC1] px-5 text-left text-[16px] font-normal transition ${
                 !activeCategory
                   ? "text-[#1E2E31]"
                   : "text-[#1E2E31] hover:bg-white/55"

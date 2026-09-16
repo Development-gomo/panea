@@ -161,7 +161,7 @@ export default function ProjectSteps({ data }) {
                         )}
                         {step?.short_information && (
                           <div
-                            className="mt-2 break-words font-['Inter'] text-[15px] leading-[1.45] font-normal text-(--color-body) sm:text-[16px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-0"
+                            className="mt-2 break-words text-[14px] leading-[1.45] font-normal text-(--color-body) sm:text-[16px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-0"
                             dangerouslySetInnerHTML={{
                               __html: step.short_information,
                             }}

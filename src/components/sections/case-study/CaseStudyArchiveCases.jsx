@@ -214,7 +214,7 @@ export default function CaseStudyArchiveCases({
       id="case-archive-grid"
       className="w-full scroll-mt-24 py-[40px] md:py-[60px]"
     >
-      <div className="web-width mx-auto px-6">
+      <div className="web-width-sm mx-auto px-6">
         {categories.length > 0 && (
           <div className="mb-10 md:mb-12">
             <div className="-mx-6 flex gap-3 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-5">

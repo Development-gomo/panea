@@ -113,7 +113,7 @@ export default function ProductGallery({ product }) {
 
   return (
     <div className="product-gallery">
-      <div className="relative bg-white rounded-lg">
+      <div className="relative bg-white rounded-[10px] border border-[rgba(30,46,49,0.15)]">
         <Swiper
           modules={[Navigation, Thumbs]}
           navigation={
