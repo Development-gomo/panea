@@ -435,7 +435,7 @@ function InsightPostBreadcrumbs({ post, lang }) {
 
   return (
     <nav
-      className="web-width mx-auto px-6 pt-5 text-[12px] leading-none text-[#596366]"
+      className="web-width-sm mx-auto px-6 pt-5 text-[12px] leading-none text-[#596366]"
       aria-label={lang === DEFAULT_LANG ? "Brodsmulor" : "Breadcrumb"}
     >
       <ol className="flex min-w-0 items-center gap-2">

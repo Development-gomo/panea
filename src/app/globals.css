@@ -419,7 +419,12 @@ h6 {
 #career-page-content form select{
 padding-left: 14px !important;
 }
-
+p:has(+ ul.product-key-features) strong {
+  font-weight: 500;
+}
+.product-key-features li {
+  font-size: 14px;
+}
 @media (max-width: 767px) {
   .insight-wysiwyg h1,
   .insight-wysiwyg h2,

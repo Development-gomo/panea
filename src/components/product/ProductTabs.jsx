@@ -215,7 +215,7 @@ function DownloadRows({ rows }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="font-['Inter'] text-[20px] font-medium leading-normal text-[#1E2E31]">
+      <h2 className="text-[20px] font-medium leading-normal text-[#1E2E31]">
         Download product sheet
       </h2>
 
@@ -227,7 +227,7 @@ function DownloadRows({ rows }) {
                 href={file.href}
                 download
                 target="_blank"
-                className="flex min-h-10 cursor-pointer items-center justify-between gap-4 rounded-sm border border-[#D8D0C4] bg-[#F8F4EE] px-4 font-['Inter'] text-[14px] font-normal leading-5 text-[#1E2E31] transition hover:border-(--color-body) hover:bg-white"
+                className="flex min-h-10 cursor-pointer items-center justify-between gap-4 rounded-sm border border-[#D8D0C4] bg-[#F8F4EE] px-4 text-[14px] font-normal leading-5 text-[#1E2E31] transition hover:border-(--color-body) hover:bg-white"
               >
                 <span className="truncate">{file.label}</span>
                 <span aria-hidden="true" className="shrink-0 text-[#62696B]">
@@ -248,7 +248,7 @@ function DownloadRows({ rows }) {
                 </span>
               </a>
             ) : (
-              <span className="flex min-h-10 cursor-pointer items-center justify-between gap-4 border border-[#D8D0C4] bg-[#F8F4EE] px-4 font-['Inter'] text-[14px] font-normal leading-5 text-[#1E2E31]">
+              <span className="flex min-h-10 cursor-pointer items-center justify-between gap-4 border border-[#D8D0C4] bg-[#F8F4EE] px-4 text-[14px] font-normal leading-5 text-[#1E2E31]">
                 <span className="truncate">{file.label}</span>
               </span>
             )}
@@ -264,7 +264,7 @@ function OverviewFeatures({ rows }) {
     <div className="w-full min-w-0">
       {rows.map((feature, index) => (
         <NumberedListItem key={`${feature}-${index}`} index={index}>
-          <p className="break-words font-['Inter'] text-[15px] leading-[1.45] font-normal text-(--color-body) sm:text-[16px]">
+          <p className="break-words  text-[14px] leading-[1.45] font-normal text-(--color-body) sm:text-[16px]">
             {feature}
           </p>
         </NumberedListItem>
@@ -298,7 +298,7 @@ function buildTabs(product) {
               }
             >
               <div
-                className="body-text min-w-0 [&>h2]:mb-4 [&>h2]:text-[20px] [&>h2]:font-semibold [&>p]:mb-6 [&>p:last-child]:mb-0"
+                className="body-text min-w-0 font-normal [&>h2]:mb-4 [&>h2]:text-[20px] [&>h2]:font-semibold [&>p]:mb-6 [&>p:last-child]:mb-0"
                 dangerouslySetInnerHTML={{ __html: toHtml(overview) }}
               />
               {overviewFeatures.length > 0 && <OverviewFeatures rows={overviewFeatures} />}

@@ -243,7 +243,7 @@ export default function ProductContactFormSection({
 
   return (
     <section className="w-full pt-[60px] pb-[120px]">
-      <div className="web-width mx-auto px-6">
+      <div className="web-width-sm mx-auto px-6">
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {text_above_title && (
             <motion.p
