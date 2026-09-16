@@ -85,7 +85,7 @@ export default function VacanciesListing({ data, vacancies = [], lang = "sv" }) 
 
           {shortDescription && (
             <div
-              className="body-text mt-5 max-w-[920px] text-[16px] font-light leading-[1.5] text-(--color-body) [&_p]:mb-3 [&_p:last-child]:mb-0"
+              className="body-text mt-6 max-w-[920px] text-[16px] font-light leading-[1.5] text-(--color-body) [&_p]:mb-3 [&_p:last-child]:mb-0"
               dangerouslySetInnerHTML={{ __html: shortDescription }}
             />
           )}
@@ -112,7 +112,7 @@ export default function VacanciesListing({ data, vacancies = [], lang = "sv" }) 
                     aria-controls={panelId}
                     className="flex w-full cursor-pointer items-center gap-6 px-6 py-6 text-left md:px-8"
                   >
-                    <span className="flex-1 text-[16px] font-medium text-(--color-body)">
+                    <span className="flex-1 text-[20px] font-normal text-(--color-body)">
                       {vacancyTitle}
                     </span>
                     {location && (
@@ -121,7 +121,7 @@ export default function VacanciesListing({ data, vacancies = [], lang = "sv" }) 
                         {location}
                       </span>
                     )}
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-(--color-body)/20 text-[16px] leading-none">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-(--color-body)/20 text-[24px] leading-none">
                       {isOpen ? "−" : "+"}
                     </span>
                   </button>
@@ -134,7 +134,7 @@ export default function VacanciesListing({ data, vacancies = [], lang = "sv" }) 
                       <div>
                         {fields.short_information_about_profile && (
                           <div
-                            className="max-w-[680px] text-[15px] font-light leading-[1.55] text-(--color-body) [&_p]:mb-3 [&_p:last-child]:mb-0"
+                            className="max-w-[680px] text-[16px] font-light leading-[1.55] text-(--color-body) [&_p]:mb-3 [&_p:last-child]:mb-0"
                             dangerouslySetInnerHTML={{
                               __html: fields.short_information_about_profile,
                             }}
@@ -149,10 +149,10 @@ export default function VacanciesListing({ data, vacancies = [], lang = "sv" }) 
                           ].map(([label, value]) =>
                             value ? (
                               <div key={label}>
-                                <dt className="mb-2 text-[10px] uppercase tracking-[0.12em] text-(--color-body)/45">
+                                <dt className="mb-2 text-[14px] uppercase tracking-[0.12em] text-(--color-body)/45">
                                   {label}
                                 </dt>
-                                <dd className="text-[14px] font-medium text-(--color-body)">
+                                <dd className="text-[16px] font-light text-(--color-body)">
                                   {value}
                                 </dd>
                               </div>
@@ -164,7 +164,7 @@ export default function VacanciesListing({ data, vacancies = [], lang = "sv" }) 
                       <button
                           type="button"
                           onClick={() => setSelectedVacancy(vacancy)}
-                          className="inline-flex h-fit cursor-pointer items-center justify-center self-end rounded-full bg-(--color-body) px-8 py-4 text-[14px] font-medium leading-none text-white transition-opacity hover:opacity-80"
+                          className="inline-flex h-fit cursor-pointer text-[16px] font-light items-center justify-center  self-end rounded-full bg-(--color-body) px-8 py-4 text-[14px] leading-none text-white"
                         >
                           {applyLabel}
                       </button>
