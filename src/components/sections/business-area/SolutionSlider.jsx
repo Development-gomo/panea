@@ -39,7 +39,9 @@ function useSliderSideOffset() {
 }
 
 function getTitle(item) {
-  return decodeHtml(stripHtml(item?.title?.rendered || item?.title || item?.post_title || ""));
+  return decodeHtml(
+    stripHtml(item?.title?.rendered || item?.title || item?.post_title || "")
+  );
 }
 
 function getFeaturedImage(item) {
@@ -55,7 +57,13 @@ function getFeaturedImage(item) {
 function getImageUrl(image) {
   if (!image) return "";
   if (typeof image === "string") return image;
-  return image?.url || image?.sizes?.large || image?.sizes?.medium_large || "";
+
+  return (
+    image?.url ||
+    image?.sizes?.large ||
+    image?.sizes?.medium_large ||
+    ""
+  );
 }
 
 function getButtons(rows) {
@@ -76,6 +84,67 @@ function getSliderDetails(solution) {
     solution?.slider_details ||
     {}
   );
+}
+
+/*
+ * Supports:
+ *
+ * 1. New Business Area repeater row:
+ * {
+ *   solution: {...},
+ *   short_description: "...",
+ *   hover_text: "...",
+ *   background_image: {...},
+ *   button_row: [...]
+ * }
+ *
+ * 2. Existing solution objects, so the component remains backwards compatible.
+ */
+function resolveSolutionRow(row) {
+  const solution = row?.solution || row;
+
+  if (!solution) return null;
+
+  const defaults = getSliderDetails(solution);
+
+  const shortDescription =
+    row?.solution && row?.short_description
+      ? row.short_description
+      : defaults?.short_description ||
+        solution?.acf?.short_description ||
+        "";
+
+  const hoverText =
+    row?.solution && row?.hover_text
+      ? row.hover_text
+      : defaults?.hover_text ||
+        solution?.acf?.hover_text ||
+        "";
+
+  const overrideImage =
+    row?.solution ? getImageUrl(row?.background_image) : "";
+
+  const backgroundImage =
+    overrideImage ||
+    getImageUrl(defaults?.background_image) ||
+    getImageUrl(defaults?.backgroundImage) ||
+    getFeaturedImage(solution);
+
+  const overrideButtons =
+    row?.solution ? getButtons(row?.button_row) : [];
+
+  const defaultButtons = getButtons(defaults?.button_row);
+
+  const buttons =
+    overrideButtons.length > 0 ? overrideButtons : defaultButtons;
+
+  return {
+    solution,
+    shortDescription,
+    hoverText,
+    backgroundImage,
+    buttons,
+  };
 }
 
 function ExploreIcon() {
@@ -99,19 +168,32 @@ function ExploreIcon() {
   );
 }
 
-function SolutionSlideCard({ solution, lang }) {
-  const details = getSliderDetails(solution);
+function SolutionSlideCard({ row, lang }) {
+  const resolved = resolveSolutionRow(row);
+
+  if (!resolved) return null;
+
+  const {
+    solution,
+    shortDescription,
+    hoverText,
+    backgroundImage,
+    buttons,
+  } = resolved;
+
   const title = getTitle(solution);
-  const backgroundImage =
-    getImageUrl(details.background_image) || getImageUrl(details.backgroundImage) || getFeaturedImage(solution);
-  const shortDescription = details.short_description || solution?.acf?.short_description || "";
-  const hoverText = details.hover_text || "";
-  const buttons = getButtons(details.button_row);
-  const fallbackHref = solution?.slug ? langHref(`/${solution.slug}`, lang) : "";
+
+  const fallbackHref = solution?.slug
+    ? langHref(`/${solution.slug}`, lang)
+    : "";
+
   const exploreLabel = EXPLORE_LABELS[lang] || EXPLORE_LABELS.en;
+
   const allButtons = [
     ...buttons,
-    ...(fallbackHref ? [{ text: exploreLabel, url: fallbackHref, isMain: true }] : []),
+    ...(fallbackHref
+      ? [{ text: exploreLabel, url: fallbackHref, isMain: true }]
+      : []),
   ];
 
   return (
@@ -145,7 +227,7 @@ function SolutionSlideCard({ solution, lang }) {
         </div>
       </div>
 
-        <div className="absolute inset-x-0 top-0 bottom-[51px] overflow-auto p-6 text-white opacity-0 transition-opacity duration-0 group-hover:duration-300 group-hover:opacity-100">
+      <div className="absolute inset-x-0 top-0 bottom-[51px] overflow-auto p-6 text-white opacity-0 transition-opacity duration-0 group-hover:duration-300 group-hover:opacity-100">
         {title && (
           <h3 className="mb-5 text-[22px] font-normal leading-tight text-white md:text-[24px]">
             {title}
@@ -161,10 +243,9 @@ function SolutionSlideCard({ solution, lang }) {
       </div>
 
       {allButtons.length > 0 && (
-        <div
-          className="absolute inset-x-0 bottom-0 z-10 grid grid-cols-2 border-t border-white/15 bg-black/25 backdrop-blur-md transition-colors duration-0 group-hover:duration-300 group-hover:bg-[#1E2E31] group-hover:backdrop-blur-0"
-        >
+        <div className="absolute inset-x-0 bottom-0 z-10 grid grid-cols-2 border-t border-white/15 bg-black/25 backdrop-blur-md transition-colors duration-0 group-hover:duration-300 group-hover:bg-[#1E2E31] group-hover:backdrop-blur-0">
           {allButtons.length === 1 && <span aria-hidden="true" />}
+
           {allButtons.map((button, index) => (
             <Link
               key={`${button.text}-${index}`}
@@ -192,6 +273,23 @@ export default function BusinessAreaSolutionSlider({
   const sliderSideOffset = useSliderSideOffset();
 
   if (!data) return null;
+
+  /*
+   * Pass the new business_area_solutions repeater as `solutions`.
+   *
+   * If your parent component passes the complete Business Area ACF object
+   * instead, you can use:
+   *
+   * const sliderSolutions =
+   *   data?.business_area_solutions?.length
+   *     ? data.business_area_solutions
+   *     : solutions;
+   */
+
+  const sliderSolutions =
+    data?.business_area_solutions?.length
+      ? data.business_area_solutions
+      : solutions;
 
   return (
     <section className="w-full overflow-hidden pt-[60px] pb-0 md:pt-[120px]">
@@ -222,12 +320,12 @@ export default function BusinessAreaSolutionSlider({
         </div>
       </div>
 
-      {solutions.length > 0 && (
+      {sliderSolutions.length > 0 && (
         <motion.div
-        className="w-full"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
+          className="w-full"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
           viewport={{ once: true }}
         >
           <Swiper
@@ -247,15 +345,26 @@ export default function BusinessAreaSolutionSlider({
               },
             }}
           >
-            {solutions.map((solution, index) => (
-              <SwiperSlide
-                key={solution.id || solution.slug || index}
-                className="!h-auto"
-                style={{ width: "min(416px, calc(100vw - 48px))" }}
-              >
-                <SolutionSlideCard solution={solution} lang={lang} />
-              </SwiperSlide>
-            ))}
+            {sliderSolutions.map((row, index) => {
+              const solution = row?.solution || row;
+
+              if (!solution) return null;
+
+              return (
+                <SwiperSlide
+                  key={
+                    solution?.id ||
+                    solution?.ID ||
+                    solution?.slug ||
+                    index
+                  }
+                  className="!h-auto"
+                  style={{ width: "min(416px, calc(100vw - 48px))" }}
+                >
+                  <SolutionSlideCard row={row} lang={lang} />
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
         </motion.div>
       )}
