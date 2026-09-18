@@ -297,6 +297,7 @@ export default function RelatedProducts({
   products = [],
   lang = DEFAULT_LANG,
   randomLimit = 0,
+  themeOptions = null,
 }) {
   const [isMounted, setIsMounted] = useState(false);
   const quoteCartSnapshot = useSyncExternalStore(
@@ -321,19 +322,34 @@ export default function RelatedProducts({
   }, [products, randomLimit]);
   const acf = getProductAcf(product);
   const relatedProducts = getRelatedProductsGroup(acf);
-  const smallHeading = toText(getFieldDeep(relatedProducts, ["small_heading"]));
-  const largeHeading = toText(getFieldDeep(relatedProducts, ["large_heading"]));
+  // When available, the heading/CTA content is managed centrally in Theme
+  // Options (related_products_data) instead of per product.
+  const themeRelatedProducts = themeOptions?.related_products_data || null;
+  const smallHeading = toText(
+    themeRelatedProducts
+      ? themeRelatedProducts.text_above_title
+      : getFieldDeep(relatedProducts, ["small_heading"])
+  );
+  const largeHeading = toText(
+    themeRelatedProducts
+      ? themeRelatedProducts.title
+      : getFieldDeep(relatedProducts, ["large_heading"])
+  );
   const webshopLinkText = toText(
-    getFieldDeep(relatedProducts, ["webshop_link_text"])
+    themeRelatedProducts
+      ? themeRelatedProducts.cta_text
+      : getFieldDeep(relatedProducts, ["webshop_link_text"])
   );
   const webshopLink =
     toText(
-      getFieldDeep(relatedProducts, [
-        "webshop_link_url",
-        "webshop_link",
-        "link",
-        "url",
-      ])
+      themeRelatedProducts
+        ? themeRelatedProducts.cta_url
+        : getFieldDeep(relatedProducts, [
+            "webshop_link_url",
+            "webshop_link",
+            "link",
+            "url",
+          ])
     ) ||
     "/webshop";
 

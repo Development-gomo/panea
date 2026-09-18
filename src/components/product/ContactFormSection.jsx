@@ -229,7 +229,7 @@ export default function ProductContactFormSection({
   lang,
   prefetchedTeamMembers = [],
 }) {
-  const { text_above_title, title, select_form } = data || {};
+  const { text_above_title, title, select_form, cform_title } = data || {};
   const selectedTeamMembers =
     teamData?.select_team_members || data?.select_team_members;
   const teamMembers = mergeMembers(
@@ -283,6 +283,7 @@ export default function ProductContactFormSection({
                 lang={lang}
                 variant="solution"
                 showTitle
+                formTitle={cform_title}
                 submitLabel={lang === "sv" ? "Skicka förfrågan" : "Submit form"}
               />
             </motion.div>

@@ -951,6 +951,21 @@ function collectProductRelationIds(product, layouts, field) {
     .filter(Boolean);
 }
 
+// Contact form / team member section content now comes from Theme Options
+// instead of the product's own block — the block's presence in the builder
+// still toggles whether the section (and its prefetched data) is used.
+function collectThemeOptionTeamMemberIds(product, themeOptions, layouts, field) {
+  const builder = getProductAcf(product).product_page_builder;
+  if (!Array.isArray(builder)) return [];
+
+  const isEnabled = builder.some((block) => layouts.includes(block?.acf_fc_layout));
+  if (!isEnabled) return [];
+
+  return normalizeSelectedPosts(themeOptions?.team_member_section?.[field])
+    .map((item) => (typeof item === "object" ? item?.ID || item?.id : item))
+    .filter(Boolean);
+}
+
 export default async function SinglePage({ params }) {
   const resolved = await params;
   const parsed = resolveParams(resolved);
@@ -1007,8 +1022,9 @@ export default async function SinglePage({ params }) {
       )
     : [];
   const productTeamMemberIds = isProduct
-    ? collectProductRelationIds(
+    ? collectThemeOptionTeamMemberIds(
         product,
+        themeOptions,
         ["contact_form_section", "contact_form", "team_member_section"],
         "select_team_members"
       )
