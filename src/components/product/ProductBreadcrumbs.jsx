@@ -7,11 +7,11 @@ export default function ProductBreadcrumbs({ product, lang = DEFAULT_LANG }) {
 
   const items = [
     {
-      label: "Home",
+      label: lang === "sv" ? "Hem" : "Home",
       href: langHome(lang),
     },
     {
-      label: "Webshop",
+      label: lang === "sv" ? "Webbshop" : "Webshop",
       href: langHref("/webshop", lang),
     },
     {

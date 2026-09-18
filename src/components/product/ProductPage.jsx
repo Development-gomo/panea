@@ -93,24 +93,37 @@ function getProductFAQ(product) {
   );
 }
 
-function getProductContactForm(product) {
+function getProductContactForm(product, themeOptions) {
   const acf = getProductAcf(product);
 
   if (!Array.isArray(acf.product_page_builder)) return null;
 
-  return acf.product_page_builder.find((block) =>
+  // The contact form section's own fields are no longer used — its content
+  // is now managed centrally in Theme Options. The block's presence in the
+  // builder still controls whether the section shows on this product page.
+  const hasContactForm = acf.product_page_builder.some((block) =>
     ["contact_form_section", "contact_form"].includes(block?.acf_fc_layout)
   );
+
+  if (!hasContactForm) return null;
+
+  return themeOptions?.contact_form_section || null;
 }
 
-function getProductTeamData(product) {
+function getProductTeamData(product, themeOptions) {
   const acf = getProductAcf(product);
 
   if (!Array.isArray(acf.product_page_builder)) return null;
 
-  return acf.product_page_builder.find(
+  // Same as above — content now comes from Theme Options instead of the
+  // block's own fields; presence of the layout still toggles the section.
+  const hasTeamSection = acf.product_page_builder.some(
     (block) => block?.acf_fc_layout === "team_member_section"
   );
+
+  if (!hasTeamSection) return null;
+
+  return themeOptions?.team_member_section || null;
 }
 
 export default function ProductPage({
@@ -125,8 +138,8 @@ export default function ProductPage({
   const structuredProcess = getProductStructuredProcess(product, themeOptions);
   const testimonial = getProductTestimonial(product);
   const faq = getProductFAQ(product);
-  const contactForm = getProductContactForm(product);
-  const teamData = getProductTeamData(product);
+  const contactForm = getProductContactForm(product, themeOptions);
+  const teamData = getProductTeamData(product, themeOptions);
   const whyChooseUs = getProductWhyChooseUs(product);
   const whyChoosePanea = getProductWhyChoosePanea(product, themeOptions);
 
@@ -146,7 +159,12 @@ export default function ProductPage({
       </article>
 
       <ProductTabs product={product} />
-      <RelatedProducts product={product} products={relatedProducts} lang={lang} />
+      <RelatedProducts
+        product={product}
+        products={relatedProducts}
+        lang={lang}
+        themeOptions={themeOptions}
+      />
       <ProductOurApproach data={ourApproach} />
       <BusinessAreaOurApproach data={structuredProcess} />
       <ProductWhyChooseUs data={whyChooseUs} lang={lang} />
