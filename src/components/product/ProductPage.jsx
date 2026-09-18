@@ -8,6 +8,7 @@ import ProductContactFormSection from "./ContactFormSection";
 import ProductOurApproach from "./OurApproach";
 import ProductTestimonialSlider from "./TestimonialSlider";
 import ProductWhyChooseUs from "./ProductWhyChooseUs";
+import BusinessAreaOurApproach from "../sections/business-area/OurApproach";
 
 function getProductAcf(product) {
   return {
@@ -28,6 +29,22 @@ function getProductWhyChooseUs(product) {
   );
 }
 
+function getProductWhyChoosePanea(product, themeOptions) {
+  const acf = getProductAcf(product);
+
+  if (!Array.isArray(acf.product_page_builder)) return null;
+
+  // "why_choose_panea" is an empty layout — when it's present, the section's
+  // content is managed centrally in Theme Options instead of per product.
+  const usesPaneaThemeContent = acf.product_page_builder.some(
+    (block) => block?.acf_fc_layout === "why_choose_panea"
+  );
+
+  if (!usesPaneaThemeContent) return null;
+
+  return themeOptions?.why_choose_us || null;
+}
+
 function getProductOurApproach(product) {
   const acf = getProductAcf(product);
 
@@ -36,6 +53,22 @@ function getProductOurApproach(product) {
   return acf.product_page_builder.find((block) =>
     ["our_approach", "our_approach_section"].includes(block?.acf_fc_layout)
   );
+}
+
+function getProductStructuredProcess(product, themeOptions) {
+  const acf = getProductAcf(product);
+
+  if (!Array.isArray(acf.product_page_builder)) return null;
+
+  // "structured_process" is an empty layout — when it's present, the section's
+  // content is managed centrally in Theme Options instead of per product.
+  const usesStructuredProcess = acf.product_page_builder.some(
+    (block) => block?.acf_fc_layout === "structured_process"
+  );
+
+  if (!usesStructuredProcess) return null;
+
+  return themeOptions?.our_approach || null;
 }
 
 function getProductTestimonial(product) {
@@ -86,13 +119,16 @@ export default function ProductPage({
   relatedProducts = [],
   prefetchedTestimonials = [],
   prefetchedTeamMembers = [],
+  themeOptions = null,
 }) {
   const ourApproach = getProductOurApproach(product);
+  const structuredProcess = getProductStructuredProcess(product, themeOptions);
   const testimonial = getProductTestimonial(product);
   const faq = getProductFAQ(product);
   const contactForm = getProductContactForm(product);
   const teamData = getProductTeamData(product);
   const whyChooseUs = getProductWhyChooseUs(product);
+  const whyChoosePanea = getProductWhyChoosePanea(product, themeOptions);
 
   return (
     <>
@@ -112,7 +148,9 @@ export default function ProductPage({
       <ProductTabs product={product} />
       <RelatedProducts product={product} products={relatedProducts} lang={lang} />
       <ProductOurApproach data={ourApproach} />
+      <BusinessAreaOurApproach data={structuredProcess} />
       <ProductWhyChooseUs data={whyChooseUs} lang={lang} />
+      <ProductWhyChooseUs data={whyChoosePanea} lang={lang} />
       <ProductTestimonialSlider
         data={testimonial}
         prefetchedTestimonials={prefetchedTestimonials}
