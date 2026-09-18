@@ -35,6 +35,10 @@ const BusinessAreaOurApproach = dynamic(() =>
   import("../sections/business-area/OurApproach")
 );
 
+const SolutionOurClients = dynamic(() =>
+  import("../sections/solution/OurClients")
+);
+
 const BusinessAreaFAQ = dynamic(() =>
   import("../sections/business-area/FAQ")
 );
