@@ -295,7 +295,7 @@ export default function QuoteCartPage({
   };
 
   return (
-    <main className="bg-[#F3EDE5]">
+    <main className="bg-[#F2EBE2]">
       <nav
         aria-label="Breadcrumb"
         className="border-t border-[#D6CEC2] bg-[#F2EBE2]"
@@ -405,7 +405,7 @@ export default function QuoteCartPage({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-3 min-h-11 cursor-pointer rounded-full bg-white px-8 text-[13px] text-[#183034] transition hover:bg-[#F3EDE5] disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 min-h-11 cursor-pointer rounded-full bg-white px-8 text-[13px] text-[#183034] transition hover:bg-[#F2EBE2] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting
                   ? "Submitting..."
@@ -436,7 +436,7 @@ export default function QuoteCartPage({
       />
       <WebshopHighlightBanner
         data={highlightBanner}
-        paddingTopClass="pt-[60px] pb-[120px]"
+        paddingTopClass="pt-[60px] pb-[60px] md:pt-[120px] md:pb-[120px]"
       />  
     </main>
   );

@@ -157,13 +157,21 @@ function getPostTitle(post) {
   return getPlainText(post?.title?.rendered || post?.title || "");
 }
 
+function truncateWords(value = "", wordLimit = 25) {
+  const words = value.split(/\s+/).filter(Boolean);
+  if (words.length <= wordLimit) return value;
+  return `${words.slice(0, wordLimit).join(" ")}…`;
+}
+
 function getPostExcerpt(post) {
-  return getPlainText(
+  const text = getPlainText(
     post?.excerpt?.rendered ||
       post?.acf?.excerpt ||
       post?.excerpt ||
       ""
-  );
+  ).replace(/\s*\[?…\]?\s*$/, "");
+
+  return truncateWords(text, 25);
 }
 
 const insightContentClassName =
@@ -850,13 +858,10 @@ function InsightAuthorSection({ block, authorById, lang }) {
 function InsightPostContent({ post, lang, hasFeaturedImage }) {
   const factPointBlocks = getInsightFactPointBlocks(post);
   const hasSidebar = getInsightSummaryBlock(post) || post?.acf?.upload_audio_file;
-  const hasFactPoints = factPointBlocks.length > 0;
 
   return (
     <section
-      className={`web-width-sm mx-auto px-6 ${
-        hasFactPoints ? "pb-0" : "pb-15 md:pb-30"
-      } ${
+      className={`web-width-sm mx-auto px-6 pb-0 ${
         hasFeaturedImage ? "pt-0" : "pt-15 md:pt-30"
       }`}
     >
@@ -1070,6 +1075,7 @@ export default async function SinglePage({ params }) {
             relatedProducts={relatedProducts}
             prefetchedTestimonials={prefetchedTestimonials}
             prefetchedTeamMembers={prefetchedProductTeamMembers}
+            themeOptions={themeOptions}
           />
         ) : isCaseStudy ? (
           <CaseStudyBuilder

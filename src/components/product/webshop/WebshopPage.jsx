@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { DEFAULT_LANG, langHref } from "@/config";
@@ -527,6 +527,23 @@ export default function WebshopPage({
   const [currentPaginationPage, setCurrentPaginationPage] = useState(1);
   const [brandOpen, setBrandOpen] = useState(false);
   const [selectedBrands, setSelectedBrands] = useState([]);
+  const brandFilterRef = useRef(null);
+
+  useEffect(() => {
+    if (!brandOpen) return undefined;
+
+    const handleClickOutside = (event) => {
+      if (
+        brandFilterRef.current &&
+        !brandFilterRef.current.contains(event.target)
+      ) {
+        setBrandOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [brandOpen]);
 
   const parentCategories = useMemo(
     () => categories.filter((category) => !category.parent),
@@ -657,7 +674,7 @@ export default function WebshopPage({
 
           <div className="min-w-0">
             <div className="mb-6 flex min-h-10 items-center justify-between gap-4">
-              <div className="relative">
+              <div className="relative" ref={brandFilterRef}>
                 <button
                   type="button"
                   onClick={() => setBrandOpen((open) => !open)}
@@ -682,7 +699,7 @@ export default function WebshopPage({
 
                 {brandOpen && (
                   <div className="absolute left-0 top-[calc(100%+8px)] z-20 min-w-[180px] rounded-[7px] border border-[#D5CDC1] bg-white p-3 shadow-sm">
-                    <div className="space-y-2">
+                    <div className="max-h-[300px] space-y-2 overflow-y-auto">
                       {brands.length > 0 ? (
                         brands.map((brand) => {
                           const brandKey = getBrandKey(brand);

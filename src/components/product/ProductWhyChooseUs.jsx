@@ -19,6 +19,14 @@ export default function ProductWhyChooseUs({ data, lang = DEFAULT_LANG }) {
     features = [],
   } = data;
 
+  const hasContent =
+    Boolean(text_above_title) ||
+    Boolean(title) ||
+    Boolean(cta_text && cta_url) ||
+    features.length > 0;
+
+  if (!hasContent) return null;
+
   const bgColor = background_color || "#B8D1D1";
 
   return (

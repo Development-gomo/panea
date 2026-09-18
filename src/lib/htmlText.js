@@ -12,6 +12,7 @@ export function decodeHtml(value) {
     .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')
     .replace(/&apos;/g, "'")
+    .replace(/&hellip;/g, "…")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">");
 }

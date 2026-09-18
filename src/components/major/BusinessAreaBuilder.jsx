@@ -863,6 +863,8 @@ export default async function BusinessAreaBuilder({
                   lang={lang}
                 />
               );
+          case "our_clients":
+            return <SolutionOurClients key={i} data={block} lang={lang} />;
 
             /* =================================================
                SOLUTION SLIDER
