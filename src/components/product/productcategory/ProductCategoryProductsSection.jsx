@@ -497,8 +497,8 @@ export default function ProductCategoryProductsSection({
   };
 
   return (
-    <section className="bg-[#F2EBE2] pt-[24px]">
-      <div className="web-width mx-auto px-6">
+    <section className="w-full bg-[#F2EBE2] pt-[60px] pb-0 md:pt-[24px]">
+      <div className="web-width-sm mx-auto px-6">
         <div className="grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)]">
           <aside className="self-start overflow-hidden rounded-[4px] border border-[#D5CDC1] bg-[#F2EBE2]">
             <Link

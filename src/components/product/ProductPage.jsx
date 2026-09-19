@@ -147,16 +147,18 @@ export default function ProductPage({
     <>
       <ProductBreadcrumbs product={product} lang={lang} />
 
-      <article className="bg-[#F2EBE2]">
-        <div className="web-width mx-auto grid min-w-0 gap-8 px-4 pt-[40px] pb-[60px] sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-20">
-          <section aria-label="Product media" className="min-w-0">
-            <ProductGallery product={product} />
-          </section>
-          <section className="min-w-0">
-            <ProductDetails product={product} lang={lang} />
-          </section>
+      <section className="w-full bg-[#F2EBE2] pt-[30px] pb-0 md:pt-[30px]">
+        <div className="web-width-sm mx-auto px-6">
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start lg:gap-20">
+            <section aria-label="Product media" className="min-w-0">
+              <ProductGallery product={product} />
+            </section>
+            <section className="min-w-0">
+              <ProductDetails product={product} lang={lang} />
+            </section>
+          </div>
         </div>
-      </article>
+      </section>
 
       <ProductTabs product={product} />
       <RelatedProducts

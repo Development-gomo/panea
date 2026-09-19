@@ -606,7 +606,7 @@ export default function WebshopPage({
   };
 
   return (
-    <section className="bg-[#F2EBE2]">
+    <>
       <div className="web-width mx-auto px-6">
         <section
           className={`relative h-[320px] items-center justify-center overflow-hidden rounded-[11px] bg-(--color-body) text-white md:h-[400px] ${
@@ -638,11 +638,16 @@ export default function WebshopPage({
             </Link>
           </div>
         </section>
+      </div>
 
-        <section
-          className={`grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)] ${
-            showHero ? "pt-[80px]" : "pt-6"
-          }`}
+      <section
+        className={`w-full bg-[#F2EBE2] pb-0 ${
+          showHero ? "pt-[60px] md:pt-[80px]" : "pt-6"
+        }`}
+      >
+        <div className="web-width-sm mx-auto px-6">
+        <div
+          className="grid gap-10 lg:grid-cols-[300px_minmax(0,1fr)]"
           suppressHydrationWarning
         >
           <aside className="overflow-hidden rounded-[4px] border border-[#D5CDC1] bg-[#F2EBE2] self-start">
@@ -763,7 +768,7 @@ export default function WebshopPage({
 
             {totalPages > 1 && (
               <nav
-                className="mt-14 flex items-center justify-center gap-4"
+                className="mt-16 flex items-center justify-center gap-4"
                 aria-label="Product pagination"
               >
                 <button
@@ -818,16 +823,17 @@ export default function WebshopPage({
               </nav>
             )}
           </div>
-        </section>
+        </div>
+        </div>
+      </section>
 
-        {showHighlightBanner && <WebshopHighlightBanner data={highlightBanner} />}
-        <WebshopContactFormSection
-          data={contactForm}
-          teamData={teamData}
-          lang={lang}
-          prefetchedTeamMembers={prefetchedTeamMembers}
-        />
-      </div>
-    </section>
+      {showHighlightBanner && <WebshopHighlightBanner data={highlightBanner} />}
+      <WebshopContactFormSection
+        data={contactForm}
+        teamData={teamData}
+        lang={lang}
+        prefetchedTeamMembers={prefetchedTeamMembers}
+      />
+    </>
   );
 }

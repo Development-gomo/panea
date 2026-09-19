@@ -150,8 +150,9 @@ export default function ProductCategoryHero({
   const logos = getLogos(info);
 
   return (
-    <section className="bg-[#F2EBE2]">
-      <div className="web-width mx-auto grid gap-10 px-6 pt-9 pb-[64px] lg:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] lg:items-center">
+    <section className="w-full bg-[#F2EBE2] pt-[60px] pb-[64px] md:pt-[30px]">
+      <div className="web-width-sm mx-auto px-6">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,420px)] lg:items-center">
         <div className="max-w-[620px]">
           {title && (
             <h1 className="mb-5 text-[32px] font-normal leading-tight text-[#1E2E31] md:text-[40px]">
@@ -195,6 +196,7 @@ export default function ProductCategoryHero({
             ))}
           </div>
         )}
+      </div>
       </div>
     </section>
   );

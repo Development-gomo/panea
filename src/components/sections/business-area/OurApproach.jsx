@@ -57,7 +57,7 @@ export default function BusinessAreaOurApproach({ data }) {
           {steps.map((step, index) => (
             <motion.article
               key={`${step.step_number || index}-${step.step_title || ""}`}
-              className="border-b border-(--color-dark)/20 py-8 sm:px-6 sm:[&:nth-child(2n)]:border-l lg:border-b-0 lg:px-6 lg:[&:not(:nth-child(4n+1))]:border-l lg:[&:nth-child(2n)]:border-l"
+              className="border-b border-(--color-dark)/20 py-8 sm:px-6 sm:[&:nth-child(2n)]:border-l sm:max-lg:[&:nth-child(odd)]:pl-0 lg:border-b-0 lg:px-6 lg:[&:not(:nth-child(4n+1))]:border-l lg:[&:nth-child(2n)]:border-l lg:[&:nth-child(4n+1)]:pl-0"
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.08 }}
