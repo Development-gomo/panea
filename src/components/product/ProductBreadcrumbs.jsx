@@ -26,7 +26,7 @@ export default function ProductBreadcrumbs({ product, lang = DEFAULT_LANG }) {
       aria-label="Breadcrumb"
       className="border-t border-[#D6CEC2] bg-[#F2EBE2]"
     >
-      <ol className="web-width mx-auto flex min-h-11 items-center gap-2 px-6 text-[12px] leading-none text-[#596366]">
+      <ol className="web-width-sm mx-auto flex min-h-11 items-center gap-2 px-6 text-[12px] leading-none text-[#596366]">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
 

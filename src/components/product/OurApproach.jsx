@@ -34,8 +34,8 @@ export default function ProductOurApproach({ data }) {
   if (!text_above_title && !heading && steps.length === 0) return null;
 
   return (
-    <section className="w-full pt-[60px] pb-[60px]">
-      <div className="web-width-sm mx-auto">
+    <section className="w-full pt-[60px] pb-0 md:pt-[120px]">
+      <div className="web-width-sm mx-auto px-6">
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {text_above_title && (
             <motion.p
@@ -69,7 +69,7 @@ export default function ProductOurApproach({ data }) {
               return (
                 <motion.article
                   key={`${step.number || index}-${stepTitle}`}
-                  className="border-b border-(--color-dark)/20 py-8 sm:px-6 sm:[&:nth-child(2n)]:border-l lg:border-b-0 lg:px-6 lg:[&:not(:nth-child(4n+1))]:border-l lg:[&:nth-child(2n)]:border-l"
+                  className="border-b border-(--color-dark)/20 py-8 sm:px-6 sm:[&:nth-child(2n)]:border-l sm:max-lg:[&:nth-child(odd)]:pl-0 lg:border-b-0 lg:px-6 lg:[&:not(:nth-child(4n+1))]:border-l lg:[&:nth-child(2n)]:border-l lg:[&:nth-child(4n+1)]:pl-0"
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.08 }}

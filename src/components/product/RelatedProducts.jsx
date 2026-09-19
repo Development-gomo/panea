@@ -360,8 +360,8 @@ export default function RelatedProducts({
   if (!isMounted || !displayedProducts.length) return null;
 
   return (
-    <section className="overflow-hidden bg-[#F2EBE2]">
-      <div className="web-width mx-auto px-4 pt-14 pb-14 sm:px-6 pt-[60px] pb-[60px]">
+    <section className="w-full overflow-hidden bg-[#F2EBE2] pt-[60px] pb-0 md:pt-[120px]">
+      <div className="web-width mx-auto px-4 sm:px-6">
         <div className="mx-auto mb-8 max-w-4xl text-center md:mb-10">
           {smallHeading && (
             <p className="mb-3 text-[12px] leading-5 text-[#1E2E31]">{smallHeading}</p>

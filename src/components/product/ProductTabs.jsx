@@ -338,8 +338,8 @@ export default function ProductTabs({ product }) {
     tabs.find((tab) => tab.id === activeTab)?.content || tabs[0].content;
 
   return (
-    <section className="bg-[#F2EBE2]">
-      <div className="web-width mx-auto px-4 pt-[60px] pb-[60px] sm:px-6">
+    <section className="w-full bg-[#F2EBE2] pt-[60px] pb-0 md:pt-[120px]">
+      <div className="web-width-sm mx-auto px-6">
         <div className="overflow-hidden border border-[#D8D0C4] rounded-lg">
           <div className="flex overflow-x-auto border-b border-[#D8D0C4]">
             {tabs.map((tab) => {

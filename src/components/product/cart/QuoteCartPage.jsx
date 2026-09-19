@@ -300,7 +300,7 @@ export default function QuoteCartPage({
         aria-label="Breadcrumb"
         className="border-t border-[#D6CEC2] bg-[#F2EBE2]"
       >
-        <ol className="web-width mx-auto flex min-h-11 items-center gap-2 px-6 text-[12px] leading-none text-[#596366]">
+        <ol className="web-width-sm mx-auto flex min-h-11 items-center gap-2 px-6 text-[12px] leading-none text-[#596366]">
           <li>
             <Link
               href={langHome(lang)}
@@ -325,10 +325,11 @@ export default function QuoteCartPage({
         </ol>
       </nav>
 
-      <section className="web-width mx-auto px-6 py-12 md:py-16">
+      <section className="w-full pb-0 pt-[60px] md:pt-[30px]">
+      <div className="web-width-sm mx-auto px-6">
         <section className="mb-6 grid gap-8 lg:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.85fr)]">
           <div className="flex flex-col gap-2">
-            <h1 className="ff-larken text-[32px] font-normal leading-tight text-(--color-body) md:text-[40px]">
+            <h1 className="text-[32px] font-normal leading-tight text-(--color-body) md:text-[40px]">
               {lang === "sv" ? "Varor i varukorgen" : "Items in cart"}
             </h1>
             {items.length > 0 && (
@@ -427,6 +428,7 @@ export default function QuoteCartPage({
             </form>
           </section>
         </div>
+      </div>
       </section>
       <RelatedProducts
         product={page}
