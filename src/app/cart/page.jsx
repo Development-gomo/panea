@@ -2,7 +2,7 @@ import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
 import GenericPageBuilder from "@/components/major/GenericPageBuilder";
 import QuoteCartPage from "@/components/product/cart/QuoteCartPage";
-import { getAllProducts, getMenu, getPageBySlug, getThemeOptions } from "@/lib/api";
+import { getRecentProducts, getMenu, getPageBySlug, getThemeOptions } from "@/lib/api";
 import { DEFAULT_LANG } from "@/config";
 
 export const metadata = {
@@ -15,7 +15,7 @@ export default async function CartRoute() {
     getMenu(lang),
     getThemeOptions(lang),
     getPageBySlug("cart", lang),
-    getAllProducts(lang),
+    getRecentProducts(lang, 6),
   ]);
   const genericSections = Array.isArray(cartPage?.acf?.generic_page_builder)
     ? cartPage.acf.generic_page_builder

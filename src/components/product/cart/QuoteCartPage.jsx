@@ -434,7 +434,6 @@ export default function QuoteCartPage({
         product={page}
         products={relatedProducts}
         lang={lang}
-        randomLimit={12}
       />
       <WebshopHighlightBanner
         data={highlightBanner}

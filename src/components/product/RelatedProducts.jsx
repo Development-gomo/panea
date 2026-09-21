@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Pagination } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { DEFAULT_LANG, langHref } from "@/config";
 import "swiper/css";
@@ -390,8 +390,9 @@ export default function RelatedProducts({
         </div>
 
         <Swiper
-          modules={[Pagination]}
+          modules={[Pagination, Autoplay]}
           pagination={{ clickable: true }}
+          autoplay={{ delay: 2000, disableOnInteraction: false }}
           spaceBetween={16}
           slidesPerView={1.05}
           breakpoints={{

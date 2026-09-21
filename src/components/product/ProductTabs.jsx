@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import NumberedListItem from "../NumberedListItem";
 import { stripHtmlWs as stripHtml } from "@/lib/htmlText";
+import { DEFAULT_LANG } from "@/config";
 
 function getProductAcf(product) {
   return {
@@ -209,14 +210,14 @@ function SpecificationRows({ rows }) {
   );
 }
 
-function DownloadRows({ rows }) {
+function DownloadRows({ rows, lang }) {
   const files = rows.map(getFileData).filter(Boolean);
   if (files.length === 0) return null;
 
   return (
     <div className="space-y-4">
       <h2 className="text-[20px] font-medium leading-normal text-[#1E2E31]">
-        Download product sheet
+        {lang === "sv" ? "Ladda ner produktblad" : "Download product sheet"}
       </h2>
 
       <ul className="w-full max-w-[330px] space-y-3">
@@ -273,7 +274,7 @@ function OverviewFeatures({ rows }) {
   );
 }
 
-function buildTabs(product) {
+function buildTabs(product, lang) {
   const acf = getProductAcf(product);
   const productTabs = getProductTabsGroup(acf);
 
@@ -288,7 +289,7 @@ function buildTabs(product) {
     hasContent(overview)
       ? {
           id: "overview",
-          label: "Overview",
+          label: lang === "sv" ? "Översikt" : "Overview",
           content: (
             <div
               className={
@@ -316,19 +317,19 @@ function buildTabs(product) {
     downloads.length > 0
       ? {
           id: "downloadable-material",
-          label: "Downloadable material",
-          content: <DownloadRows rows={downloads} />,
+          label: lang === "sv" ? "Nedladdningsbart material" : "Downloadable material",
+          content: <DownloadRows rows={downloads} lang={lang} />,
         }
       : null,
   ].filter(Boolean);
 }
 
-export default function ProductTabs({ product }) {
+export default function ProductTabs({ product, lang = DEFAULT_LANG }) {
   const tabs = useMemo(() => {
-    const allTabs = buildTabs(product);
+    const allTabs = buildTabs(product, lang);
 
     return allTabs.filter((_, index) => index !== 1);
-  }, [product]);
+  }, [product, lang]);
 
   const [activeTab, setActiveTab] = useState(tabs[0]?.id);
 
