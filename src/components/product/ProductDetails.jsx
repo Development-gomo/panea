@@ -295,7 +295,11 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
     if (isInQuoteCart) return;
 
     if (availableModels.length > 0 && !effectiveModel) {
-      setQuoteMessage("Please select an available model first.");
+      setQuoteMessage(
+        lang === "sv"
+          ? "Välj först en tillgänglig modell."
+          : "Please select an available model first."
+      );
       return;
     }
 
@@ -341,7 +345,9 @@ export default function ProductDetails({ product, lang = DEFAULT_LANG }) {
 
       {availableModels.length > 0 && (
         <section className="space-y-3">
-          <h2 className="text-[16px] font-medium">Available models</h2>
+          <h2 className="text-[16px] font-medium">
+            {lang === "sv" ? "Tillgängliga modeller" : "Available models"}
+          </h2>
           <div className="flex flex-wrap gap-2">
             {availableModels.map((model, index) => (
               <button

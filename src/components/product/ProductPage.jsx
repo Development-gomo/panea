@@ -160,7 +160,7 @@ export default function ProductPage({
         </div>
       </section>
 
-      <ProductTabs product={product} />
+      <ProductTabs product={product} lang={lang} />
       <RelatedProducts
         product={product}
         products={relatedProducts}

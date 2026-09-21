@@ -409,6 +409,21 @@ export async function getAllProducts(lang = DEFAULT_LANG) {
     : [];
 }
 
+// Lightweight fetch for the cart page's related-products slider — only the
+// most recently published N products, sorted server-side, instead of
+// pulling the entire catalog just to sample a handful client-side.
+export async function getRecentProducts(lang = DEFAULT_LANG, limit = 6) {
+  const products = await fetchWP(
+    `/wp/v2/product?lang=${lang}&per_page=${limit}&orderby=date&order=desc&_embed&acf_format=standard`
+  );
+  if (Array.isArray(products) && products.length > 0) return products;
+
+  const fallbackProducts = await fetchWP(
+    `/wp/v2/products?lang=${lang}&per_page=${limit}&orderby=date&order=desc&_embed&acf_format=standard`
+  );
+  return Array.isArray(fallbackProducts) ? fallbackProducts : [];
+}
+
 export async function getProductSlugs(lang = DEFAULT_LANG) {
   return await fetchAllWP(
     `/wp/v2/product?lang=${lang}&_fields=slug`,
