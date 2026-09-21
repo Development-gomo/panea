@@ -38,6 +38,41 @@ function getDescription(item) {
   );
 }
 
+function getButtons(rows) {
+  const items = Array.isArray(rows) ? rows : rows ? [rows] : [];
+
+  return items
+    .map((row) => ({
+      text: row?.cta_text || "",
+      url: row?.cta_url || "",
+    }))
+    .filter((button) => button.text && button.url);
+}
+
+/**
+ * Supports both:
+ * 1. New solution_area_business repeater row:
+ *    { business: {...}, short_description: "...", button_row: [...] }
+ * 2. Existing plain Business Area CPT objects (unchanged behaviour).
+ */
+function resolveBusinessAreaRow(row) {
+  const businessArea = row?.business || row;
+  if (!businessArea) return null;
+
+  const shortDescription =
+    row?.business && row?.short_description
+      ? row.short_description
+      : getDescription(businessArea);
+
+  const overrideButtons = row?.business ? getButtons(row?.button_row) : [];
+
+  return {
+    businessArea,
+    shortDescription,
+    overrideButton: overrideButtons[0] || null,
+  };
+}
+
 function getExpert(item) {
   const expert =
     item?.acf?.expert ||
@@ -94,25 +129,27 @@ export default function SolutionBusinessAreas({
     cta_text,
     cta_url,
   } = data || {};
-  const activeItem = businessAreas[activeIndex] || businessAreas[0] || {};
+  const resolvedItems = businessAreas.map(resolveBusinessAreaRow).filter(Boolean);
+  const activeResolved = resolvedItems[activeIndex] || resolvedItems[0] || {};
+  const activeItem = activeResolved.businessArea || {};
   const activeTitle = getTitle(activeItem);
   const activeImage = getImage(activeItem);
-  const activeDescription = getDescription(activeItem);
+  const activeDescription = activeResolved.shortDescription;
   const activeExpert = getExpert(activeItem);
-  const buttonText = contactButton?.cta_text || "";
-  const buttonUrl = contactButton?.cta_url || "";
+  const buttonText = activeResolved.overrideButton?.text || contactButton?.cta_text || "";
+  const buttonUrl = activeResolved.overrideButton?.url || contactButton?.cta_url || "";
 
   useEffect(() => {
-    if (businessAreas.length <= 1 || isPaused) return undefined;
+    if (resolvedItems.length <= 1 || isPaused) return undefined;
 
     const timer = setTimeout(() => {
-      setActiveIndex((current) => (current + 1) % businessAreas.length);
+      setActiveIndex((current) => (current + 1) % resolvedItems.length);
     }, AUTO_ROTATE_DELAY);
 
     return () => clearTimeout(timer);
-  }, [activeIndex, businessAreas.length, isPaused]);
+  }, [activeIndex, resolvedItems.length, isPaused]);
 
-  if (!data || !businessAreas.length) return null;
+  if (!data || !resolvedItems.length) return null;
 
   return (
     <section className="w-full pt-[60px] pb-0 md:pt-[120px]">
@@ -188,8 +225,9 @@ export default function SolutionBusinessAreas({
             }}
           >
             <ul className="flex flex-col gap-3 md:gap-4">
-              {businessAreas.map((item, index) => {
+              {resolvedItems.map((resolved, index) => {
                 const isActive = index === activeIndex;
+                const item = resolved.businessArea;
                 const itemTitle = getTitle(item);
 
                 return (

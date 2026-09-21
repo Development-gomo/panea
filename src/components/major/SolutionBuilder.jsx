@@ -6,6 +6,7 @@ import {
   getTeamMembersByIds,
   getTestimonialsByIds,
 } from "@/lib/api";
+import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
 const SolutionHero = dynamic(() => import("../sections/solution/Hero"));
 const SolutionFAQ = dynamic(() => import("../sections/solution/FAQ"));
@@ -35,6 +36,91 @@ function getSelectedBusinessAreas(selected, allBusinessAreas) {
 function normalizeSelectedPosts(selected) {
   if (!selected) return [];
   return Array.isArray(selected) ? selected : [selected];
+}
+
+/* =========================================================
+   SOLUTION AREA BUSINESS OVERRIDES
+   (mirrors the business_area_solutions pattern used in
+   BusinessAreaBuilder.jsx — per-Solution overrides for the
+   business_areas module, sourced from:
+   Panea - Solution Area Business Details ->
+   solution_area_business: [
+     { business: {...}/ID, short_description: "...", button_row: [...] }
+   ]
+========================================================= */
+
+function postId(item) {
+  return typeof item === "object" ? item?.ID || item?.id : item;
+}
+
+function postSlug(item) {
+  if (!item || typeof item !== "object") return "";
+  return item.slug || item.post_name || item.post_title || "";
+}
+
+function normalizeSlug(value = "") {
+  return String(value).trim().toLowerCase();
+}
+
+function getEntryTitle(entry) {
+  if (!entry || typeof entry !== "object") return "";
+  return (
+    entry?.title?.rendered ||
+    entry?.title ||
+    entry?.post_title ||
+    entry?.name ||
+    ""
+  );
+}
+
+function normalizeText(value = "") {
+  return decodeHtml(stripHtml(value)).trim().toLowerCase();
+}
+
+function getSolutionAreaBusinessRows(solutionData) {
+  const rows = solutionData?.solution_area_business;
+  if (!rows) return [];
+  return Array.isArray(rows) ? rows : [rows];
+}
+
+/**
+ * Resolve each row's `business` Post Object reference against the full
+ * Business Area CPT list (ID match first, slug/title as a WPML-safe
+ * fallback), keeping the row's own short_description/button_row overrides.
+ */
+function buildSolutionAreaBusinessItems(rows, availableBusinessAreas) {
+  if (!Array.isArray(rows) || !Array.isArray(availableBusinessAreas)) return [];
+
+  return rows
+    .map((row) => {
+      const selected = row?.business;
+      const selectedId = Number(postId(selected));
+      const selectedSlug = normalizeSlug(postSlug(selected));
+      const selectedTitle = normalizeText(getEntryTitle(selected));
+
+      const businessArea = availableBusinessAreas.find((item) => {
+        const itemId = Number(item?.id || item?.ID);
+        const itemSlug = normalizeSlug(postSlug(item));
+        const itemTitle = normalizeText(getEntryTitle(item));
+
+        return (
+          (selectedId && itemId === selectedId) ||
+          (selectedSlug && itemSlug === selectedSlug) ||
+          (selectedTitle && itemTitle === selectedTitle)
+        );
+      });
+
+      const resolvedBusinessArea =
+        businessArea || (selected && typeof selected === "object" ? selected : null);
+
+      if (!resolvedBusinessArea) return null;
+
+      return {
+        ...row,
+        business: resolvedBusinessArea,
+      };
+    })
+    .filter(Boolean);
 }
 
 function collectTestimonialIds(sections) {
@@ -88,6 +174,40 @@ export default async function SolutionBuilder({
     allBusinessAreas
   );
 
+  /*
+   * Priority 1: new solution_area_business repeater, if configured on this
+   * Solution — resolved against the fetched Business Area CPT list, with a
+   * cross-language fallback fetch for WPML-mismatched IDs.
+   *
+   * Priority 2: no repeater configured, so preserve the existing
+   * select_business_areas relationship behaviour untouched.
+   */
+  const solutionAreaBusinessRows = getSolutionAreaBusinessRows(solutionData);
+  const selectedSolutionAreaBusiness = buildSolutionAreaBusinessItems(
+    solutionAreaBusinessRows,
+    allBusinessAreas
+  );
+
+  const shouldFetchBusinessAreaFallback =
+    solutionAreaBusinessRows.length > 0 &&
+    selectedSolutionAreaBusiness.length === 0;
+
+  const fallbackBusinessAreas = shouldFetchBusinessAreaFallback
+    ? await getAllBusinessAreas("all")
+    : [];
+
+  const fallbackSolutionAreaBusiness = buildSolutionAreaBusinessItems(
+    solutionAreaBusinessRows,
+    fallbackBusinessAreas
+  );
+
+  const businessAreaItems =
+    solutionAreaBusinessRows.length > 0
+      ? selectedSolutionAreaBusiness.length > 0
+        ? selectedSolutionAreaBusiness
+        : fallbackSolutionAreaBusiness
+      : selectedBusinessAreas;
+
   return (
     <>
       {sections.map((block, i) => {
@@ -124,7 +244,7 @@ export default async function SolutionBuilder({
                 key={i}
                 data={block}
                 lang={lang}
-                businessAreas={selectedBusinessAreas}
+                businessAreas={businessAreaItems}
                 contactButton={solutionData?.contact_button}
               />
             );
