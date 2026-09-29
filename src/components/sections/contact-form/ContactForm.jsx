@@ -243,7 +243,10 @@ export default function ContactForm({
     for (const f of fields) {
       if (!f.required) continue;
       const v = (values[f.key] || "").toString().trim();
-      if (!v) next[f.key] = "This field is required";
+      if (!v) {
+        next[f.key] =
+          lang === "sv" ? "Detta fält är obligatoriskt" : "This field is required";
+      }
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -258,7 +261,10 @@ export default function ContactForm({
         ...s,
         submitting: false,
         ok: false,
-        msg: "Please fill required fields.",
+        msg:
+          lang === "sv"
+            ? "Vänligen fyll i de obligatoriska fälten."
+            : "Please fill required fields.",
       }));
       return;
     }
@@ -449,6 +455,7 @@ export default function ContactForm({
                     relative inline-flex items-center justify-center select-none
                     px-6 py-4
                     overflow-hidden
+                    border border-transparent transition-colors duration-300 hover:border-(--color-brand) hover:bg-(--color-body) hover:text-(--color-brand)
                     disabled:opacity-50 disabled:cursor-not-allowed
                     ${
                       variant === "solution"

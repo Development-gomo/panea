@@ -304,7 +304,7 @@ export default function SolutionBusinessAreas({
                   <div className="flex justify-end border-t border-white/15">
                     <Link
                       href={buttonUrl}
-                      className="group/cta inline-flex items-center gap-2 border-l border-white/15 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors duration-300 hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
+                      className="group/cta inline-flex items-center gap-2 border border-transparent border-l-white/15 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors duration-300 hover:border-[#1E2E31]/30 hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
                     >
                       {buttonText}
                       <ExploreIcon />

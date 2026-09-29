@@ -216,7 +216,7 @@ export default function ArticleArchivePosts({
                       <span className="min-w-0 truncate px-4 py-3 text-[12px] leading-none text-white/90 sm:px-5 sm:py-4 sm:text-[13px] xl:px-6 xl:text-[14px]">
                         {date}
                       </span>
-                      <span className="group/cta inline-flex items-center gap-1.5 whitespace-nowrap border-l border-white/15 px-3 py-3 text-[13px] leading-none text-white/85 transition-colors duration-300 hover:bg-[#F2EBE2] hover:text-[#1E2E31] sm:px-4 sm:py-4 sm:text-[14px] xl:gap-2 xl:px-6 xl:text-[16px]">
+                      <span className="group/cta inline-flex items-center gap-1.5 whitespace-nowrap border border-transparent border-l-white/15 px-3 py-3 text-[13px] leading-none text-white/85 transition-colors duration-300 hover:border-[#1E2E31]/30 hover:bg-[#F2EBE2] hover:text-[#1E2E31] sm:px-4 sm:py-4 sm:text-[14px] xl:gap-2 xl:px-6 xl:text-[16px]">
                         {labels.readMore}
                         <ExploreIcon />
                       </span>

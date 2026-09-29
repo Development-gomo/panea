@@ -58,7 +58,7 @@ export default function HomeHero({ data }) {
               initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-white font-extralight text-xs md:text-base text-center px-6 pt-7 md:pt-9 [&_*]:text-white [&_p]:text-white ff-larken fs-24"
+              className="text-(--color-brand) font-extralight text-xs md:text-base text-center px-6 pt-7 md:pt-9 [&_*]:text-(--color-brand) [&_p]:text-(--color-brand) ff-larken fs-24"
               dangerouslySetInnerHTML={{ __html: shortHeading }}
             />
           )}
@@ -91,7 +91,7 @@ export default function HomeHero({ data }) {
           >
             {bannerIntro && (
               <div
-                className="ff-larken fs-24 font-light text-white text-xs md:text-sm max-w-[350px] md:max-w-[350px] leading-tight [&_*]:text-white [&_p]:leading-tight"
+                className="ff-larken fs-24 font-light text-(--color-brand) text-xs md:text-sm max-w-[350px] md:max-w-[350px] leading-tight [&_*]:text-(--color-brand) [&_p]:leading-tight"
                 dangerouslySetInnerHTML={{ __html: bannerIntro }}
               />
             )}
