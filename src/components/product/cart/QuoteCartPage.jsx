@@ -406,7 +406,7 @@ export default function QuoteCartPage({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="mt-3 min-h-11 cursor-pointer rounded-full bg-white px-8 text-[13px] text-[#183034] transition hover:bg-[#F2EBE2] disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 min-h-11 cursor-pointer rounded-full bg-white px-8 text-[13px] text-[#183034] border border-transparent transition-colors duration-300 hover:border-(--color-brand) hover:bg-(--color-body) hover:text-(--color-brand) disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting
                   ? "Submitting..."

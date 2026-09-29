@@ -195,7 +195,7 @@ export default function CareerApplicationModal({
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <input className={inputClass} value={values["your-name"]} onChange={(event) => setValue("your-name", event.target.value)} placeholder={isSv ? "Namn*" : "Name*"} required />
             <input className={inputClass} type="tel" value={values["your-phone"]} onChange={(event) => setValue("your-phone", event.target.value)} placeholder={isSv ? "Telefon*" : "Phone*"} required />
-            <input className={inputClass} type="email" value={values["your-email"]} onChange={(event) => setValue("your-email", event.target.value)} placeholder="E-mail*" required />
+            <input className={inputClass} type="email" value={values["your-email"]} onChange={(event) => setValue("your-email", event.target.value)} placeholder={isSv ? "E-post*" : "E-mail*"} required />
             <input className={inputClass} value={values["current-employment"]} onChange={(event) => setValue("current-employment", event.target.value)} placeholder={isSv ? "Nuvarande anställning*" : "Current employment*"} required />
           </div>
 
@@ -246,7 +246,7 @@ export default function CareerApplicationModal({
             <span className="relative top-[2px]">{isSv ? "Jag accepterar att informationen jag lämnar behandlas och lagras av Panea." : "I accept that the information I provide will be processed and stored by Panea."}</span>
           </label>
 
-          <button type="submit" disabled={status.submitting || !schema} className="mt-7 min-w-[130px] cursor-pointer rounded-[4px] bg-(--color-body) px-7 py-4 text-[14px] font-semibold tracking-[0.08em] text-white disabled:cursor-not-allowed disabled:opacity-50">
+          <button type="submit" disabled={status.submitting || !schema} className="mt-7 min-w-[130px] cursor-pointer rounded-[4px] bg-(--color-body) px-7 py-4 text-[14px] font-semibold tracking-[0.08em] text-white border border-transparent transition-colors duration-300 hover:border-(--color-brand) hover:bg-(--color-body) hover:text-(--color-brand) disabled:cursor-not-allowed disabled:opacity-50">
             {status.submitting ? (isSv ? "Skickar…" : "Sending…") : isSv ? "Skicka" : "Send"}
           </button>
 

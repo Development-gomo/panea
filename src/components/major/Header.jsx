@@ -8,7 +8,7 @@ import Image from "next/image";
 import ArrowSvg from "../../../public/right-arrow.svg";
 import DownSvg from "../../../public/down-arrow.svg";
 import ArrowSvgB from "../../../public/right-arrow-black.png";
-import CartSvg from "../../../public/cart-icon.svg";
+import CartSvg from "../../../public/cart_icon-new.svg";
 import MegaMenu from "./MegaMenu";
 import { getMenu, getThemeOptions, getEntryTranslations } from "@/lib/api";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";

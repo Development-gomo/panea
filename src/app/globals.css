@@ -100,6 +100,11 @@ body {
   padding-bottom: 50px !important;
 }
 
+/* Drop the space reserved for the dots when Swiper has disabled them */
+.panea-solution-slider.swiper-pagination-disabled {
+  padding-bottom: 0 !important;
+}
+
 .panea-testimonial-slide {
   width: clamp(720px, 70vw, 876px) !important;
 }

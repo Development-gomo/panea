@@ -47,7 +47,7 @@ export default function SolutionHero({ data }) {
             >
               <Link
                 href={ctaUrl}
-                className="inline-flex rounded-[50px] bg-(--color-brand) px-9 py-3.5 text-[16px] leading-none text-(--color-body) transition-colors duration-300 hover:bg-white"
+                className="inline-flex rounded-[50px] bg-(--color-brand) px-9 py-4 text-[16px] leading-none text-(--color-body) transition-colors duration-300 hover:bg-white"
               >
                 {ctaText}
               </Link>

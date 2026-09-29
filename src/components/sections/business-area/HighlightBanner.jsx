@@ -120,7 +120,7 @@ export default function BusinessAreaHighlightBanner({ data }) {
                   <Link
                     key={`${button.text}-${index}`}
                     href={button.url}
-                    className={`inline-flex rounded-[50px] border px-9 py-3.5 text-[14px] leading-none transition-colors duration-300 ${
+                    className={`inline-flex rounded-[50px] border px-9 py-4 text-[14px] leading-none transition-colors duration-300 ${
                       index === 0
                         ? "border-white bg-white text-(--color-body) hover:bg-transparent hover:text-white"
                         : "border-white/65 text-white hover:bg-white hover:text-(--color-body)"

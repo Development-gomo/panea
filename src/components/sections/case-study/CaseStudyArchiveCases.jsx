@@ -308,7 +308,7 @@ export default function CaseStudyArchiveCases({
                         className="line-clamp-2 min-w-0 break-words px-4 py-3 text-[13px] leading-[1.35] text-white/85 sm:px-5 sm:py-4 sm:text-[14px] xl:px-6 [&_p]:m-0 [&_a]:underline [&_strong]:font-semibold"
                         dangerouslySetInnerHTML={{ __html: excerpt }}
                       />
-                      <span className="group/cta inline-flex items-center gap-1.5 whitespace-nowrap border-l border-white/15 px-3 py-3 text-[13px] leading-none text-white/85 transition-colors duration-300 hover:bg-[#F2EBE2] hover:text-[#1E2E31] sm:px-4 sm:py-4 sm:text-[14px] xl:gap-2 xl:px-6 xl:text-[16px]">
+                      <span className="group/cta inline-flex items-center gap-1.5 whitespace-nowrap border border-transparent border-l-white/15 px-3 py-3 text-[13px] leading-none text-white/85 transition-colors duration-300 hover:border-[#1E2E31]/30 hover:bg-[#F2EBE2] hover:text-[#1E2E31] sm:px-4 sm:py-4 sm:text-[14px] xl:gap-2 xl:px-6 xl:text-[16px]">
                         {labels.readMore}
                         <ExploreIcon />
                       </span>

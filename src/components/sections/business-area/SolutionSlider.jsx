@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -36,6 +36,36 @@ function useSliderSideOffset() {
   }, []);
 
   return offset;
+}
+
+// Gives every card's title/description panel the height of the tallest one.
+function useEqualPanelHeights(containerRef, deps = []) {
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    function equalize() {
+      const panels = container.querySelectorAll("[data-solution-panel]");
+      panels.forEach((panel) => {
+        panel.style.minHeight = "";
+      });
+
+      const maxHeight = Math.max(
+        0,
+        ...Array.from(panels, (panel) => panel.offsetHeight)
+      );
+
+      panels.forEach((panel) => {
+        panel.style.minHeight = `${maxHeight}px`;
+      });
+    }
+
+    equalize();
+    document.fonts?.ready.then(equalize);
+    window.addEventListener("resize", equalize);
+    return () => window.removeEventListener("resize", equalize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
 }
 
 function getTitle(item) {
@@ -211,7 +241,9 @@ function SolutionSlideCard({ row, lang }) {
       <div className="absolute inset-0 bg-[#1E2E31] opacity-0 transition-opacity duration-0 group-hover:duration-500 group-hover:opacity-100" />
 
       <div className="absolute inset-x-0 bottom-[51px] text-white transition-opacity duration-0 group-hover:duration-300 group-hover:opacity-0">
-        <div className="bg-black/25 px-5 py-5 shadow-[0_-12px_36px_rgba(0,0,0,0.3)] backdrop-blur-md md:px-6 md:py-6">
+        <div
+          data-solution-panel
+          className="bg-black/25 px-5 py-5 shadow-[0_-12px_36px_rgba(0,0,0,0.3)] backdrop-blur-md md:px-6 md:py-6">
           {title && (
             <h3 className="mb-3 text-[18px] font-normal leading-tight md:text-[24px]">
               {title}
@@ -229,7 +261,7 @@ function SolutionSlideCard({ row, lang }) {
 
       <div className="absolute inset-x-0 top-0 bottom-[51px] overflow-auto p-6 text-white opacity-0 transition-opacity duration-0 group-hover:duration-300 group-hover:opacity-100">
         {title && (
-          <h3 className="mb-5 text-[22px] font-normal leading-tight text-white md:text-[24px]">
+          <h3 className="mb-5 text-[22px] font-light leading-tight text-white md:text-[24px]">
             {title}
           </h3>
         )}
@@ -271,6 +303,9 @@ export default function BusinessAreaSolutionSlider({
 }) {
   const { text_above_title, title } = data || {};
   const sliderSideOffset = useSliderSideOffset();
+  const sliderRef = useRef(null);
+
+  useEqualPanelHeights(sliderRef, [data, solutions, lang]);
 
   if (!data) return null;
 
@@ -322,6 +357,7 @@ export default function BusinessAreaSolutionSlider({
 
       {sliderSolutions.length > 0 && (
         <motion.div
+          ref={sliderRef}
           className="w-full"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -330,18 +366,29 @@ export default function BusinessAreaSolutionSlider({
         >
           <Swiper
             modules={[Pagination]}
-            className="panea-testimonial-slider"
+            className="panea-testimonial-slider panea-solution-slider"
             slidesPerView="auto"
             slidesOffsetBefore={sliderSideOffset}
             slidesOffsetAfter={sliderSideOffset}
             spaceBetween={12}
-            pagination={{ clickable: true }}
+            pagination={{ clickable: true, enabled: true }}
             breakpoints={{
               768: {
                 spaceBetween: 14,
+                allowTouchMove: true,
+                pagination: { enabled: true },
               },
               1024: {
                 spaceBetween: 16,
+                allowTouchMove: true,
+                pagination: { enabled: true },
+              },
+              // From this width three 416px slides fit (3 × 416 + 2 × 16 + 2 × 24),
+              // so there is nothing to slide unless there are more than three.
+              1328: {
+                spaceBetween: 16,
+                allowTouchMove: sliderSolutions.length > 3,
+                pagination: { enabled: sliderSolutions.length > 3 },
               },
             }}
           >

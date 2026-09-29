@@ -316,7 +316,7 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
                     {webshopButton && (
                       <Link
                         href={webshopButton.url}
-                        className="group/cta inline-flex items-center gap-2 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
+                        className="group/cta inline-flex items-center gap-2 border border-transparent px-6 py-4 text-[16px] leading-none text-white/85 transition-colors hover:border-[#1E2E31]/30 hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
                       >
                         {webshopButton.text}
                         <ExploreIcon />
@@ -326,7 +326,7 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
                     {activeHref && (
                     <Link
                       href={activeHref}
-                      className="group/cta inline-flex items-center gap-2 border-l border-white/15 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors duration-300 hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
+                      className="group/cta inline-flex items-center gap-2 border border-transparent border-l-white/15 px-6 py-4 text-[16px] leading-none text-white/85 transition-colors duration-300 hover:border-[#1E2E31]/30 hover:bg-[#F2EBE2] hover:text-[#1E2E31]"
                     >
                       {ctaLabel}
                       <ExploreIcon />

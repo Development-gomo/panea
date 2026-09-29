@@ -93,7 +93,7 @@ export default function SolutionOurApproach({ data }) {
           >
             <Link
               href={cta_url}
-              className="inline-flex rounded-[50px] bg-(--color-body) px-9 py-3.5 text-[16px] leading-none text-white transition-colors duration-300 hover:bg-white hover:text-(--color-body)"
+              className="inline-flex rounded-[50px] bg-(--color-body) px-9 py-4 text-[16px] leading-none text-white transition-colors duration-300 hover:bg-white hover:text-(--color-body)"
             >
               {cta_text}
             </Link>

@@ -121,7 +121,7 @@ export default function BusinessAreaExpertiseAreas({ data }) {
                       aria-pressed={isActive}
                     >
                       <span
-                        className={`ff-larken flex h-full items-center text-[14px] font-light italic leading-none text-(--color-body) transition-opacity duration-300 ${
+                        className={`ff-larken mt-[10px] flex h-full items-start text-[14px] font-light italic leading-none text-(--color-body) transition-opacity duration-300 ${
                           isActive ? "opacity-100" : "opacity-0"
                         }`}
                       >
@@ -151,7 +151,7 @@ export default function BusinessAreaExpertiseAreas({ data }) {
             </ul>
           </div>
 
-          <div className="relative min-h-[280px] overflow-hidden rounded-[7px] bg-(--color-body)/10 md:min-h-[420px] lg:min-h-[500px]">
+          <div className="relative min-h-[280px] overflow-hidden rounded-[7px] bg-(--color-body)/10 md:min-h-[340px] lg:min-h-[400px]">
             {activeImage ? (
               <Image
                 key={activeImage}

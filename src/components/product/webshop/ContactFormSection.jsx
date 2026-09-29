@@ -169,7 +169,8 @@ function ContactRow({ label, items, showLabel }) {
   );
 }
 
-function TeamMemberCard({ member, compact }) {
+function TeamMemberCard({ member, compact, lang }) {
+  const isSv = lang === "sv";
   const title = getTitle(member);
   const image = getImage(member);
   const acf = member?.acf || {};
@@ -215,9 +216,9 @@ function TeamMemberCard({ member, compact }) {
       </div>
 
       <div className={compact ? "mt-5" : "mt-7"}>
-        <ContactRow label="Phone" items={contacts.phones} showLabel={!compact} />
-        <ContactRow label="E-mail" items={contacts.emails} showLabel={!compact} />
-        <ContactRow label="Follow me" items={contacts.links} showLabel={!compact} />
+        <ContactRow label={isSv ? "Telefon" : "Phone"} items={contacts.phones} showLabel={!compact} />
+        <ContactRow label={isSv ? "E-post" : "E-mail"} items={contacts.emails} showLabel={!compact} />
+        <ContactRow label={isSv ? "Följ mig" : "Follow me"} items={contacts.links} showLabel={!compact} />
       </div>
     </article>
   );
@@ -229,7 +230,7 @@ export default function WebshopContactFormSection({
   lang,
   prefetchedTeamMembers = [],
 }) {
-  const { text_above_title, title, select_form } = data || {};
+  const { text_above_title, title, select_form, contact_form_title } = data || {};
   const selectedTeamMembers =
     teamData?.select_team_members || data?.select_team_members;
   const teamMembers = mergeMembers(
@@ -283,6 +284,7 @@ export default function WebshopContactFormSection({
                 lang={lang}
                 variant="solution"
                 showTitle
+                formTitle={contact_form_title}
                 submitLabel={lang === "sv" ? "Skicka förfrågan" : "Submit form"}
               />
             </motion.div>
@@ -305,6 +307,7 @@ export default function WebshopContactFormSection({
                   key={postId(member)}
                   member={member}
                   compact={compactCards}
+                  lang={lang}
                 />
               ))}
             </motion.div>
