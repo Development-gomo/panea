@@ -302,6 +302,12 @@ export default async function GenericPageBuilder({
           case "contact_page-location":
             return null;
 
+          case "spacer": {
+            const height = Number(block?.height);
+            if (!Number.isFinite(height) || height <= 0) return null;
+            return <div key={i} aria-hidden="true" style={{ height: `${height}px` }} />;
+          }
+
           default:
             return null;
         }

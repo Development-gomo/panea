@@ -17,11 +17,6 @@ const LOAD_MORE_LABELS = {
   sv: "Visa alla kontakter",
 };
 
-function selectedPosts(value) {
-  if (!value) return [];
-  return Array.isArray(value) ? value : [value];
-}
-
 function getTitle(member) {
   return decodeHtml(stripHtml(member?.post_title || member?.title?.rendered || member?.title || ""));
 }
@@ -97,25 +92,9 @@ function getFollowLink(member) {
   return link?.url || "";
 }
 
-function getEntryTitle(entry) {
-  if (!entry || typeof entry !== "object") return "";
-  return decodeHtml(
-    stripHtml(entry?.title?.rendered || entry?.title || entry?.post_title || entry?.name || "")
-  );
-}
-
 function getBusinessAreas(member) {
-  const areas = selectedPosts(member?.acf?.responsible_business_area)
-    .map(getEntryTitle)
-    .filter(Boolean);
-
-  if (areas.length) return areas;
-
-  const terms = member?._embedded?.["wp:term"] || [];
-  return terms
-    .flat()
-    .filter((term) => ["business_area", "business_areas"].includes(term?.taxonomy))
-    .map((term) => term.name)
+  return repeaterRows(member?.acf?.area_of_business_ownership)
+    .map((row) => decodeHtml(stripHtml(row?.business_area_or_solution || "")).trim())
     .filter(Boolean);
 }
 
