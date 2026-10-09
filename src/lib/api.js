@@ -236,12 +236,12 @@ export async function getFooterWidgets(lang = DEFAULT_LANG) {
   return footer;
 }
 
-// Theme options (logo, colours, socials) — cache for 24 hours
+// Theme options (logo, colours, socials) — cache for 5 minutes
 export async function getThemeOptions(lang = DEFAULT_LANG) {
   try {
     const options = await fetchWP(
-      `/panea/v1/theme-options?lang=${lang}&cache_version=process-journey-1`,
-      { revalidate: 86400 }
+      `/panea/v1/theme-options?lang=${lang}&cache_version=2026-10-09`,
+      { revalidate: 300 }
     );
     if (!options) {
       return { header: {}, footer: {} };
