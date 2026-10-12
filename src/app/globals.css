@@ -430,6 +430,11 @@ p:has(+ ul.product-key-features) strong {
 .product-key-features li {
   font-size: 14px;
 }
+#career-vacancies{
+padding-top: 0 !important;
+
+}
+
 @media (max-width: 767px) {
   .insight-wysiwyg h1,
   .insight-wysiwyg h2,
