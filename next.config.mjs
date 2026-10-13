@@ -21,6 +21,8 @@ const nextConfig = {
   reactStrictMode: true,
 
   images: {
+    // Default quality for all next/image output (Next's default is 75).
+    qualities: [85],
     remotePatterns: [
       { protocol: "https", hostname: wpHostname, pathname: "/**" },
       { protocol: "https", hostname: `www.${wpHostname}`, pathname: "/**" },
