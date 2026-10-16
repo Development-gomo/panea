@@ -75,10 +75,17 @@ function mergeTestimonials(selected, fetched) {
     .filter(Boolean);
 }
 
-export default function BusinessAreaTestimonialSlider({ data, prefetchedTestimonials = [] }) {
+// Testimonials are hidden site-wide except on these business area slugs.
+const VISIBLE_ON_SLUGS = ["bageri-konditori"];
+
+export default function BusinessAreaTestimonialSlider({
+  data,
+  prefetchedTestimonials = [],
+  slug = "",
+}) {
   const sliderSideOffset = useSliderSideOffset();
 
-  return null;
+  if (!VISIBLE_ON_SLUGS.includes(slug)) return null;
 
   const { text_above_title, title } = data || {};
   const testimonials = mergeTestimonials(
@@ -87,6 +94,8 @@ export default function BusinessAreaTestimonialSlider({ data, prefetchedTestimon
   );
 
   if (!testimonials.length) return null;
+
+  const isSingle = testimonials.length === 1;
 
   return (
     <section className="w-full overflow-hidden pt-[60px] pb-0 md:pt-[120px]">
@@ -118,7 +127,7 @@ export default function BusinessAreaTestimonialSlider({ data, prefetchedTestimon
       </div>
 
       <motion.div
-        className="w-full"
+        className={isSingle ? "web-width-sm mx-auto px-6" : "w-full"}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
@@ -126,12 +135,15 @@ export default function BusinessAreaTestimonialSlider({ data, prefetchedTestimon
       >
         <Swiper
           modules={[Pagination]}
-          className="panea-testimonial-slider"
+          className={`panea-testimonial-slider${
+            isSingle ? " panea-testimonial-slider-single" : ""
+          }`}
           slidesPerView="auto"
-          slidesOffsetBefore={sliderSideOffset}
-          slidesOffsetAfter={sliderSideOffset}
+          slidesOffsetBefore={isSingle ? 0 : sliderSideOffset}
+          slidesOffsetAfter={isSingle ? 0 : sliderSideOffset}
           spaceBetween={14}
-          pagination={{ clickable: true }}
+          allowTouchMove={!isSingle}
+          pagination={isSingle ? false : { clickable: true }}
           breakpoints={{
             768: { spaceBetween: 14 },
             1024: { spaceBetween: 16 },
@@ -155,7 +167,11 @@ export default function BusinessAreaTestimonialSlider({ data, prefetchedTestimon
                         src={image}
                         alt={titleText || "Testimonial author"}
                         fill
-                        sizes="(max-width: 767px) calc(100vw - 48px), 280px"
+                        sizes={
+                          isSingle
+                            ? "(max-width: 767px) calc(100vw - 48px), 430px"
+                            : "(max-width: 767px) calc(100vw - 48px), 280px"
+                        }
                         className="object-cover"
                       />
                     ) : (
@@ -183,7 +199,9 @@ export default function BusinessAreaTestimonialSlider({ data, prefetchedTestimon
 
                     {content && (
                       <div
-                        className="ff-larken relative z-10 max-w-[510px] text-[24px] font-light leading-[1.35] text-white md:text-[28px] [&_p]:mb-4 [&_p:last-child]:mb-0"
+                        className={`ff-larken relative z-10 ${
+                          isSingle ? "max-w-[860px]" : "max-w-[510px]"
+                        } text-[24px] font-light leading-[1.35] text-white md:text-[28px] [&_p]:mb-4 [&_p:last-child]:mb-0`}
                         dangerouslySetInnerHTML={{ __html: content }}
                       />
                     )}

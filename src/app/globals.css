@@ -109,6 +109,15 @@ body {
   width: clamp(720px, 70vw, 876px) !important;
 }
 
+/* Only one testimonial selected: full-width card, no space for dots */
+.panea-testimonial-slider.panea-testimonial-slider-single {
+  padding-bottom: 0 !important;
+}
+
+.panea-testimonial-slider-single .panea-testimonial-slide {
+  width: 100% !important;
+}
+
 .panea-testimonial-slider .swiper-pagination {
   bottom: 20 !important;
   display: flex;
