@@ -947,6 +947,7 @@ export default async function BusinessAreaBuilder({
                   prefetchedTestimonials={
                     prefetchedTestimonials
                   }
+                  slug={businessAreaData?.slug}
                 />
               );
 
