@@ -623,7 +623,6 @@ export default function WebshopPage({
             sizes="(min-width: 1440px) 1408px, calc(100vw - 48px)"
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-black/35" />
 
           <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center">
             <h1 className="max-w-[920px] text-[30px] font-[300] leading-[1.2] text-white md:text-[36px] lg:text-[40px]">

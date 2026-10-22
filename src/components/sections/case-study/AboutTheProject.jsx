@@ -154,7 +154,7 @@ export default function AboutTheProject({ data }) {
 
             {content && (
               <div
-                className="body-text w-full min-w-0 break-words space-y-4 text-(--color-body) md:flex-1 [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-4"
+                className="body-text w-full min-w-0 break-words space-y-6 text-(--color-body) md:flex-1 [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-4"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             )}

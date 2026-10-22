@@ -22,9 +22,9 @@ export default function CaseStudyOurApproach({ data }) {
   if (!text_above_title && !heading && steps.length === 0) return null;
 
   return (
-    <section className="w-full py-[40px] md:py-[60px]">
+    <section className="w-full py-[48px] md:py-[60px]">
       <div className="web-width mx-auto px-6">
-        <div className="mb-10 flex flex-col items-center text-center md:mb-16">
+        <div className="mb-12 flex flex-col items-center text-center md:mb-16">
           {text_above_title && (
             <motion.p
               className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
@@ -60,19 +60,19 @@ export default function CaseStudyOurApproach({ data }) {
                   transition={{ duration: 0.5, delay: index * 0.08 }}
                   viewport={{ once: true }}
                 >
-                  <p className="ff-larken break-words text-[36px] font-medium leading-none text-(--color-body) md:text-[52px] xl:text-[64px]">
+                  <p className="ff-larken break-words text-[36px] font-normal leading-none text-(--color-body) md:text-[52px] xl:text-[64px]">
                     {formatStepNumber(step.number, index)}
                   </p>
 
                   {step.suffix && (
-                    <h3 className="mt-6 mb-4 break-words text-[18px] font-normal leading-[1.25] text-(--color-body)">
+                    <h3 className="mt-6 mb-4 break-words text-[20px] font-normal leading-[1.25] text-(--color-body)">
                       {step.suffix}
                     </h3>
                   )}
 
                   {step.short_text && (
                     <div
-                      className={`text-[14px] font-light leading-[1.55] text-(--color-body) [&_p]:mb-4 [&_p:last-child]:mb-0 ${
+                      className={`text-[16px] font-light leading-[1.55] text-(--color-body) [&_p]:mb-4 [&_p:last-child]:mb-0 ${
                         step.suffix ? "" : "mt-6"
                       }`}
                       dangerouslySetInnerHTML={{ __html: step.short_text }}

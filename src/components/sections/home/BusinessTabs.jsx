@@ -183,7 +183,7 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
         </div>
 
         <motion.div
-          className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr]"
+          className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_1fr] min-h-[550px]"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
