@@ -36,7 +36,6 @@ export default function BusinessAreaHero({
           />
         )}
 
-        <div className="absolute inset-0 bg-black/35" />
 
         <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center">
           {title && (

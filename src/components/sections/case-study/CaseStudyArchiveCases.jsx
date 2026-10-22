@@ -335,7 +335,7 @@ export default function CaseStudyArchiveCases({
               onClick={() => goToPage(safeCurrentPage - 1)}
               disabled={safeCurrentPage === 1}
               aria-label={labels.previous}
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-[#1E2E31]/25 text-[18px] text-(--color-body) transition-colors hover:bg-(--color-body) hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-(--color-body)"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-[#1E2E31]/25 text-[25px] text-(--color-body) transition-colors hover:bg-(--color-body) hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-(--color-body)"
             >
               ‹
             </button>
@@ -362,7 +362,7 @@ export default function CaseStudyArchiveCases({
               onClick={() => goToPage(safeCurrentPage + 1)}
               disabled={safeCurrentPage === totalPages}
               aria-label={labels.next}
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-[#1E2E31]/25 text-[18px] text-(--color-body) transition-colors hover:bg-(--color-body) hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-(--color-body)"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-[#1E2E31]/25 text-[25px] text-(--color-body) transition-colors hover:bg-(--color-body) hover:text-white disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-(--color-body)"
             >
               ›
             </button>

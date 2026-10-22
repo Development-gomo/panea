@@ -118,7 +118,7 @@ export default function GenericContactPageSection({ data, locationData, lang }) 
               transition={{ duration: 0.5, delay: 0.08 }}
               viewport={{ once: true }}
             >
-              <div className="panea-thin-scrollbar px-6 pt-12 pb-6 md:px-8 md:pb-8 lg:h-full lg:overflow-y-auto">
+              <div className="panea-thin-scrollbar p-8 md:p-10 lg:h-full lg:overflow-y-auto">
                 {locationTitle && (
                   <h3 className="ff-larken mb-6 text-[26px] font-light leading-tight text-(--color-body)">
                     {locationTitle}

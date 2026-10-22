@@ -152,7 +152,7 @@ export default function CareerApplicationModal({
         <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#C85A22] text-center">
           {textAboveTitle}
         </p>
-        <h2 className="text-center ff-larken mt-5 text-[28px] font-normal leading-tight md:text-[28px]">
+        <h2 className="text-center ff-larken mt-5 text-[28px] font-normal leading-tight md:text-[32px]">
           {title}
         </h2>
         {shortInformation ? (

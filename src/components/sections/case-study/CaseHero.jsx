@@ -95,7 +95,6 @@ export default function CaseHero({
             />
           )}
 
-          <div className="absolute inset-0 bg-black/35" />
 
           <div className="relative z-10 flex w-full min-w-0 flex-col items-center justify-center px-5 text-center sm:px-6">
             {showEyebrow && (
@@ -132,7 +131,7 @@ export default function CaseHero({
               <li>
                 <Link
                   href={langHome(lang)}
-                  className="transition-colors hover:text-(--color-body)"
+                  className="transition-colors text-(--color-body)/70 hover:text-(--color-body)"
                 >
                   {homeLabel}
                 </Link>
@@ -141,7 +140,7 @@ export default function CaseHero({
               <li>
                 <Link
                   href={langHref("/cases/", lang)}
-                  className="transition-colors hover:text-(--color-body)"
+                  className="transition-colors text-(--color-body)/70 hover:text-(--color-body)"
                 >
                   {archiveLabel}
                 </Link>

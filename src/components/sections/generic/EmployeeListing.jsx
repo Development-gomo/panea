@@ -112,7 +112,7 @@ function ContactLink({ href, children }) {
         alt=""
         width={12}
         height={14}
-        className="opacity-45 transition-transform group-hover:translate-x-1"
+        className="transition-transform group-hover:translate-x-1"
       />
     </Link>
   );
