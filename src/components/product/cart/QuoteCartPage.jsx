@@ -400,8 +400,8 @@ export default function QuoteCartPage({
 
               <Field label={lang === "sv" ? "E-post" : "Email"} name="email" type="email" required />
               <Field label={lang === "sv" ? "Telefon" : "Phone"} name="phone" type="tel" required />
-              <Field label= {lang === "sv" ? "Företag" : "Company"} name="company" />
-              <Field label= {lang === "sv" ? "Meddelande" : "Message"} name="message" textarea />
+              <Field label= {lang === "sv" ? "Företag" : "Company"} name="company" required />
+              <Field label= {lang === "sv" ? "Finns det något mer vi bör veta?" : "Message"} name="message" textarea />
 
               <button
                 type="submit"

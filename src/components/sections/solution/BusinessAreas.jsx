@@ -277,13 +277,13 @@ export default function SolutionBusinessAreas({
               />
             )}
 
-            <div className="absolute right-5 top-5 h-20 w-20">
-              <Image src={LogoWhite} alt="" fill sizes="80px" className="object-contain" />
+            <div className="absolute right-6 top-6 h-[60px] w-[60px]">
+              <Image src={LogoWhite} alt="" fill sizes="60px" className="object-contain" />
             </div>
 
             <div className="absolute inset-x-0 bottom-0 text-white">
               <div className="backdrop-blur-md">
-                <div className="p-6">
+                <div className="p-6 md:min-h-[190px]">
                   <h3 className="text-[20px] leading-tight md:text-[24px]">
                     {activeTitle}
                   </h3>
@@ -294,7 +294,7 @@ export default function SolutionBusinessAreas({
                   )}
                   {activeDescription && (
                     <div
-                      className="mt-3 max-w-[460px] text-[16px] font-light leading-[1.5] text-white [&_p]:mb-0"
+                      className="mt-3 max-w-[500px] text-[16px] font-light leading-[1.5] text-white [&_p]:mb-0"
                       dangerouslySetInnerHTML={{ __html: activeDescription }}
                     />
                   )}

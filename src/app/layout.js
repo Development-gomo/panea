@@ -3,6 +3,7 @@ import { DEFAULT_LANG } from "@/config";
 import { headers } from "next/headers";
 import NextTopLoader from "nextjs-toploader";
 import LangSyncer from "@/components/LangSyncer";
+import HashLinkHandler from "@/components/HashLinkHandler";
 // import Script from "next/script"; // uncomment when adding tracking scripts
 
 export default async function RootLayout({ children }) {
@@ -56,6 +57,7 @@ export default async function RootLayout({ children }) {
           shadow="0 0 10px #00fec3,0 0 5px #00fec3"
         />
         <LangSyncer />
+        <HashLinkHandler />
         {children}
       </body>
     </html>

@@ -17,7 +17,7 @@ import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
 const EXPLORE_LABELS = {
   en: "Explore solution",
-  sv: "Utforska lösningar",
+  sv: "Utforska tjänsten",
 };
 
 function useSliderSideOffset() {
@@ -268,7 +268,7 @@ function SolutionSlideCard({ row, lang }) {
 
         {hoverText && (
           <div
-            className="text-[15px] font-light leading-[1.5] text-white md:text-[16px] [&_li]:border-b [&_li]:border-white/15 [&_li]:py-3 [&_li]:text-[16px] [&_li]:[font-family:var(--font-larken)!important] [&_li:first-child]:pt-0 [&_ul]:mt-0 [&_p]:mb-7"
+            className="text-[15px] font-light leading-[1.5] md:text-[16px] text-[#B8D1D1] [&_li]:border-b [&_li]:border-white/15 [&_li]:py-3 [&_li]:text-[16px] [&_li]:[font-family:var(--font-larken)!important] [&_li:first-child]:pt-0 [&_ul]:mt-0 [&_p]:mb-7"
             dangerouslySetInnerHTML={{ __html: hoverText }}
           />
         )}

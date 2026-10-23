@@ -202,13 +202,13 @@ function TeamMemberCard({ member, compact, lang }) {
             </h3>
           )}
           {acf.designation && (
-            <p className="mb-4 text-[14px] font-light leading-normal text-(--color-body)/60">
+            <p className="mb-4 text-[14px] font-light leading-normal text-[#1E2E31B2]">
               {acf.designation}
             </p>
           )}
           {acf.short_information && (
             <div
-              className="text-[14px] font-medium leading-[1.45] text-(--color-body) [&_p]:mb-3 [&_p:last-child]:mb-0"
+              className="text-[14px] font-normal leading-[1.45] text-(--color-body) [&_p]:mb-3 [&_p:last-child]:mb-0"
               dangerouslySetInnerHTML={{ __html: acf.short_information }}
             />
           )}
@@ -243,7 +243,7 @@ export default function WebshopContactFormSection({
   if (!formId && !teamMembers.length) return null;
 
   return (
-    <section className="w-full py-[60px] md:py-[120px]">
+    <section id="contact-form" className="w-full scroll-mt-24 py-[60px] md:py-[120px]">
       <div className="web-width-sm mx-auto px-6">
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {text_above_title && (

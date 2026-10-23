@@ -266,12 +266,12 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
               </div>
             )}
 
-            <div className="absolute right-5 top-5 h-20 w-20">
+            <div className="absolute right-6 top-6 h-[60px] w-[60px]">
               <Image
                 src={LogoWhite}
                 alt=""
                 fill
-                sizes="80px"
+                sizes="60px"
                 className="object-contain"
               />
             </div>

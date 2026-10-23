@@ -50,6 +50,9 @@ const GenericVacanciesListing = dynamic(() =>
 const ProcessAnimation = dynamic(() =>
   import("../sections/business-area/ProcessAnimation")
 );
+const GenericFullWidthContent = dynamic(() =>
+  import("../sections/generic/FullWidthContent")
+);
 const GenericContactPageSection = dynamic(() =>
   import("../sections/generic/ContactPageSection")
 );
@@ -301,6 +304,9 @@ export default async function GenericPageBuilder({
 
           case "contact_page-location":
             return null;
+
+          case "full_width_content":
+            return <GenericFullWidthContent key={i} data={block} />;
 
           case "spacer": {
             const height = Number(block?.height);
