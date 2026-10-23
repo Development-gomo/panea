@@ -12,7 +12,7 @@ const HEADING_TEXT = {
   },
   sv: {
     subHeading: "Paneas arbetssätt",
-    heading: "Från första idé till färdig miljö",
+    heading: "Paneas arbetssätt",
   },
 };
 
@@ -257,7 +257,7 @@ export default function BusinessAreaProcessAnimation({
     <section className={styles.section}>
       <div className="web-width-sm mx-auto px-6">
         <div className={styles.heading}>
-          <p className="ff-larken">{heading.subHeading}</p>
+          {/* <p className="ff-larken">{heading.subHeading}</p> */}
           <h2>{heading.heading}</h2>
         </div>
 

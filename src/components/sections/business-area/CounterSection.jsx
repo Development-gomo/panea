@@ -107,7 +107,7 @@ export default function BusinessAreaCounterSection({ data }) {
                 <>
                   <hr className="mt-8 mb-6 border-t border-(--color-dark)/20 md:mt-10" />
 
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-8 ff-larken sm:grid-cols-3">
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-8 ff-larken sm:flex sm:flex-wrap sm:justify-between">
                     {counters.map((item, i) => (
                       <motion.div
                         key={i}

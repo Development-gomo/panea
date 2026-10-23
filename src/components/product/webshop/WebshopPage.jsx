@@ -473,7 +473,7 @@ function ProductCard({ product, lang, quoteCartItems = [] }) {
           {title}
         </h3>
         {description && (
-          <p className="mb-5 truncate text-[12px] font-light leading-5 text-[#1E2E31]">
+          <p className="mb-5 text-[12px] font-light leading-5 text-[#1E2E31]">
             {description}
           </p>
         )}
