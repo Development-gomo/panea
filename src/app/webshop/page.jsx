@@ -48,7 +48,7 @@ export default async function WebshopRoute() {
     getMenu(lang),
     getThemeOptions(lang),
     getAllProducts(lang),
-    getProductCategories(lang),
+    getProductCategories(lang, { includeChildren: true }),
     getProductBrands(lang),
   ]);
   const teamMemberIds = collectWebshopTeamMemberIds(page);

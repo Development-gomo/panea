@@ -8,11 +8,11 @@ import { DEFAULT_LANG } from "@/config";
 const HEADING_TEXT = {
   en: {
     subHeading: "Your customer journey with Panea",
-    heading: "The Panea way of working",
+    heading: "Panea way of working",
   },
   sv: {
     subHeading: "Paneas arbetssätt",
-    heading: "Paneas arbetssätt",
+    heading: "Panea way of working",
   },
 };
 

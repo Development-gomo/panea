@@ -277,7 +277,7 @@ export default function SolutionBusinessAreas({
               />
             )}
 
-            <div className="absolute right-6 top-6 h-[60px] w-[60px]">
+            <div className="absolute right-6 top-6 h-[50px] w-[50px]">
               <Image src={LogoWhite} alt="" fill sizes="60px" className="object-contain" />
             </div>
 

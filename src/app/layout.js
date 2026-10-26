@@ -51,10 +51,10 @@ export default async function RootLayout({ children }) {
         */}
 
         <NextTopLoader
-          color="#00fec3"
+          color="#1e2e31"
           height={3}
           showSpinner={false}
-          shadow="0 0 10px #00fec3,0 0 5px #00fec3"
+          shadow="0 0 10px #1e2e31,0 0 5px #1e2e31"
         />
         <LangSyncer />
         <HashLinkHandler />
