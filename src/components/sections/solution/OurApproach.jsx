@@ -67,9 +67,9 @@ export default function SolutionOurApproach({ data }) {
                 {formatStepNumber(step.step_number, index)}
               </p>
 
-              {step.step_title && (
-                <h3 className="mt-6 mb-4 text-[20px] font-normal leading-[1.25] text-(--color-body)">
-                  {step.step_title}
+               {step.step_title && (
+                <h3 className="mt-6 mb-4 text-[20px] font-normal leading-[1.25] text-(--color-body)"
+                  dangerouslySetInnerHTML={{ __html: step.step_title }}>
                 </h3>
               )}
 

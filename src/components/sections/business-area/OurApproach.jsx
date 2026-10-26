@@ -68,8 +68,8 @@ export default function BusinessAreaOurApproach({ data }) {
               </p>
 
               {step.step_title && (
-                <h3 className="mt-6 mb-4 text-[20px] font-normal leading-[1.25] text-(--color-body)">
-                  {step.step_title}
+                <h3 className="mt-6 mb-4 text-[20px] font-normal leading-[1.25] text-(--color-body)"
+                  dangerouslySetInnerHTML={{ __html: step.step_title }}>
                 </h3>
               )}
 

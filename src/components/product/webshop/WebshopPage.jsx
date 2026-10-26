@@ -203,6 +203,25 @@ function getProductCategoryIds(product) {
   return [...ids];
 }
 
+// Category ids that have at least one product, including ancestors of
+// categories with products, so parents of non-empty subcategories stay visible.
+function getCategoryIdsWithProducts(products, categories) {
+  const ids = new Set(products.flatMap(getProductCategoryIds));
+  const parentById = new Map(
+    categories.map((category) => [Number(category.id), Number(category.parent) || 0])
+  );
+
+  [...ids].forEach((id) => {
+    let parentId = parentById.get(id);
+    while (parentId && !ids.has(parentId)) {
+      ids.add(parentId);
+      parentId = parentById.get(parentId);
+    }
+  });
+
+  return ids;
+}
+
 function getProductBrandKeys(product) {
   const keys = new Set();
 
@@ -545,10 +564,17 @@ export default function WebshopPage({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [brandOpen]);
 
-  const parentCategories = useMemo(
-    () => categories.filter((category) => !category.parent),
-    [categories]
-  );
+  const parentCategories = useMemo(() => {
+    const topLevel = categories.filter((category) => !category.parent);
+    if (products.length === 0) return topLevel;
+
+    const idsWithProducts = getCategoryIdsWithProducts(products, categories);
+    return topLevel.filter(
+      (category) =>
+        idsWithProducts.has(Number(category.id)) ||
+        category.slug === initialCategory
+    );
+  }, [categories, products, initialCategory]);
   const activeCategory = parentCategories.find(
     (category) => category.slug === initialCategory
   );

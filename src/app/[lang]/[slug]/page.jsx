@@ -990,7 +990,7 @@ export default async function SinglePage({ params }) {
     getMenu(lang),
     getThemeOptions(lang),
     isWebshopSlug ? getAllProducts(lang) : null,
-    isWebshopSlug ? getProductCategories(lang) : null,
+    isWebshopSlug ? getProductCategories(lang, { includeChildren: true }) : null,
     isWebshopSlug ? getProductBrands(lang) : null,
   ]);
 
