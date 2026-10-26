@@ -258,6 +258,7 @@ function SolutionSlideCard({ row, lang }) {
           )}
         </div>
       </div>
+      
 
       <div className="absolute inset-x-0 top-0 bottom-[51px] overflow-auto p-6 text-white opacity-0 transition-opacity duration-0 group-hover:duration-300 group-hover:opacity-100">
         {title && (
