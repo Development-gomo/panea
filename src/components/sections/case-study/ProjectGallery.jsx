@@ -2,6 +2,12 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { DEFAULT_LANG } from "@/config";
+
+const GALLERY_LABELS = {
+  en: "Project Gallery",
+  sv: "Projektgalleri",
+};
 
 function getImageUrl(image) {
   if (!image) return "";
@@ -46,7 +52,7 @@ function getMasonryClass(index) {
   return positions[index] || "";
 }
 
-export default function ProjectGallery({ data }) {
+export default function ProjectGallery({ data, lang = DEFAULT_LANG }) {
   if (!data) return null;
 
   const { text_above_title, heading, gallery_images } = data;
@@ -58,27 +64,17 @@ export default function ProjectGallery({ data }) {
     <section className="w-full py-[40px] md:py-[60px]">
       <div className="web-width mx-auto px-6">
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
+          {/* The heading is hidden; the text above it is shown in the heading style. */}
           {text_above_title && (
-            <motion.p
-              className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              {text_above_title}
-            </motion.p>
-          )}
-
-          {heading && (
             <motion.div
               className="section-heading h2 max-w-[920px] text-2xl font-regular leading-[1.3] text-(--color-body) md:text-3xl lg:text-[36px]"
-              dangerouslySetInnerHTML={{ __html: heading }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-            />
+            >
+              {GALLERY_LABELS[lang] || GALLERY_LABELS.en}
+            </motion.div>
           )}
         </div>
 

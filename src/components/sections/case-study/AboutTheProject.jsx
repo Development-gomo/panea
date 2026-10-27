@@ -4,6 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import RightArrow from "../../../../public/right-arrow.svg";
+import { DEFAULT_LANG } from "@/config";
+
+const ABOUT_LABELS = {
+  en: "About the Project",
+  sv: "Om projektet",
+};
 
 function getImageUrl(image) {
   if (!image) return "";
@@ -29,7 +35,7 @@ function getText(value) {
   return getText(value.rendered || value.name || value.label || value.value);
 }
 
-export default function AboutTheProject({ data }) {
+export default function AboutTheProject({ data, lang = DEFAULT_LANG }) {
   if (!data) return null;
 
   const {
@@ -44,33 +50,13 @@ export default function AboutTheProject({ data }) {
 
   const imageUrl = getImageUrl(image);
   const imageLeft = image_position === "left";
-  const details = [
-    {
-      value: getText(data.client_name),
-      label: getText(data.client_label),
-    },
-    {
-      value: getText(data.location_name),
-      label: getText(data.location_label),
-    },
-    {
-      value: getText(data.industry_name),
-      label: getText(data.industry_label),
-    },
-    {
-      value: getText(data.scope_of_work),
-      label: getText(data.scope_of_work_label),
-    },
-  ];
-  const hasDetails = details.some((item) => item.value);
 
   if (
     !text_above_title &&
     !title &&
     !cta_text &&
     !imageUrl &&
-    !content &&
-    !hasDetails
+    !content
   ) {
     return null;
   }
@@ -82,27 +68,17 @@ export default function AboutTheProject({ data }) {
     >
       <div className="web-width-sm mx-auto px-6">
         <div className="mb-10 flex flex-col items-center text-center md:mb-15">
+          {/* The title is hidden; the text above it is shown in the title style. */}
           {text_above_title && (
-            <motion.p
-              className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              {text_above_title}
-            </motion.p>
-          )}
-
-          {title && (
             <motion.div
               className="section-heading h2 max-w-[920px] text-2xl leading-[1.3] font-regular text-(--color-body) md:text-3xl lg:text-[36px]"
-              dangerouslySetInnerHTML={{ __html: title }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-            />
+            >
+              {ABOUT_LABELS[lang] || ABOUT_LABELS.en}
+            </motion.div>
           )}
 
           {cta_text && cta_url && (
@@ -159,44 +135,6 @@ export default function AboutTheProject({ data }) {
               />
             )}
           </motion.div>
-        )}
-
-        {hasDetails && (
-          <motion.dl
-            className="mb-5 grid border-y border-[#1E2E31]/20 sm:grid-cols-2 lg:grid-cols-4"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            {details.map((item, index) => (
-              <div
-                key={`${item.label}-${index}`}
-                className={`relative min-w-0 px-[24px] py-[24px] ${
-                  index > 0
-                    ? "border-t border-[#1E2E31]/15 lg:border-t-0"
-                    : ""
-                } ${
-                  index === 1 ? "sm:border-t-0" : ""
-                } ${
-                  index % 2 === 1
-                    ? "sm:border-l sm:border-[#1E2E31]/15 lg:border-l-0"
-                    : ""
-                } ${
-                  index > 0
-                    ? "lg:before:absolute lg:before:left-0 lg:before:top-1/2 lg:before:h-[42px] lg:before:w-px lg:before:-translate-y-1/2 lg:before:bg-[#1E2E31]/20 lg:before:content-['']"
-                    : ""
-                }`}
-              >
-                <dd className="break-words text-[20px] font-normal leading-[1.2] text-(--color-body)">
-                  {item.value || "—"}
-                </dd>
-                <dt className="ff-larken mt-[5px] text-[16px] font-light leading-none text-(--color-body)">
-                  {item.label}
-                </dt>
-              </div>
-            ))}
-          </motion.dl>
         )}
       </div>
     </section>

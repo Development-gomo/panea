@@ -7,6 +7,19 @@ import ArrowSvg from "../../../../public/right-arrow.svg";
 import { DEFAULT_LANG } from "@/config";
 import CaseStudiesSlider from "../home/CaseStudiesSlider";
 
+const SECTION_LABELS = {
+  en: {
+    label: "How we create value for our clients",
+    title: "Our successful projects delivered together with our clients",
+    cta: "See previous projects",
+  },
+  sv: {
+    label: "Hur vi skapar värde för våra kunder",
+    title: "Våra framgångsrika projekt levererade tillsammans med våra kunder",
+    cta: "Se tidigare projekt",
+  },
+};
+
 export default function CaseStudySection({
   data,
   lang = DEFAULT_LANG,
@@ -15,18 +28,12 @@ export default function CaseStudySection({
 }) {
   const cases = prefetchedCases || [];
 
-  const {
-    text_above_title,
-    sub_heading,
-    title,
-    heading,
-    cta_text,
-    cta_url_copy,
-    cta_url,
-  } = data || {};
+  const { cta_url_copy, cta_url } = data || {};
 
-  const label = text_above_title || sub_heading;
-  const sectionTitle = title || heading;
+  const labels = SECTION_LABELS[lang] || SECTION_LABELS.en;
+  const label = labels.label;
+  const sectionTitle = labels.title;
+  const cta_text = labels.cta;
   const ctaUrl = cta_url_copy || cta_url;
 
   if (!cases.length) return null;

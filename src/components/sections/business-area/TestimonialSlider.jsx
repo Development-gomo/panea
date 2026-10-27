@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Pagination } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import QuoteImage from "../../../../public/quote-image.svg";
@@ -134,7 +134,9 @@ export default function BusinessAreaTestimonialSlider({
         viewport={{ once: true }}
       >
         <Swiper
-          modules={[Pagination]}
+          modules={[Pagination, Autoplay]}
+          loop={!isSingle}
+          autoplay={isSingle ? false : { delay: 2000, disableOnInteraction: false }}
           className={`panea-testimonial-slider${
             isSingle ? " panea-testimonial-slider-single" : ""
           }`}

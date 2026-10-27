@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import RightArrow from "../../../../public/right-arrow.svg";
+import { DEFAULT_LANG } from "@/config";
+
+const CHALLENGE_LABELS = {
+  en: "The challenge",
+  sv: "Utmaningen",
+};
 
 function getImageUrl(image) {
   if (!image) return "";
@@ -19,45 +24,7 @@ function getImageUrl(image) {
   );
 }
 
-function StepsCta({ text }) {
-  if (!text) return null;
-
-  const handleClick = () => {
-    const projectAchive = document.getElementById("project-achive");
-
-    if (!projectAchive) return;
-
-    projectAchive.scrollIntoView({ behavior: "smooth", block: "start" });
-    projectAchive.focus({ preventScroll: true });
-  };
-
-  const content = (
-    <>
-      <span className="relative pb-[2px]">
-        {text}
-        <span className="absolute bottom-0 left-0 h-[1px] w-full bg-(--color-dark) transition-all duration-300 ease-out group-hover:w-[calc(100%+22px)]" />
-      </span>
-      <span className="ml-2 transition-transform duration-300 ease-out group-hover:translate-x-1.5">
-        <Image src={RightArrow} alt="arrow" width={17} height={17} />
-      </span>
-    </>
-  );
-
-  const className =
-    "group inline-flex items-center text-xs text-(--color-body) transition-all font-normal";
-
-  return (
-    <button
-      type="button"
-      className={`${className} cursor-pointer`}
-      onClick={handleClick}
-    >
-      {content}
-    </button>
-  );
-}
-
-export default function ProjectSteps({ data }) {
+export default function ProjectSteps({ data, lang = DEFAULT_LANG }) {
   if (!data) return null;
 
   const {
@@ -81,38 +48,16 @@ export default function ProjectSteps({ data }) {
     <section className="w-full bg-[#F2EBE2] py-[40px] md:py-[60px]">
       <div className="web-width mx-auto px-6">
         <div className="mb-10 flex flex-col items-center text-center md:mb-15">
+          {/* The title is hidden; the text above it is shown in the title style. */}
           {text_above_title && (
-            <motion.p
-              className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              viewport={{ once: true }}
-            >
-              {text_above_title}
-            </motion.p>
-          )}
-
-          {title && (
             <motion.div
               className="section-heading h2 max-w-[920px] text-2xl leading-[1.3] font-regular text-(--color-body) md:text-3xl lg:text-[36px]"
-              dangerouslySetInnerHTML={{ __html: title }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-            />
-          )}
-
-          {cta_text && (
-            <motion.div
-              className="mt-6"
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              viewport={{ once: true }}
             >
-              <StepsCta text={cta_text} />
+              {CHALLENGE_LABELS[lang] || CHALLENGE_LABELS.en}
             </motion.div>
           )}
         </div>

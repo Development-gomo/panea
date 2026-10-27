@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import { Pagination } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import PExplore from "../../../../public/p-explore.svg";
@@ -14,6 +14,11 @@ import { DEFAULT_LANG, langHref } from "@/config";
 import "swiper/css";
 import "swiper/css/pagination";
 import { decodeHtml, stripHtml } from "@/lib/htmlText";
+
+const MIN_LOOP_SLIDES = 8;
+
+// Solutions whose card shows no "Explore solution" button.
+const HIDDEN_EXPLORE_SLUGS = ["service"];
 
 const EXPLORE_LABELS = {
   en: "Explore solution",
@@ -213,9 +218,12 @@ function SolutionSlideCard({ row, lang }) {
 
   const title = getTitle(solution);
 
-  const fallbackHref = solution?.slug
-    ? langHref(`/${solution.slug}`, lang)
-    : "";
+  const hideExplore = HIDDEN_EXPLORE_SLUGS.includes(solution?.slug);
+
+  const fallbackHref =
+    solution?.slug && !hideExplore
+      ? langHref(`/${solution.slug}`, lang)
+      : "";
 
   const exploreLabel = EXPLORE_LABELS[lang] || EXPLORE_LABELS.en;
 
@@ -275,8 +283,11 @@ function SolutionSlideCard({ row, lang }) {
         )}
       </div>
 
-      {allButtons.length > 0 && (
+      {(allButtons.length > 0 || hideExplore) && (
         <div className="absolute inset-x-0 bottom-0 z-10 grid grid-cols-2 border-t border-white/15 bg-black/25 backdrop-blur-md transition-colors duration-0 group-hover:duration-300 group-hover:bg-[#1E2E31] group-hover:backdrop-blur-0">
+          {allButtons.length === 0 && (
+            <span aria-hidden="true" className="col-span-2 min-h-[50px]" />
+          )}
           {allButtons.length === 1 && <span aria-hidden="true" />}
 
           {allButtons.map((button, index) => (
@@ -327,6 +338,26 @@ export default function BusinessAreaSolutionSlider({
       ? data.business_area_solutions
       : solutions;
 
+  // Swiper only loops when there are more slides than fit on screen, so repeat
+  // the solutions until there are enough. Pagination still shows one bullet
+  // per real solution.
+  const solutionCount = sliderSolutions.length;
+  const shouldLoop = solutionCount > 3;
+  const loopSolutions = [];
+  while (shouldLoop && loopSolutions.length < MIN_LOOP_SLIDES) {
+    loopSolutions.push(...sliderSolutions);
+  }
+  const renderedSolutions = shouldLoop ? loopSolutions : sliderSolutions;
+
+  function syncBullets(swiper) {
+    swiper.pagination?.bullets?.forEach((bullet, index) => {
+      bullet.classList.toggle(
+        "swiper-pagination-bullet-active",
+        index === swiper.realIndex % solutionCount
+      );
+    });
+  }
+
   return (
     <section className="w-full overflow-hidden pt-[60px] pb-0 md:pt-[120px]">
       <div className="web-width mx-auto px-6">
@@ -366,13 +397,28 @@ export default function BusinessAreaSolutionSlider({
           viewport={{ once: true }}
         >
           <Swiper
-            modules={[Pagination]}
+            modules={[Pagination, Autoplay]}
+            loop={shouldLoop}
+            autoplay={
+              shouldLoop
+                ? { delay: 2000, disableOnInteraction: false }
+                : false
+            }
+            onPaginationUpdate={syncBullets}
+            onSlideChange={syncBullets}
             className="panea-testimonial-slider panea-solution-slider"
             slidesPerView="auto"
             slidesOffsetBefore={sliderSideOffset}
             slidesOffsetAfter={sliderSideOffset}
             spaceBetween={12}
-            pagination={{ clickable: true, enabled: true }}
+            pagination={{
+              clickable: true,
+              enabled: true,
+              renderBullet: (index, className) =>
+                `<span class="${className}"${
+                  index >= solutionCount ? ' style="display:none"' : ""
+                }></span>`,
+            }}
             breakpoints={{
               768: {
                 spaceBetween: 14,
@@ -393,19 +439,16 @@ export default function BusinessAreaSolutionSlider({
               },
             }}
           >
-            {sliderSolutions.map((row, index) => {
+            {renderedSolutions.map((row, index) => {
               const solution = row?.solution || row;
 
               if (!solution) return null;
 
               return (
                 <SwiperSlide
-                  key={
-                    solution?.id ||
-                    solution?.ID ||
-                    solution?.slug ||
-                    index
-                  }
+                  key={`${
+                    solution?.id || solution?.ID || solution?.slug || "slide"
+                  }-${index}`}
                   className="!h-auto"
                   style={{ width: "min(416px, calc(100vw - 48px))" }}
                 >

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Pagination } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import QuoteImage from "../../../../public/quote-image.svg";
@@ -125,7 +125,9 @@ export default function SolutionTestimonialSlider({ data, prefetchedTestimonials
         viewport={{ once: true }}
       >
         <Swiper
-          modules={[Pagination]}
+          modules={[Pagination, Autoplay]}
+          loop
+          autoplay={{ delay: 2000, disableOnInteraction: false }}
           className="panea-testimonial-slider"
           slidesPerView="auto"
           slidesOffsetBefore={sliderSideOffset}
