@@ -391,6 +391,7 @@ export default function RelatedProducts({
 
         <Swiper
           modules={[Pagination, Autoplay]}
+          loop
           pagination={{ clickable: true }}
           autoplay={{ delay: 2000, disableOnInteraction: false }}
           spaceBetween={16}

@@ -31,12 +31,14 @@ export default function CaseHero({
   showCurrentTitleInBreadcrumb = true,
   showBreadcrumb = true,
   showEyebrow = true,
+  ctaLabel = "",
+  showOverlay = false,
 }) {
   if (!data) return null;
 
   const backgroundImage = data.background_image;
   const backgroundUrl = getImageUrl(backgroundImage);
-  const ctaText = data.cta_text || "";
+  const ctaText = data.cta_text ? ctaLabel || data.cta_text : "";
   const caseStudyLabel =
     eyebrow || (lang === "sv" ? "Fallstudie" : "Case study");
   const homeLabel = lang === "sv" ? "Hem" : "Home";
@@ -93,6 +95,10 @@ export default function CaseHero({
               className="object-cover"
               priority
             />
+          )}
+
+          {backgroundUrl && showOverlay && (
+            <div className="absolute inset-0 bg-[#1E2E31]/45" />
           )}
 
 

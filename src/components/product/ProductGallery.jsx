@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { Navigation, Thumbs } from "swiper/modules";
+import { Autoplay, Navigation, Thumbs } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -115,7 +115,9 @@ export default function ProductGallery({ product }) {
     <div className="product-gallery">
       <div className="relative bg-white rounded-[10px] border border-[rgba(30,46,49,0.15)]">
         <Swiper
-          modules={[Navigation, Thumbs]}
+          modules={[Navigation, Thumbs, Autoplay]}
+          loop={showNavigation}
+          autoplay={showNavigation ? { delay: 2000, disableOnInteraction: false } : false}
           navigation={
             showNavigation
               ? {

@@ -1,21 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 import ContactArrow from "../../../../public/p-contact-arrow.svg";
 import LinkedinIcon from "../../../../public/linkedin-theme-icon.png";
-import { DEFAULT_LANG } from "@/config";
 import { decodeHtml, stripHtml } from "@/lib/htmlText";
-
-const EMPLOYEES_PER_PAGE = 8;
-
-const LOAD_MORE_LABELS = {
-  en: "View all contacts",
-  sv: "Visa alla kontakter",
-};
 
 function getTitle(member) {
   return decodeHtml(stripHtml(member?.post_title || member?.title?.rendered || member?.title || ""));
@@ -199,15 +190,9 @@ function EmployeeCard({ member, index }) {
 export default function GenericEmployeeListing({
   data,
   employees = [],
-  lang = DEFAULT_LANG,
 }) {
   const { text_above_title, title } = data || {};
   const teamMembers = Array.isArray(employees) ? employees : [];
-  const [showAll, setShowAll] = useState(false);
-  const visibleMembers = showAll
-    ? teamMembers
-    : teamMembers.slice(0, EMPLOYEES_PER_PAGE);
-  const hasMore = !showAll && teamMembers.length > EMPLOYEES_PER_PAGE;
 
   if (!data || !teamMembers.length) return null;
 
@@ -240,22 +225,10 @@ export default function GenericEmployeeListing({
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {visibleMembers.map((member, index) => (
+          {teamMembers.map((member, index) => (
             <EmployeeCard key={member?.id || member?.ID || index} member={member} index={index} />
           ))}
         </div>
-
-        {hasMore && (
-          <div className="mt-10 flex justify-center md:mt-14">
-            <button
-              type="button"
-              onClick={() => setShowAll(true)}
-              className="cursor-pointer rounded-full bg-(--color-body) px-8 py-4 text-[16px] leading-none text-white transition-colors duration-300 hover:bg-[#2d4246]"
-            >
-              {LOAD_MORE_LABELS[lang] || LOAD_MORE_LABELS.en}
-            </button>
-          </div>
-        )}
       </div>
     </section>
   );

@@ -5,9 +5,7 @@ import { getRecentCaseStudies, getTestimonialsByIds } from "@/lib/api";
 import CaseHero from "../sections/case-study/CaseHero";
 import AboutTheProject from "../sections/case-study/AboutTheProject";
 import ProjectSteps from "../sections/case-study/ProjectSteps";
-import CaseStudyOurApproach from "../sections/case-study/OurApproach";
 import ProjectGallery from "../sections/case-study/ProjectGallery";
-import ProjectAchive from "../sections/case-study/ProjectAchive";
 import CaseStudySection from "../sections/case-study/CaseStudySection";
 import CaseStudyImageCtaBanner from "../sections/case-study/ImageCtaBanner";
 import CaseStudyTestimonialSlider from "../sections/case-study/TestimonialSlider";
@@ -93,6 +91,8 @@ export default async function CaseStudyBuilder({
                 data={block}
                 lang={lang}
                 pageTitle={caseStudyTitle}
+                ctaLabel={lang === "sv" ? "Läs fallstudie" : ""}
+                showOverlay
               />
             );
           case "about_the_project":
@@ -100,16 +100,17 @@ export default async function CaseStudyBuilder({
               <AboutTheProject
                 key={i}
                 data={block}
+                lang={lang}
               />
             );
           case "our_process":
-            return <ProjectSteps key={i} data={block} />;
+            return <ProjectSteps key={i} data={block} lang={lang} />;
+          // "How we delivered the solution" and "What the project achieved" are hidden.
           case "our_approach":
-            return <CaseStudyOurApproach key={i} data={block} />;
-          case "project_gallery":
-            return <ProjectGallery key={i} data={block} />;
           case "project_achive":
-            return <ProjectAchive key={i} data={block} />;
+            return null;
+          case "project_gallery":
+            return <ProjectGallery key={i} data={block} lang={lang} />;
           case "case_study_section":
             return (
               <CaseStudySection
@@ -136,10 +137,10 @@ export default async function CaseStudyBuilder({
             );
           default:
             if (Array.isArray(block?.steps_content)) {
-              return <ProjectSteps key={i} data={block} />;
+              return <ProjectSteps key={i} data={block} lang={lang} />;
             }
             if (Array.isArray(block?.gallery_images)) {
-              return <ProjectGallery key={i} data={block} />;
+              return <ProjectGallery key={i} data={block} lang={lang} />;
             }
             return null;
         }
