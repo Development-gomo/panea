@@ -40,7 +40,7 @@ export default function CaseHero({
   const backgroundUrl = getImageUrl(backgroundImage);
   const ctaText = data.cta_text ? ctaLabel || data.cta_text : "";
   const caseStudyLabel =
-    eyebrow || (lang === "sv" ? "Fallstudie" : "Case study");
+    eyebrow || (lang === "sv" ? "Kundcase" : "Case study");
   const homeLabel = lang === "sv" ? "Hem" : "Home";
   const archiveLabel = lang === "sv" ? "Våra Case" : "Case studies";
   const scrollToAboutProject = () => {

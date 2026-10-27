@@ -15,7 +15,7 @@ import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
 const READ_CASE_LABELS = {
   en: "Read case",
-  sv: "Läs ärendet",
+  sv: "Läs kundcaset",
 };
 
 function getCaseImage(item) {

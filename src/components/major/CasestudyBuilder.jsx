@@ -91,7 +91,7 @@ export default async function CaseStudyBuilder({
                 data={block}
                 lang={lang}
                 pageTitle={caseStudyTitle}
-                ctaLabel={lang === "sv" ? "Läs fallstudie" : ""}
+                ctaLabel={lang === "sv" ? "Läs kundcase" : ""}
                 showOverlay
               />
             );
@@ -100,17 +100,16 @@ export default async function CaseStudyBuilder({
               <AboutTheProject
                 key={i}
                 data={block}
-                lang={lang}
               />
             );
           case "our_process":
-            return <ProjectSteps key={i} data={block} lang={lang} />;
+            return <ProjectSteps key={i} data={block} />;
           // "How we delivered the solution" and "What the project achieved" are hidden.
           case "our_approach":
           case "project_achive":
             return null;
           case "project_gallery":
-            return <ProjectGallery key={i} data={block} lang={lang} />;
+            return <ProjectGallery key={i} data={block} />;
           case "case_study_section":
             return (
               <CaseStudySection
@@ -137,10 +136,10 @@ export default async function CaseStudyBuilder({
             );
           default:
             if (Array.isArray(block?.steps_content)) {
-              return <ProjectSteps key={i} data={block} lang={lang} />;
+              return <ProjectSteps key={i} data={block} />;
             }
             if (Array.isArray(block?.gallery_images)) {
-              return <ProjectGallery key={i} data={block} lang={lang} />;
+              return <ProjectGallery key={i} data={block} />;
             }
             return null;
         }
