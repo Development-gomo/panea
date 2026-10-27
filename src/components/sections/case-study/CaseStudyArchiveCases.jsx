@@ -21,7 +21,7 @@ const LABELS = {
     all: "All",
   },
   sv: {
-    readMore: "Läs ärendet",
+    readMore: "Läs kundcaset",
     caseStudy: "Fallstudie",
     noResults: "Inga fallstudier hittades.",
     previous: "Föregående sida",

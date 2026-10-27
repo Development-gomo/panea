@@ -4,12 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import RightArrow from "../../../../public/right-arrow.svg";
-import { DEFAULT_LANG } from "@/config";
-
-const ABOUT_LABELS = {
-  en: "About the Project",
-  sv: "Om projektet",
-};
 
 function getImageUrl(image) {
   if (!image) return "";
@@ -35,7 +29,7 @@ function getText(value) {
   return getText(value.rendered || value.name || value.label || value.value);
 }
 
-export default function AboutTheProject({ data, lang = DEFAULT_LANG }) {
+export default function AboutTheProject({ data }) {
   if (!data) return null;
 
   const {
@@ -68,17 +62,27 @@ export default function AboutTheProject({ data, lang = DEFAULT_LANG }) {
     >
       <div className="web-width-sm mx-auto px-6">
         <div className="mb-10 flex flex-col items-center text-center md:mb-15">
-          {/* The title is hidden; the text above it is shown in the title style. */}
           {text_above_title && (
+            <motion.p
+              className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+            >
+              {text_above_title}
+            </motion.p>
+          )}
+
+          {title && (
             <motion.div
               className="section-heading h2 max-w-[920px] text-2xl leading-[1.3] font-regular text-(--color-body) md:text-3xl lg:text-[36px]"
+              dangerouslySetInnerHTML={{ __html: title }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               viewport={{ once: true }}
-            >
-              {ABOUT_LABELS[lang] || ABOUT_LABELS.en}
-            </motion.div>
+            />
           )}
 
           {cta_text && cta_url && (
