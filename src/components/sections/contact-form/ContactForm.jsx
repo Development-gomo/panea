@@ -126,16 +126,21 @@ function Field({ field, value, setValue, error, variant = "default", lang = DEFA
   if (field.type === "select") {
     return (
       <div className="space-y-2">
-        <label className={visibleLabelClass}>
+        <label className={`block ${visibleLabelClass}`}>
           {label} {field.required ? "*" : ""}
         </label>
+        {/* Select and file rows share a fixed height so their underlines line up. */}
         <select
-          className={common}
+          className={
+            common +
+            " h-12 py-0" +
+            (isSolution && !value ? " !text-white/55" : "")
+          }
           value={value || ""}
           onChange={(e) => setValue(field.key, e.target.value)}
         >
           <option value="" className="bg-[#f2ebe2] text-[#1e2e31]">
-            {field.placeholder || "Select"}
+            {field.placeholder || (lang === "sv" ? "Välj" : "Select")}
           </option>
           {(field.options || []).map((opt, idx) => {
             const option = getSelectOption(opt);
@@ -165,21 +170,21 @@ function Field({ field, value, setValue, error, variant = "default", lang = DEFA
     // browser's language, so it is hidden and replaced with translated UI.
     return (
       <div className="space-y-2">
-        <span className={labelClass}>
+        <span className={`block ${labelClass}`}>
           {label} {field.required ? "*" : ""}
         </span>
         <label
           htmlFor={inputId}
-          className={common + " flex cursor-pointer items-center gap-4"}
+          className={common + " flex h-12 cursor-pointer items-center gap-4 py-0"}
         >
           <span
-            className={`shrink-0 rounded-sm px-3 py-1 text-xs font-normal  tracking-wide ${
-              isSolution ? "bg-white/15 text-white" : "bg-black/10"
+            className={`shrink-0 rounded-sm px-2 text-sm leading-5 font-normal ${
+              isSolution ? "bg-white/10 text-white/55" : "bg-black/10 text-black/55"
             }`}
           >
             {isSv ? "Ladda upp fil" : "Upload file"}
           </span>
-          <span className={`truncate ${isSolution ? "text-white/55" : "text-black/55"}`}>
+          <span className={`truncate leading-5 ${isSolution ? "text-white/55" : "text-black/55"}`}>
             {value?.name || (isSv ? "Ingen fil vald" : "No file chosen")}
           </span>
         </label>

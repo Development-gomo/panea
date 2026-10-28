@@ -5,6 +5,23 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { DEFAULT_LANG, langHref } from "@/config";
 
+// Banner copy is fixed for every case study; only the image, overlay, logo
+// and button link still come from ACF.
+const BANNER_COPY = {
+  sv: {
+    title: "Kontakta oss idag för att komma igång med utvecklingen av din verksamhet.",
+    description:
+      "<p>Vi är är specialister inom helhetskoncept och finns representerade i Stockholm, Halmstad, Jönköping, och våra kunder finns över hela landet från Kiruna till Ystad. Våra medarbetare har lång erfarenhet av att driva komplexa projekt, och vi har specialistkompetens inom ett flertal områden.</p>",
+    cta_text: "Kontakta oss",
+  },
+  en: {
+    title: "Get in touch today and let’s start growing your business.",
+    description:
+      "<p>We specialise in complete, end-to-end concepts, with offices in Stockholm, Halmstad and Jönköping and customers all over Sweden, from Kiruna to Ystad. Our team has extensive experience delivering complex projects, and we bring specialist expertise across a wide range of areas.</p>",
+    cta_text: "Contact us",
+  },
+};
+
 export default function CaseStudyImageCtaBanner({
   data,
   lang = DEFAULT_LANG,
@@ -12,25 +29,9 @@ export default function CaseStudyImageCtaBanner({
 }) {
   if (!data) return null;
 
-  const {
-    background_image,
-    background_overlay,
-    logo,
-    title,
-    cta_text,
-    cta_url,
-    description,
-  } = data;
-
-  if (
-    !background_image?.url &&
-    !logo?.url &&
-    !title &&
-    !description &&
-    !cta_text
-  ) {
-    return null;
-  }
+  const { background_image, background_overlay, logo, cta_url } = data;
+  const { title, description, cta_text } =
+    BANNER_COPY[lang === "sv" ? "sv" : "en"];
 
   return (
     <section className="w-full pt-[40px] pb-[60px] md:pt-[60px] md:pb-[120px]">
