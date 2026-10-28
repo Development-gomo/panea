@@ -66,7 +66,31 @@ function getSelectOption(option) {
   return parsedLabel;
 }
 
-function Field({ field, value, setValue, error, variant = "default" }) {
+function isFileField(field) {
+  return String(field?.type || "").replace("*", "") === "file";
+}
+
+// CF7 file tags carry options like "limit:5mb" and "filetypes:pdf|doc"; the
+// schema may expose them as fields or inside the options array.
+function getFileRules(field) {
+  const opts = Array.isArray(field?.options) ? field.options.map(String) : [];
+  const findOpt = (name) =>
+    opts.find((o) => o.startsWith(`${name}:`))?.slice(name.length + 1);
+
+  const rawTypes = field?.filetypes || findOpt("filetypes") || "";
+  const extensions = (Array.isArray(rawTypes) ? rawTypes : String(rawTypes).split("|"))
+    .map((t) => t.trim().toLowerCase().replace(/^\./, ""))
+    .filter(Boolean);
+
+  const rawLimit = String(field?.limit || findOpt("limit") || "").toLowerCase();
+  const match = rawLimit.match(/^(\d+(?:\.\d+)?)\s*(kb|mb)?$/);
+  const multiplier = { kb: 1024, mb: 1024 * 1024 }[match?.[2]] || 1;
+  const maxBytes = match ? Number(match[1]) * multiplier : 0;
+
+  return { extensions, maxBytes, limitLabel: rawLimit };
+}
+
+function Field({ field, value, setValue, error, variant = "default", lang = DEFAULT_LANG }) {
   const isSolution = variant === "solution";
   const common = isSolution
     ? "w-full border-0 border-b bg-transparent px-0 py-3 text-sm text-white outline-none placeholder:text-white/55 " +
@@ -132,6 +156,46 @@ function Field({ field, value, setValue, error, variant = "default" }) {
     );
   }
 
+  if (isFileField(field)) {
+    const { extensions } = getFileRules(field);
+    const inputId = `cf7-file-${field.key}`;
+    const isSv = lang === "sv";
+
+    // The native file input's button and "No file chosen" text follow the
+    // browser's language, so it is hidden and replaced with translated UI.
+    return (
+      <div className="space-y-2">
+        <span className={labelClass}>
+          {label} {field.required ? "*" : ""}
+        </span>
+        <label
+          htmlFor={inputId}
+          className={common + " flex cursor-pointer items-center gap-4"}
+        >
+          <span
+            className={`shrink-0 rounded-sm px-3 py-1 text-xs font-normal  tracking-wide ${
+              isSolution ? "bg-white/15 text-white" : "bg-black/10"
+            }`}
+          >
+            {isSv ? "Ladda upp fil" : "Upload file"}
+          </span>
+          <span className={`truncate ${isSolution ? "text-white/55" : "text-black/55"}`}>
+            {value?.name || (isSv ? "Ingen fil vald" : "No file chosen")}
+          </span>
+        </label>
+        <input
+          id={inputId}
+          className="sr-only"
+          type="file"
+          name={field.key}
+          accept={extensions.map((ext) => `.${ext}`).join(",") || undefined}
+          onChange={(e) => setValue(field.key, e.target.files?.[0] || null)}
+        />
+        {error ? <p className={errorClass}>{error}</p> : null}
+      </div>
+    );
+  }
+
   // default input: text/email/tel/url
   const type = ["email", "tel", "url"].includes(field.type)
     ? field.type
@@ -166,6 +230,8 @@ export default function ContactForm({
   const [schema, setSchema] = useState(null);
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
+  // File inputs can't be cleared through state, so bump this to remount them.
+  const [resetKey, setResetKey] = useState(0);
   const [state, setState] = useState({
     loading: true,
     submitting: false,
@@ -241,6 +307,32 @@ export default function ContactForm({
   function validate() {
     const next = {};
     for (const f of fields) {
+      if (isFileField(f)) {
+        const file = values[f.key];
+        if (!file) {
+          if (f.required) {
+            next[f.key] =
+              lang === "sv" ? "Detta fält är obligatoriskt" : "This field is required";
+          }
+          continue;
+        }
+
+        const { extensions, maxBytes, limitLabel } = getFileRules(f);
+        const ext = file.name.split(".").pop().toLowerCase();
+        if (extensions.length && !extensions.includes(ext)) {
+          next[f.key] =
+            lang === "sv"
+              ? `Filtypen stöds inte. Tillåtna: ${extensions.join(", ")}`
+              : `File type not allowed. Allowed: ${extensions.join(", ")}`;
+        } else if (maxBytes && file.size > maxBytes) {
+          next[f.key] =
+            lang === "sv"
+              ? `Filen är för stor (max ${limitLabel})`
+              : `File is too large (max ${limitLabel})`;
+        }
+        continue;
+      }
+
       if (!f.required) continue;
       const v = (values[f.key] || "").toString().trim();
       if (!v) {
@@ -271,9 +363,13 @@ export default function ContactForm({
 
     // Transform payload to match backend expectations
     const transformedValues = Object.keys(values).reduce((acc, key) => {
-      acc[key] = values[key]?.toString().trim();
+      const value = values[key];
+      acc[key] = value instanceof Blob ? value : value?.toString().trim();
       return acc;
     }, {});
+    const hasFile = Object.values(transformedValues).some(
+      (value) => value instanceof Blob,
+    );
 
     try {
       let res;
@@ -292,7 +388,8 @@ export default function ContactForm({
           directMessage.includes("failed to fetch") ||
           directMessage.includes("networkerror");
 
-        if (directStatus || !isNetworkError) {
+        // The proxy sends JSON, so it can't carry file uploads.
+        if (directStatus || !isNetworkError || hasFile) {
           throw directErr;
         }
 
@@ -320,6 +417,7 @@ export default function ContactForm({
       const reset = {};
       fields.forEach((f) => (reset[f.key] = ""));
       setValues(reset);
+      setResetKey((k) => k + 1);
     } catch (err) {
       // If CF7 validation errors come back, map them
       const cf7 = err?.cf7;
@@ -434,7 +532,7 @@ export default function ContactForm({
       >
         {fields.map((f) => (
           <div
-            key={f.key}
+            key={`${f.key}-${resetKey}`}
             className={variant === "solution" && f.type === "textarea" ? "md:col-span-2" : ""}
           >
             <Field
@@ -443,6 +541,7 @@ export default function ContactForm({
               setValue={setValue}
               error={errors[f.key]}
               variant={variant}
+              lang={lang}
             />
           </div>
         ))}
