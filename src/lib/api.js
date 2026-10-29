@@ -201,6 +201,22 @@ export async function getAllTeam(lang = DEFAULT_LANG) {
   );
 }
 
+// "Team Type" taxonomy terms (names + slugs) used to group employee_listing.
+// Needs "Show in REST API" enabled on the teamtype taxonomy; until then WP
+// answers with a rest_no_route error object, so callers get [] back.
+export async function getTeamTypes(lang = DEFAULT_LANG) {
+  const terms = await fetchWP(
+    `/wp/v2/teamtype?lang=${lang}&per_page=100&hide_empty=true&_fields=id,name,slug`,
+    {
+      revalidate: 300,
+      tags: [`team-${lang}`],
+      useMemoryCache: false,
+    }
+  );
+
+  return Array.isArray(terms) ? terms : [];
+}
+
 export async function getTeamMembersByIds(ids = [], lang = DEFAULT_LANG) {
   const cleanIds = [...new Set(ids.map((id) => Number(id)).filter(Boolean))];
 
@@ -291,6 +307,16 @@ export async function getCaseStudies(lang = DEFAULT_LANG) {
 export async function getRecentCaseStudies(lang = DEFAULT_LANG) {
   return await fetchWP(
     `/wp/v2/case_study?lang=${lang}&per_page=8&orderby=date&order=desc&_embed`
+  );
+}
+
+export async function getCaseStudiesByIds(ids = [], lang = DEFAULT_LANG) {
+  const cleanIds = [...new Set(ids.map((id) => Number(id)).filter(Boolean))];
+
+  if (!cleanIds.length) return [];
+
+  return await fetchWP(
+    `/wp/v2/case_study?include=${cleanIds.join(",")}&per_page=${cleanIds.length}&orderby=include&lang=${lang}&_embed`
   );
 }
 

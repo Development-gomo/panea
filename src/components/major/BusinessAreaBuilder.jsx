@@ -4,10 +4,16 @@ import { DEFAULT_LANG } from "@/config";
 
 import {
   getAllSolutions,
+  getCaseStudiesByIds,
   getRecentCaseStudies,
   getTeamMembersByIds,
   getTestimonialsByIds,
 } from "@/lib/api";
+
+import {
+  collectSelectedCaseStudyIds,
+  pickSliderCases,
+} from "@/lib/caseStudySelection";
 
 import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
@@ -619,6 +625,11 @@ export default async function BusinessAreaBuilder({
       sectionItems
     );
 
+  const selectedCaseStudyIds =
+    collectSelectedCaseStudyIds(
+      sectionItems
+    );
+
   /* =======================================================
      FETCH DATA
   ======================================================= */
@@ -626,6 +637,7 @@ export default async function BusinessAreaBuilder({
   const [
     currentLanguageSolutions,
     prefetchedCases,
+    selectedCases,
     prefetchedTestimonials,
     prefetchedTeamMembers,
   ] = await Promise.all([
@@ -635,6 +647,13 @@ export default async function BusinessAreaBuilder({
 
     needsCases
       ? getRecentCaseStudies(
+          lang
+        )
+      : null,
+
+    selectedCaseStudyIds.length
+      ? getCaseStudiesByIds(
+          selectedCaseStudyIds,
           lang
         )
       : null,
@@ -895,9 +914,11 @@ export default async function BusinessAreaBuilder({
                   key={i}
                   data={block}
                   lang={lang}
-                  prefetchedCases={
+                  prefetchedCases={pickSliderCases(
+                    block,
+                    selectedCases,
                     prefetchedCases
-                  }
+                  )}
                 />
               );
 

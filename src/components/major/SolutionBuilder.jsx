@@ -2,10 +2,15 @@ import dynamic from "next/dynamic";
 import { DEFAULT_LANG } from "@/config";
 import {
   getAllBusinessAreas,
+  getCaseStudiesByIds,
   getRecentCaseStudies,
   getTeamMembersByIds,
   getTestimonialsByIds,
 } from "@/lib/api";
+import {
+  collectSelectedCaseStudyIds,
+  pickSliderCases,
+} from "@/lib/caseStudySelection";
 import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
 const SolutionHero = dynamic(() => import("../sections/solution/Hero"));
@@ -158,13 +163,18 @@ export default async function SolutionBuilder({
   );
   const testimonialIds = collectTestimonialIds(sections);
   const teamMemberIds = collectTeamMemberIds(sections);
+  const selectedCaseStudyIds = collectSelectedCaseStudyIds(sections);
   const [
     prefetchedCases,
+    selectedCases,
     allBusinessAreas,
     prefetchedTestimonials,
     prefetchedTeamMembers,
   ] = await Promise.all([
     needsCases ? getRecentCaseStudies(lang) : null,
+    selectedCaseStudyIds.length
+      ? getCaseStudiesByIds(selectedCaseStudyIds, lang)
+      : null,
     needsBusinessAreas ? getAllBusinessAreas(lang) : null,
     testimonialIds.length ? getTestimonialsByIds(testimonialIds, lang) : null,
     teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : null,
@@ -228,7 +238,11 @@ export default async function SolutionBuilder({
                 key={i}
                 data={block}
                 lang={lang}
-                prefetchedCases={prefetchedCases}
+                prefetchedCases={pickSliderCases(
+                  block,
+                  selectedCases,
+                  prefetchedCases
+                )}
               />
             );
 

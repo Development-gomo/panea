@@ -3,6 +3,7 @@
 import { DEFAULT_LANG } from "@/config";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   getCf7FormSchema,
   submitCf7Direct,
@@ -64,6 +65,54 @@ function getSelectOption(option) {
   }
 
   return parsedLabel;
+}
+
+// Hidden CF7 select that routes the enquiry: the Mail tab sends to
+// [business_area], and CF7 swaps the submitted label for the e-mail
+// addresses after its "|". So the label (never the e-mail) is sent, picked
+// from the page slug. Add a language here (e.g. en) to enable it elsewhere.
+const BUSINESS_AREA_FIELD = "business_area";
+const BUSINESS_AREA_BY_SLUG = {
+  sv: {
+    fallback: "Kontor & arbetsplats",
+    slugs: {
+      "kontor-och-arbetsplats": "Kontor & arbetsplats",
+      "kontor-arbetsplatser": "Kontor & arbetsplats",
+      hotell: "Hotell",
+      restaurang: "Restaurang",
+      cafe: "Café",
+      "bageri-konditori": "Bageri & konditori",
+      livsmedelsindustri: "Livsmedelsindustri",
+    },
+  },
+  en: {
+    fallback: "Offices & workplaces",
+    slugs: {
+      offices: "Offices & workplaces",
+      hotels: "Hotels",
+      restaurant: "Restaurant",
+      cafe: "Cafe",
+      "bakery-pastry-shop": "Bakery & pastry shop",
+      "food-industry": "Food industry",
+    },
+  },
+};
+
+function isBusinessAreaField(field) {
+  const classes = Array.isArray(field?.options) ? field.options.map(String) : [];
+  return (
+    field?.key === BUSINESS_AREA_FIELD ||
+    classes.includes("class:hidden-field") ||
+    String(field?.class || "").split(/\s+/).includes("hidden-field")
+  );
+}
+
+function getBusinessAreaLabel(pathname, lang) {
+  const config = BUSINESS_AREA_BY_SLUG[lang];
+  if (!config) return "";
+
+  const slug = String(pathname || "").split("/").filter(Boolean).pop() || "";
+  return config.slugs[slug] || config.fallback;
 }
 
 function isFileField(field) {
@@ -245,6 +294,11 @@ export default function ContactForm({
   });
 
   const fields = useMemo(() => schema?.fields || [], [schema]);
+  const pathname = usePathname();
+  const businessAreaField = fields.find(isBusinessAreaField);
+  const businessArea = businessAreaField
+    ? getBusinessAreaLabel(pathname, lang)
+    : "";
 
   useEffect(() => {
     let alive = true;
@@ -312,6 +366,9 @@ export default function ContactForm({
   function validate() {
     const next = {};
     for (const f of fields) {
+      // Filled from the page path on submit, never by the visitor.
+      if (isBusinessAreaField(f)) continue;
+
       if (isFileField(f)) {
         const file = values[f.key];
         if (!file) {
@@ -372,6 +429,9 @@ export default function ContactForm({
       acc[key] = value instanceof Blob ? value : value?.toString().trim();
       return acc;
     }, {});
+    if (businessAreaField && businessArea) {
+      transformedValues[businessAreaField.key] = businessArea;
+    }
     const hasFile = Object.values(transformedValues).some(
       (value) => value instanceof Blob,
     );
@@ -535,7 +595,7 @@ export default function ContactForm({
             : "space-y-5"
         }
       >
-        {fields.map((f) => (
+        {fields.filter((f) => !isBusinessAreaField(f)).map((f) => (
           <div
             key={`${f.key}-${resetKey}`}
             className={variant === "solution" && f.type === "textarea" ? "md:col-span-2" : ""}

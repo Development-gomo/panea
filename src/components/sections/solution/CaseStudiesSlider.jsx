@@ -81,7 +81,12 @@ export default function SolutionCaseStudiesSlider({
         transition={{ duration: 0.6, delay: 0.1 }}
         viewport={{ once: true }}
       >
-        <CaseStudiesSlider cases={cases} lang={lang} />
+        <CaseStudiesSlider
+          cases={cases}
+          lang={lang}
+          sortByDate={false}
+          loop
+        />
       </motion.div>
     </section>
   );

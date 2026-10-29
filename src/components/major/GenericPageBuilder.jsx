@@ -6,11 +6,17 @@ import {
   getAllPosts,
   getAllSuppliers,
   getAllTeam,
+  getTeamTypes,
+  getCaseStudiesByIds,
   getRecentCaseStudies,
   getTeamMembersByIds,
   getTestimonialsByIds,
   getThemeOptions,
 } from "@/lib/api";
+import {
+  collectSelectedCaseStudyIds,
+  pickSliderCases,
+} from "@/lib/caseStudySelection";
 
 const GenericHero = dynamic(() => import("../sections/generic/Hero"));
 const GenericCounterSection = dynamic(() =>
@@ -121,22 +127,29 @@ export default async function GenericPageBuilder({
   );
   const teamMemberIds = collectTeamMemberIds(sectionItems);
   const testimonialIds = collectTestimonialIds(sectionItems);
+  const selectedCaseStudyIds = collectSelectedCaseStudyIds(sectionItems);
   const [
     prefetchedCases,
+    selectedCases,
     prefetchedBusinessAreas,
     prefetchedPosts,
     prefetchedTeamMembers,
     prefetchedEmployees,
+    prefetchedTeamTypes,
     prefetchedSuppliers,
     prefetchedTestimonials,
     prefetchedVacancies,
     themeOptions,
   ] = await Promise.all([
     needsCases ? getRecentCaseStudies(lang) : null,
+    selectedCaseStudyIds.length
+      ? getCaseStudiesByIds(selectedCaseStudyIds, lang)
+      : null,
     needsBusinessAreas ? getAllBusinessAreas(lang) : null,
     needsPosts ? getAllPosts(lang) : null,
     teamMemberIds.length ? getTeamMembersByIds(teamMemberIds, lang) : null,
     needsEmployees ? getAllTeam(lang) : null,
+    needsEmployees ? getTeamTypes(lang) : null,
     needsSuppliers ? getAllSuppliers(lang) : null,
     testimonialIds.length
       ? getTestimonialsByIds(testimonialIds, lang)
@@ -167,7 +180,11 @@ export default async function GenericPageBuilder({
                 key={i}
                 data={block}
                 lang={lang}
-                prefetchedCases={prefetchedCases}
+                prefetchedCases={pickSliderCases(
+                  block,
+                  selectedCases,
+                  prefetchedCases
+                )}
               />
             );
 
@@ -253,6 +270,7 @@ export default async function GenericPageBuilder({
                 data={block}
                 lang={lang}
                 employees={prefetchedEmployees}
+                teamTypes={prefetchedTeamTypes}
               />
             );
 

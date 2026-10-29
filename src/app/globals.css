@@ -101,7 +101,8 @@ body {
 }
 
 /* Drop the space reserved for the dots when Swiper has disabled them */
-.panea-solution-slider.swiper-pagination-disabled {
+.panea-solution-slider.swiper-pagination-disabled,
+.panea-case-study-slider.swiper-pagination-disabled {
   padding-bottom: 0 !important;
 }
 
