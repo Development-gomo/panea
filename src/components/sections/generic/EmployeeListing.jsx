@@ -8,6 +8,11 @@ import ContactArrow from "../../../../public/p-contact-arrow.svg";
 import LinkedinIcon from "../../../../public/linkedin-theme-icon.png";
 import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
+// "Team Type" taxonomy (teamtype). Section titles and their order come from
+// the WP terms (teamTypes, per language). A member's terms are read from
+// class_list ("teamtype-<slug>"), which WP always includes.
+const TEAM_TYPE_PREFIX = "teamtype-";
+
 function getTitle(member) {
   return decodeHtml(stripHtml(member?.post_title || member?.title?.rendered || member?.title || ""));
 }
@@ -87,6 +92,61 @@ function getBusinessAreas(member) {
   return repeaterRows(member?.acf?.area_of_business_ownership)
     .map((row) => decodeHtml(stripHtml(row?.business_area_or_solution || "")).trim())
     .filter(Boolean);
+}
+
+function getTeamTypes(member) {
+  return (member?.class_list || [])
+    .filter((name) => name.startsWith(TEAM_TYPE_PREFIX))
+    .map((name) => name.slice(TEAM_TYPE_PREFIX.length));
+}
+
+function humanizeSlug(slug) {
+  const text = slug.replace(/-/g, " ");
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+// Groups follow the term order from WP; members with several types appear in
+// each of them, and members without a type are collected in a final, untitled
+// group so nobody drops off the page. A slug with no matching term (e.g. the
+// taxonomy isn't exposed in REST yet) still gets a group, titled from the slug.
+function groupByTeamType(members, teamTypes) {
+  const groups = new Map(
+    teamTypes.map((term) => [
+      term.slug,
+      { slug: term.slug, title: decodeHtml(term.name || ""), members: [] },
+    ])
+  );
+  const untyped = [];
+
+  members.forEach((member) => {
+    const types = getTeamTypes(member);
+    if (!types.length) {
+      untyped.push(member);
+      return;
+    }
+
+    types.forEach((slug) => {
+      if (!groups.has(slug)) {
+        groups.set(slug, { slug, title: humanizeSlug(slug), members: [] });
+      }
+      groups.get(slug).members.push(member);
+    });
+  });
+
+  return [
+    ...[...groups.values()].filter((group) => group.members.length),
+    ...(untyped.length ? [{ slug: "", title: "", members: untyped }] : []),
+  ];
+}
+
+function EmployeeGrid({ members }) {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {members.map((member, index) => (
+        <EmployeeCard key={member?.id || member?.ID || index} member={member} index={index} />
+      ))}
+    </div>
+  );
 }
 
 function ContactLink({ href, children }) {
@@ -190,11 +250,19 @@ function EmployeeCard({ member, index }) {
 export default function GenericEmployeeListing({
   data,
   employees = [],
+  teamTypes = [],
 }) {
   const { text_above_title, title } = data || {};
   const teamMembers = Array.isArray(employees) ? employees : [];
 
   if (!data || !teamMembers.length) return null;
+
+  const groups = groupByTeamType(
+    teamMembers,
+    Array.isArray(teamTypes) ? teamTypes : []
+  );
+  // Until team types are assigned in WP, keep the single ungrouped grid.
+  const isGrouped = groups.some((group) => group.slug);
 
   return (
     <section className="w-full pt-[60px] pb-0 md:pt-[120px]">
@@ -224,11 +292,28 @@ export default function GenericEmployeeListing({
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {teamMembers.map((member, index) => (
-            <EmployeeCard key={member?.id || member?.ID || index} member={member} index={index} />
-          ))}
-        </div>
+        {isGrouped ? (
+          <div className="flex flex-col gap-12 md:gap-16">
+            {groups.map((group) => (
+              <div key={group.slug || "untyped"}>
+                {group.title && (
+                  <motion.h3
+                    className="mb-6 text-left text-[24px] font-light leading-tight text-(--color-body) md:mb-8 md:text-[28px]"
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    viewport={{ once: true }}
+                  >
+                    {group.title}
+                  </motion.h3>
+                )}
+                <EmployeeGrid members={group.members} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <EmployeeGrid members={teamMembers} />
+        )}
       </div>
     </section>
   );

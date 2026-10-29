@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import PExplore from "../../../../public/p-explore.svg";
 import PExploreHover from "../../../../public/p-explore-hover.svg";
 import { DEFAULT_LANG, langHref } from "@/config";
+import useSliderSideOffset from "@/lib/useSliderSideOffset";
 
 import "swiper/css";
 import "swiper/css/pagination";
@@ -24,24 +25,6 @@ const EXPLORE_LABELS = {
   en: "Explore solution",
   sv: "Utforska tjänsten",
 };
-
-function useSliderSideOffset() {
-  const [offset, setOffset] = useState(24);
-
-  useEffect(() => {
-    function updateOffset() {
-      const viewportWidth = window.innerWidth;
-      const containerWidth = Math.min(1328, viewportWidth);
-      setOffset(Math.max(24, (viewportWidth - containerWidth) / 2 + 24));
-    }
-
-    updateOffset();
-    window.addEventListener("resize", updateOffset);
-    return () => window.removeEventListener("resize", updateOffset);
-  }, []);
-
-  return offset;
-}
 
 // Gives every card's title/description panel the height of the tallest one.
 function useEqualPanelHeights(containerRef, deps = []) {
