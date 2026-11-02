@@ -3,6 +3,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { motion } from "framer-motion";
 
 /**
@@ -14,6 +15,8 @@ import { motion } from "framer-motion";
  *   speed    — animation duration in seconds (default 30)
  */
 export default function ClientsLogoSlider({ clients = [], speed = 30, title }) {
+  const [isPaused, setIsPaused] = useState(false);
+
   if (!clients || clients.length === 0) return null;
 
   // Duplicate items for a seamless infinite loop
@@ -36,8 +39,12 @@ export default function ClientsLogoSlider({ clients = [], speed = 30, title }) {
         className="flex gap-4"
         style={{
           width: "max-content",
-          animation: `clients-marquee ${speed}s linear infinite`,
+          animation: `clients-marquee ${speed}s linear infinite ${
+            isPaused ? "paused" : "running"
+          }`,
         }}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
         initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: title ? 0.15 : 0 }}

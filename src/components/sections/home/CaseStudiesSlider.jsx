@@ -176,7 +176,7 @@ export default function CaseStudiesSlider({
         slidesPerView="auto"
         spaceBetween={12}
         pagination={{ clickable: true }}
-        autoplay={{ delay: 2000, disableOnInteraction: false }}
+        autoplay={{ delay: 2000, disableOnInteraction: false, pauseOnMouseEnter: true }}
         breakpoints={{
           768: { spaceBetween: 14 },
           1024: { spaceBetween: 16 },
@@ -221,7 +221,7 @@ function LoopingCaseSlider({ cases, lang, readCaseLabel, sideOffset, className }
         modules={[Pagination, Autoplay]}
         loop={shouldLoop}
         autoplay={
-          shouldLoop ? { delay: 2000, disableOnInteraction: false } : false
+          shouldLoop ? { delay: 2000, disableOnInteraction: false, pauseOnMouseEnter: true } : false
         }
         onPaginationUpdate={syncBullets}
         onSlideChange={syncBullets}

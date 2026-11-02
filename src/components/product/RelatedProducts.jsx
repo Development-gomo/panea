@@ -393,7 +393,7 @@ export default function RelatedProducts({
           modules={[Pagination, Autoplay]}
           loop
           pagination={{ clickable: true }}
-          autoplay={{ delay: 2000, disableOnInteraction: false }}
+          autoplay={{ delay: 2000, disableOnInteraction: false, pauseOnMouseEnter: true }}
           spaceBetween={16}
           slidesPerView={1.05}
           breakpoints={{

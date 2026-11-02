@@ -9,6 +9,7 @@ export default function CoreValueSection({ data }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef(null);
   const itemRefs = useRef([]);
+  const isPausedRef = useRef(false);
 
   // Duplicate items for seamless looping
   const items = [...core_value, ...core_value, ...core_value];
@@ -27,6 +28,12 @@ export default function CoreValueSection({ data }) {
     const singleSetWidth = scrollContainer.scrollWidth / 3;
 
     const animate = () => {
+      // Hold the current position while hovered
+      if (isPausedRef.current) {
+        animationId = requestAnimationFrame(animate);
+        return;
+      }
+
       scrollPos += scrollSpeed;
 
       // Reset to beginning when we've scrolled one full set
@@ -97,6 +104,12 @@ export default function CoreValueSection({ data }) {
             ref={scrollRef}
             className="flex gap-8 overflow-hidden whitespace-nowrap scrollbar-hide md:gap-10"
             style={{ scrollBehavior: "auto" }}
+            onMouseEnter={() => {
+              isPausedRef.current = true;
+            }}
+            onMouseLeave={() => {
+              isPausedRef.current = false;
+            }}
           >
             {items.map((item, i) => {
               const originalIndex = i % core_value.length;

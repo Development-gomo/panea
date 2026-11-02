@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -11,24 +10,6 @@ import QuoteImage from "../../../../public/quote-image.svg";
 import "swiper/css";
 import "swiper/css/pagination";
 import { decodeHtml, stripHtml } from "@/lib/htmlText";
-
-function useSliderSideOffset() {
-  const [offset, setOffset] = useState(24);
-
-  useEffect(() => {
-    function updateOffset() {
-      const viewportWidth = window.innerWidth;
-      const containerWidth = Math.min(1328, viewportWidth);
-      setOffset(Math.max(24, (viewportWidth - containerWidth) / 2 + 24));
-    }
-
-    updateOffset();
-    window.addEventListener("resize", updateOffset);
-    return () => window.removeEventListener("resize", updateOffset);
-  }, []);
-
-  return offset;
-}
 
 function selectedPosts(value) {
   if (!value) return [];
@@ -83,8 +64,6 @@ export default function BusinessAreaTestimonialSlider({
   prefetchedTestimonials = [],
   slug = "",
 }) {
-  const sliderSideOffset = useSliderSideOffset();
-
   if (!VISIBLE_ON_SLUGS.includes(slug)) return null;
 
   const { text_above_title, title } = data || {};
@@ -94,8 +73,6 @@ export default function BusinessAreaTestimonialSlider({
   );
 
   if (!testimonials.length) return null;
-
-  const isSingle = testimonials.length === 1;
 
   return (
     <section className="w-full overflow-hidden pt-[60px] pb-0 md:pt-[120px]">
@@ -127,7 +104,7 @@ export default function BusinessAreaTestimonialSlider({
       </div>
 
       <motion.div
-        className={isSingle ? "web-width-sm mx-auto px-6" : "w-full"}
+        className="web-width-sm mx-auto px-6"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
@@ -135,17 +112,16 @@ export default function BusinessAreaTestimonialSlider({
       >
         <Swiper
           modules={[Pagination, Autoplay]}
-          loop={!isSingle}
-          autoplay={isSingle ? false : { delay: 2000, disableOnInteraction: false }}
-          className={`panea-testimonial-slider${
-            isSingle ? " panea-testimonial-slider-single" : ""
-          }`}
-          slidesPerView="auto"
-          slidesOffsetBefore={isSingle ? 0 : sliderSideOffset}
-          slidesOffsetAfter={isSingle ? 0 : sliderSideOffset}
+          loop
+          autoplay={{
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
+          className="panea-testimonial-slider"
+          slidesPerView={1}
           spaceBetween={14}
-          allowTouchMove={!isSingle}
-          pagination={isSingle ? false : { clickable: true }}
+          pagination={{ clickable: true }}
           breakpoints={{
             768: { spaceBetween: 14 },
             1024: { spaceBetween: 16 },
@@ -169,11 +145,7 @@ export default function BusinessAreaTestimonialSlider({
                         src={image}
                         alt={titleText || "Testimonial author"}
                         fill
-                        sizes={
-                          isSingle
-                            ? "(max-width: 767px) calc(100vw - 48px), 430px"
-                            : "(max-width: 767px) calc(100vw - 48px), 280px"
-                        }
+                        sizes="(max-width: 767px) calc(100vw - 48px), 430px"
                         className="object-cover"
                       />
                     ) : (
@@ -201,9 +173,7 @@ export default function BusinessAreaTestimonialSlider({
 
                     {content && (
                       <div
-                        className={`ff-larken relative z-10 ${
-                          isSingle ? "max-w-[860px]" : "max-w-[510px]"
-                        } text-[24px] font-light leading-[1.35] text-white md:text-[28px] [&_p]:mb-4 [&_p:last-child]:mb-0`}
+                        className={`ff-larken relative z-10 max-w-[860px] text-[24px] font-light leading-[1.35] text-white md:text-[28px] [&_p]:mb-4 [&_p:last-child]:mb-0`}
                         dangerouslySetInnerHTML={{ __html: content }}
                       />
                     )}

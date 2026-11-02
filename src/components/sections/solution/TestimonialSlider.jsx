@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Autoplay, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -11,24 +10,6 @@ import QuoteImage from "../../../../public/quote-image.svg";
 import "swiper/css";
 import "swiper/css/pagination";
 import { decodeHtml, stripHtml } from "@/lib/htmlText";
-
-function useSliderSideOffset() {
-  const [offset, setOffset] = useState(24);
-
-  useEffect(() => {
-    function updateOffset() {
-      const viewportWidth = window.innerWidth;
-      const containerWidth = Math.min(1328, viewportWidth);
-      setOffset(Math.max(24, (viewportWidth - containerWidth) / 2 + 24));
-    }
-
-    updateOffset();
-    window.addEventListener("resize", updateOffset);
-    return () => window.removeEventListener("resize", updateOffset);
-  }, []);
-
-  return offset;
-}
 
 function selectedPosts(value) {
   if (!value) return [];
@@ -76,8 +57,6 @@ function mergeTestimonials(selected, fetched) {
 }
 
 export default function SolutionTestimonialSlider({ data, prefetchedTestimonials = [] }) {
-  const sliderSideOffset = useSliderSideOffset();
-
   return null;
 
   const { text_above_title, title } = data || {};
@@ -118,7 +97,7 @@ export default function SolutionTestimonialSlider({ data, prefetchedTestimonials
       </div>
 
       <motion.div
-        className="w-full"
+        className="web-width-sm mx-auto px-6"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
@@ -127,11 +106,13 @@ export default function SolutionTestimonialSlider({ data, prefetchedTestimonials
         <Swiper
           modules={[Pagination, Autoplay]}
           loop
-          autoplay={{ delay: 2000, disableOnInteraction: false }}
+          autoplay={{
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
           className="panea-testimonial-slider"
-          slidesPerView="auto"
-          slidesOffsetBefore={sliderSideOffset}
-          slidesOffsetAfter={sliderSideOffset}
+          slidesPerView={1}
           spaceBetween={14}
           pagination={{ clickable: true }}
           breakpoints={{
@@ -157,7 +138,7 @@ export default function SolutionTestimonialSlider({ data, prefetchedTestimonials
                         src={image}
                         alt={titleText || "Testimonial author"}
                         fill
-                        sizes="(max-width: 767px) calc(100vw - 48px), 280px"
+                        sizes="(max-width: 767px) calc(100vw - 48px), 430px"
                         className="object-cover"
                       />
                     ) : (
@@ -185,7 +166,7 @@ export default function SolutionTestimonialSlider({ data, prefetchedTestimonials
 
                     {content && (
                       <div
-                        className="ff-larken relative z-10 max-w-[510px] text-[32px] font-extralight leading-[1.35] text-white md:text-[32px] [&_p]:mb-4 [&_p:last-child]:mb-0"
+                        className="ff-larken relative z-10 max-w-[860px] text-[32px] font-extralight leading-[1.35] text-white md:text-[32px] [&_p]:mb-4 [&_p:last-child]:mb-0"
                         dangerouslySetInnerHTML={{ __html: content }}
                       />
                     )}

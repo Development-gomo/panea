@@ -91,11 +91,6 @@ body {
   background: transparent;
 }
 
-.panea-testimonial-slider-shell {
-  padding-left: max(24px, calc(50vw - 645px));
-  padding-right: 0;
-}
-
 .panea-testimonial-slider {
   padding-bottom: 50px !important;
 }
@@ -107,15 +102,6 @@ body {
 }
 
 .panea-testimonial-slide {
-  width: clamp(720px, 70vw, 876px) !important;
-}
-
-/* Only one testimonial selected: full-width card, no space for dots */
-.panea-testimonial-slider.panea-testimonial-slider-single {
-  padding-bottom: 0 !important;
-}
-
-.panea-testimonial-slider-single .panea-testimonial-slide {
   width: 100% !important;
 }
 
@@ -145,14 +131,6 @@ body {
   .panea-case-slider-shell {
     padding-left: 24px;
     padding-right: 0;
-  }
-
-  .panea-testimonial-slider-shell {
-    padding-left: 24px;
-  }
-
-  .panea-testimonial-slide {
-    width: calc(100vw - 48px) !important;
   }
 }
 /* Global heading tags default */
