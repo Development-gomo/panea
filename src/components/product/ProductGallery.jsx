@@ -117,7 +117,7 @@ export default function ProductGallery({ product }) {
         <Swiper
           modules={[Navigation, Thumbs, Autoplay]}
           loop={showNavigation}
-          autoplay={showNavigation ? { delay: 2000, disableOnInteraction: false } : false}
+          autoplay={showNavigation ? { delay: 2000, disableOnInteraction: false, pauseOnMouseEnter: true } : false}
           navigation={
             showNavigation
               ? {

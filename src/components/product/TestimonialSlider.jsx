@@ -73,8 +73,6 @@ export default function ProductTestimonialSlider({
 
   if (!testimonials.length) return null;
 
-  const isSingle = testimonials.length === 1;
-
   return (
     <section className="w-full overflow-hidden pt-[60px] pb-0 md:pt-[120px]">
       <div className="web-width mx-auto px-6">
@@ -105,9 +103,7 @@ export default function ProductTestimonialSlider({
       </div>
 
       <motion.div
-        className={
-          isSingle ? "web-width-sm mx-auto px-6" : "panea-testimonial-slider-shell"
-        }
+        className="web-width-sm mx-auto px-6"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
@@ -115,15 +111,16 @@ export default function ProductTestimonialSlider({
       >
         <Swiper
           modules={[Pagination, Autoplay]}
-          loop={!isSingle}
-          autoplay={isSingle ? false : { delay: 2000, disableOnInteraction: false }}
-          className={`panea-testimonial-slider${
-            isSingle ? " panea-testimonial-slider-single" : ""
-          }`}
-          slidesPerView="auto"
+          loop
+          autoplay={{
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true,
+          }}
+          className="panea-testimonial-slider"
+          slidesPerView={1}
           spaceBetween={14}
-          allowTouchMove={!isSingle}
-          pagination={isSingle ? false : { clickable: true }}
+          pagination={{ clickable: true }}
           breakpoints={{
             768: { spaceBetween: 14 },
             1024: { spaceBetween: 16 },
@@ -147,11 +144,7 @@ export default function ProductTestimonialSlider({
                         src={image}
                         alt={titleText || "Testimonial author"}
                         fill
-                        sizes={
-                          isSingle
-                            ? "(max-width: 767px) calc(100vw - 48px), 430px"
-                            : "(max-width: 767px) calc(100vw - 48px), 280px"
-                        }
+                        sizes="(max-width: 767px) calc(100vw - 48px), 430px"
                         className="object-cover"
                       />
                     ) : (
@@ -179,9 +172,7 @@ export default function ProductTestimonialSlider({
 
                     {content && (
                       <div
-                        className={`ff-larken relative z-10 ${
-                          isSingle ? "max-w-[860px]" : "max-w-[510px]"
-                        } text-[32px] font-extralight leading-[1.35] text-white md:text-[32px] [&_p]:mb-4 [&_p:last-child]:mb-0`}
+                        className="ff-larken relative z-10 max-w-[860px] text-[32px] font-extralight leading-[1.35] text-white md:text-[32px] [&_p]:mb-4 [&_p:last-child]:mb-0"
                         dangerouslySetInnerHTML={{ __html: content }}
                       />
                     )}

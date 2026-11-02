@@ -18,8 +18,13 @@ import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
 const MIN_LOOP_SLIDES = 8;
 
-// Solutions whose card shows no "Explore solution" button.
-const HIDDEN_EXPLORE_SLUGS = ["service"];
+// Solutions whose card links to the contact page instead of "Explore solution".
+const CONTACT_SOLUTION_SLUGS = ["service"];
+
+const CONTACT_BUTTONS = {
+  en: { text: "Contact us for service", url: "/contact/" },
+  sv: { text: "Kontakta oss för service", url: "/kontakt/" },
+};
 
 const EXPLORE_LABELS = {
   en: "Explore solution",
@@ -201,21 +206,29 @@ function SolutionSlideCard({ row, lang }) {
 
   const title = getTitle(solution);
 
-  const hideExplore = HIDDEN_EXPLORE_SLUGS.includes(solution?.slug);
+  // Draft solutions aren't in the fetched list, so only the raw ACF post
+  // object (with `post_name`, no `slug`) is available for them.
+  const isContactSolution = CONTACT_SOLUTION_SLUGS.includes(
+    solution?.slug || solution?.post_name
+  );
 
-  const fallbackHref =
-    solution?.slug && !hideExplore
-      ? langHref(`/${solution.slug}`, lang)
-      : "";
+  let mainButton = null;
+  if (isContactSolution) {
+    const contactButton = CONTACT_BUTTONS[lang] || CONTACT_BUTTONS.en;
+    mainButton = {
+      text: contactButton.text,
+      url: langHref(contactButton.url, lang),
+      isMain: true,
+    };
+  } else if (solution?.slug) {
+    mainButton = {
+      text: EXPLORE_LABELS[lang] || EXPLORE_LABELS.en,
+      url: langHref(`/${solution.slug}`, lang),
+      isMain: true,
+    };
+  }
 
-  const exploreLabel = EXPLORE_LABELS[lang] || EXPLORE_LABELS.en;
-
-  const allButtons = [
-    ...buttons,
-    ...(fallbackHref
-      ? [{ text: exploreLabel, url: fallbackHref, isMain: true }]
-      : []),
-  ];
+  const allButtons = [...buttons, ...(mainButton ? [mainButton] : [])];
 
   return (
     <article className="group relative h-[500px] overflow-hidden rounded-[7px] bg-[#1E2E31] text-white">
@@ -266,11 +279,13 @@ function SolutionSlideCard({ row, lang }) {
         )}
       </div>
 
-      {(allButtons.length > 0 || hideExplore) && (
-        <div className="absolute inset-x-0 bottom-0 z-10 grid grid-cols-2 border-t border-white/15 bg-black/25 backdrop-blur-md transition-colors duration-0 group-hover:duration-300 group-hover:bg-[#1E2E31] group-hover:backdrop-blur-0">
-          {allButtons.length === 0 && (
-            <span aria-hidden="true" className="col-span-2 min-h-[50px]" />
-          )}
+      {allButtons.length > 0 && (
+        <div className={`absolute inset-x-0 bottom-0 z-10 grid ${
+          // The contact label is longer, so its button grows to fit it on one line.
+          isContactSolution && allButtons.length === 1
+            ? "grid-cols-[1fr_auto] [&>a]:whitespace-nowrap"
+            : "grid-cols-2"
+        } border-t border-white/15 bg-black/25 backdrop-blur-md transition-colors duration-0 group-hover:duration-300 group-hover:bg-[#1E2E31] group-hover:backdrop-blur-0`}>
           {allButtons.length === 1 && <span aria-hidden="true" />}
 
           {allButtons.map((button, index) => (
@@ -384,7 +399,7 @@ export default function BusinessAreaSolutionSlider({
             loop={shouldLoop}
             autoplay={
               shouldLoop
-                ? { delay: 2000, disableOnInteraction: false }
+                ? { delay: 2000, disableOnInteraction: false, pauseOnMouseEnter: true }
                 : false
             }
             onPaginationUpdate={syncBullets}
