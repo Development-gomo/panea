@@ -71,7 +71,7 @@ export default function CaseStudyTestimonialSlider({
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {text_above_title && (
             <motion.p
-              className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
+              className="testimonial-subheading ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -83,7 +83,7 @@ export default function CaseStudyTestimonialSlider({
 
           {title && (
             <motion.div
-              className="section-heading h2 max-w-[920px] text-2xl font-regular leading-[1.3] text-(--color-body) md:text-3xl lg:text-[36px]"
+              className="testimonial-heading section-heading h2 max-w-[920px] text-2xl font-regular leading-[1.3] text-(--color-body) md:text-3xl lg:text-[36px]"
               dangerouslySetInnerHTML={{ __html: title }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -136,19 +136,19 @@ export default function CaseStudyTestimonialSlider({
 
             {content && (
               <div
-                className="ff-larken relative z-10 max-w-[725px] break-words text-[23px] font-extralight leading-[1.35] text-white sm:text-[27px] lg:text-[32px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-4 [&_p:last-child]:mb-0"
+                className="testimonial-quote ff-larken relative z-10 max-w-[725px] break-words text-[23px] font-extralight leading-[1.35] text-white sm:text-[27px] lg:text-[32px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-4 [&_p:last-child]:mb-0"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             )}
 
             <div className="relative z-10 mt-10">
               {titleText && (
-                <p className="text-[20px] font-normal leading-tight text-white">
+                <p className="testimonial-name text-[20px] font-normal leading-tight text-white">
                   {titleText}
                 </p>
               )}
               {designation && (
-                <p className="mt-1 text-[14px] font-light leading-normal text-white">
+                <p className="testimonial-designation mt-1 text-[14px] font-light leading-normal text-white">
                   {designation}
                 </p>
               )}

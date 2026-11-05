@@ -98,7 +98,7 @@ export default function BusinessAreaCounterSection({ data }) {
             <div className="w-full md:w-1/2">
               {content && (
                 <div
-                  className="body-text space-y-4 text-(--color-body) [&_p]:mb-4"
+                  className="body-text space-y-4 text-(--color-body) [&_p]:mb-4 [&_h2]:font-(family-name:--font-larken) [&_h2]:mb-4 [&_h2]:text-[24px] [&_h2]:font-light [&_h2]:leading-[1.2] md:[&_h2]:text-[28px] [&_h3]:font-(family-name:--font-larken) [&_h3]:mb-3 [&_h3]:text-[21px] [&_h3]:font-light [&_h3]:leading-[1.2] md:[&_h3]:text-[24px]"
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
               )}

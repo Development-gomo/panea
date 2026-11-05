@@ -47,7 +47,7 @@ export default function CaseStudySection({
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {label && (
             <motion.p
-              className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
+              className="cases-subheading ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -59,7 +59,7 @@ export default function CaseStudySection({
 
           {sectionTitle && (
             <motion.div
-              className="section-heading h2 max-w-[920px] text-2xl font-regular leading-[1.3] text-(--color-body) md:text-3xl lg:text-[36px]"
+              className="cases-heading section-heading h2 max-w-[920px] text-2xl font-regular leading-[1.3] text-(--color-body) md:text-3xl lg:text-[36px]"
               dangerouslySetInnerHTML={{ __html: sectionTitle }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -70,7 +70,7 @@ export default function CaseStudySection({
 
           {cta_text && ctaUrl && (
             <motion.div
-              className="mt-6"
+              className="cases-cta mt-6"
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}

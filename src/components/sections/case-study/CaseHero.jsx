@@ -104,14 +104,14 @@ export default function CaseHero({
 
           <div className="relative z-10 flex w-full min-w-0 flex-col items-center justify-center px-5 text-center sm:px-6">
             {showEyebrow && (
-              <p className="mb-4 text-[16px] font-light leading-none text-white md:text-[18px]">
+              <p className="hero-subheading mb-4 text-[16px] font-light leading-none text-white md:text-[18px]">
                 {caseStudyLabel}
               </p>
             )}
 
             {pageTitle && (
               <h1
-                className="w-full max-w-[920px] break-words text-[30px] font-[300] leading-[1.15] text-white sm:text-[34px] md:text-[42px] lg:text-[48px]"
+                className="hero-heading w-full max-w-[920px] break-words text-[30px] font-[300] leading-[1.15] text-white sm:text-[34px] md:text-[42px] lg:text-[48px]"
                 dangerouslySetInnerHTML={{ __html: pageTitle }}
               />
             )}
@@ -120,7 +120,7 @@ export default function CaseHero({
               <button
                 type="button"
                 onClick={scrollToAboutProject}
-                className="mt-6 inline-flex max-w-full cursor-pointer items-center justify-center rounded-[50px] bg-(--color-brand) px-7 py-4 text-center text-[16px] leading-tight text-(--color-body) transition-colors duration-300 hover:bg-white sm:px-9"
+                className="hero-cta mt-6 inline-flex max-w-full cursor-pointer items-center justify-center rounded-[50px] bg-(--color-brand) px-7 py-4 text-center text-[16px] leading-tight text-(--color-body) transition-colors duration-300 hover:bg-white sm:px-9"
               >
                 {ctaText}
               </button>

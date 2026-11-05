@@ -60,7 +60,7 @@ export default function ProjectGallery({ data }) {
         <div className="mb-10 flex flex-col items-center text-center md:mb-16">
           {text_above_title && (
             <motion.p
-              className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
+              className="gallery-subheading ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -72,7 +72,7 @@ export default function ProjectGallery({ data }) {
 
           {heading && (
             <motion.div
-              className="section-heading h2 max-w-[920px] text-2xl font-regular leading-[1.3] text-(--color-body) md:text-3xl lg:text-[36px]"
+              className="gallery-heading section-heading h2 max-w-[920px] text-2xl font-regular leading-[1.3] text-(--color-body) md:text-3xl lg:text-[36px]"
               dangerouslySetInnerHTML={{ __html: heading }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}

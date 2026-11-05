@@ -85,7 +85,7 @@ export default function CaseStudyImageCtaBanner({
 
             {title && (
               <motion.h2
-                className="ff-larken mb-8 max-w-[630px] break-words text-[30px] font-light leading-[1.2] text-white sm:text-[36px] md:text-[48px] md:leading-normal"
+                className="cta-banner-heading ff-larken mb-8 max-w-[630px] break-words text-[30px] font-light leading-[1.2] text-white sm:text-[36px] md:text-[48px] md:leading-normal"
                 dangerouslySetInnerHTML={{ __html: title }}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -96,7 +96,7 @@ export default function CaseStudyImageCtaBanner({
 
             {description && (
               <motion.div
-                className="mb-8 w-full max-w-[940px] break-words text-[15px] font-light leading-[1.45] text-white sm:text-[16px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mx-auto [&_p]:mb-4 [&_p]:max-w-[720px] [&_p:last-child]:mb-0 [&_ul]:mx-auto [&_ul]:mt-8 [&_ul]:flex [&_ul]:w-full [&_ul]:max-w-[940px] [&_ul]:list-disc [&_ul]:flex-wrap [&_ul]:items-center [&_ul]:justify-center [&_ul]:gap-x-8 [&_ul]:gap-y-2 [&_ul]:pl-5 [&_li]:text-left [&_li]:text-[14px] [&_li]:italic [&_li]:marker:text-white"
+                className="cta-banner-description mb-8 w-full max-w-[940px] break-words text-[15px] font-light leading-[1.45] text-white sm:text-[16px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mx-auto [&_p]:mb-4 [&_p]:max-w-[720px] [&_p:last-child]:mb-0 [&_ul]:mx-auto [&_ul]:mt-8 [&_ul]:flex [&_ul]:w-full [&_ul]:max-w-[940px] [&_ul]:list-disc [&_ul]:flex-wrap [&_ul]:items-center [&_ul]:justify-center [&_ul]:gap-x-8 [&_ul]:gap-y-2 [&_ul]:pl-5 [&_li]:text-left [&_li]:text-[14px] [&_li]:italic [&_li]:marker:text-white"
                 dangerouslySetInnerHTML={{ __html: description }}
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -114,7 +114,7 @@ export default function CaseStudyImageCtaBanner({
               >
                 <Link
                   href={langHref(cta_url, lang)}
-                  className="inline-flex items-center justify-center rounded-[50px] bg-(--color-white) px-[36px] py-[14px] text-(--color-body) transition-colors duration-300"
+                  className="cta-banner-button inline-flex items-center justify-center rounded-[50px] bg-(--color-white) px-[36px] py-[14px] text-(--color-body) transition-colors duration-300"
                 >
                   {cta_text}
                 </Link>

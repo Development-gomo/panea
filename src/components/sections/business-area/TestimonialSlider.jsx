@@ -57,7 +57,7 @@ function mergeTestimonials(selected, fetched) {
 }
 
 // Testimonials are hidden site-wide except on these business area slugs.
-const VISIBLE_ON_SLUGS = ["bageri-konditori"];
+const VISIBLE_ON_SLUGS = ["bageri-konditori", "bakery-pastry-shop"];
 
 export default function BusinessAreaTestimonialSlider({
   data,

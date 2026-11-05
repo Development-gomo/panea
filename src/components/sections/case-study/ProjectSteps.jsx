@@ -18,7 +18,9 @@ function getImageUrl(image) {
   );
 }
 
-export default function ProjectSteps({ data }) {
+export default function ProjectSteps({ data, classPrefix = "challenge" }) {
+  const cls = (name) => `${classPrefix}-${name}`;
+
   if (!data) return null;
 
   const {
@@ -39,12 +41,12 @@ export default function ProjectSteps({ data }) {
   }
 
   return (
-    <section className="w-full bg-[#F2EBE2] py-[40px] md:py-[60px]">
+    <section className={`w-full bg-[#F2EBE2] py-[40px] md:py-[60px]`}>
       <div className="web-width mx-auto px-6">
         <div className="mb-10 flex flex-col items-center text-center md:mb-15">
           {text_above_title && (
             <motion.p
-              className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
+              className={`${cls("subheading")} ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)`}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -56,7 +58,7 @@ export default function ProjectSteps({ data }) {
 
           {title && (
             <motion.div
-              className="section-heading h2 max-w-[920px] text-2xl leading-[1.3] font-regular text-(--color-body) md:text-3xl lg:text-[36px]"
+              className={`${cls("heading")} section-heading h2 max-w-[920px] text-2xl leading-[1.3] font-regular text-(--color-body) md:text-3xl lg:text-[36px]`}
               dangerouslySetInnerHTML={{ __html: title }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -84,7 +86,7 @@ export default function ProjectSteps({ data }) {
                   width={560}
                   height={420}
                   sizes="(min-width: 768px) 50vw, calc(100vw - 48px)"
-                  className="h-auto w-full rounded-[10px] object-cover"
+                  className={`h-auto w-full rounded-[10px] object-cover`}
                 />
               </div>
             )}
@@ -99,18 +101,18 @@ export default function ProjectSteps({ data }) {
                         index > 0 ? "pt-5" : ""
                       }`}
                     >
-                      <span className="ff-larken pt-[10px] text-[16px] leading-none font-light text-(--color-body) italic">
+                      <span className={`ff-larken pt-[10px] text-[16px] leading-none font-light text-(--color-body) italic`}>
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <div className="border-b border-[#1E2E31]/20 pb-4">
                         {step?.title && (
-                          <h3 className="ff-larken break-words text-[21px] leading-[1.2] font-light text-(--color-body) sm:text-[24px]">
+                          <h3 className={`${cls("pointer-heading")} ff-larken break-words text-[21px] leading-[1.2] font-light text-(--color-body) sm:text-[24px]`}>
                             {step.title}
                           </h3>
                         )}
                         {step?.short_information && (
                           <div
-                            className="mt-2 break-words text-[14px] leading-[1.45] font-normal text-(--color-body) sm:text-[16px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-0"
+                            className={`${cls("pointer-description")} mt-2 break-words text-[14px] leading-[1.45] font-normal text-(--color-body) sm:text-[16px] [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-0`}
                             dangerouslySetInnerHTML={{
                               __html: step.short_information,
                             }}
