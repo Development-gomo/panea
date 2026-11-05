@@ -21,6 +21,7 @@ const SolutionOurClients = dynamic(() => import("../sections/solution/OurClients
 const SolutionBusinessAreas = dynamic(() => import("../sections/solution/BusinessAreas"));
 const SolutionTestimonialSlider = dynamic(() => import("../sections/solution/TestimonialSlider"));
 const SolutionContactFormSection = dynamic(() => import("../sections/solution/ContactFormSection"));
+const SolutionCounterSection = dynamic(() => import("../sections/business-area/CounterSection"));
 
 function getSelectedBusinessAreas(selected, allBusinessAreas) {
   const selectedItems = Array.isArray(selected)
@@ -227,6 +228,11 @@ export default async function SolutionBuilder({
           case "hero_section":
           case "solution_hero":
             return <SolutionHero key={i} data={block} lang={lang} />;
+
+          case "counter_section":
+          case "feature_counter":
+          case "home_counter":
+            return <SolutionCounterSection key={i} data={block} lang={lang} />;
 
           case "faq":
           case "faq_section":

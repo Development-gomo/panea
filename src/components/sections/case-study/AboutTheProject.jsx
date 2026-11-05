@@ -64,7 +64,7 @@ export default function AboutTheProject({ data }) {
         <div className="mb-10 flex flex-col items-center text-center md:mb-15">
           {text_above_title && (
             <motion.p
-              className="ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
+              className="about-subheading ff-larken mb-4 text-[16px] font-light leading-normal text-(--color-body)"
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -76,7 +76,7 @@ export default function AboutTheProject({ data }) {
 
           {title && (
             <motion.div
-              className="section-heading h2 max-w-[920px] text-2xl leading-[1.3] font-regular text-(--color-body) md:text-3xl lg:text-[36px]"
+              className="about-heading section-heading h2 max-w-[920px] text-2xl leading-[1.3] font-regular text-(--color-body) md:text-3xl lg:text-[36px]"
               dangerouslySetInnerHTML={{ __html: title }}
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -91,7 +91,7 @@ export default function AboutTheProject({ data }) {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               viewport={{ once: true }}
-              className="mt-6"
+              className="about-cta mt-6"
             >
               <Link
                 href={cta_url}
@@ -134,7 +134,7 @@ export default function AboutTheProject({ data }) {
 
             {content && (
               <div
-                className="body-text w-full min-w-0 break-words space-y-6 text-(--color-body) md:flex-1 [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-4"
+                className="about-description body-text w-full min-w-0 break-words space-y-6 text-(--color-body) md:flex-1 [&_img]:h-auto [&_img]:max-w-full [&_p]:mb-4"
                 dangerouslySetInnerHTML={{ __html: content }}
               />
             )}

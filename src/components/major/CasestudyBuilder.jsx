@@ -103,7 +103,7 @@ export default async function CaseStudyBuilder({
               />
             );
           case "our_process":
-            return <ProjectSteps key={i} data={block} />;
+            return <ProjectSteps key={i} data={block} classPrefix="process" />;
           // "How we delivered the solution" and "What the project achieved" are hidden.
           case "our_approach":
           case "project_achive":
