@@ -12,7 +12,7 @@ const HEADING_TEXT = {
   },
   sv: {
     subHeading: "Paneas arbetssätt",
-    heading: "Panea way of working",
+    heading: "Så arbetar vi på Panea",
   },
 };
 
