@@ -58,7 +58,11 @@ async function prefetchSectionData(sections, lang) {
   return { businessAreas, cases, posts, team, clients, clientsTitle };
 }
 
-export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
+export default async function PageBuilder({
+  sections,
+  lang = DEFAULT_LANG,
+  businessTabsCtaVariant,
+}) {
   if (!sections) return null;
 
   const prefetched = await prefetchSectionData(sections, lang);
@@ -117,7 +121,15 @@ export default async function PageBuilder({ sections, lang = DEFAULT_LANG }) {
             return <WhyChooseUs key={i} data={block} lang={lang} />;
 
           case "business_tabs":
-            return <BusinessTabs key={i} data={block} lang={lang} prefetchedBusinessAreas={prefetched.businessAreas} />;
+            return (
+              <BusinessTabs
+                key={i}
+                data={block}
+                lang={lang}
+                prefetchedBusinessAreas={prefetched.businessAreas}
+                ctaVariant={businessTabsCtaVariant}
+              />
+            );
 
           default:
             return null;

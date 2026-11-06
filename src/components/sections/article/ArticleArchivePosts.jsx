@@ -14,6 +14,7 @@ const POSTS_PER_PAGE = 12;
 const LABELS = {
   en: {
     all: "All",
+    filterHeading: "Choose your category",
     article: "Article",
     readMore: "Read more",
     previous: "Previous page",
@@ -21,7 +22,8 @@ const LABELS = {
     pagination: "Article pagination",
   },
   sv: {
-    all: "Alla",
+    all: "Alla insikter & nyheter",
+    filterHeading: "Vilken kategori vill du läsa om?",
     article: "Artikel",
     readMore: "Läs mer",
     previous: "Föregående sida",
@@ -29,6 +31,43 @@ const LABELS = {
     pagination: "Artikelpaginering",
   },
 };
+
+// Preferred display order of the category filter per language. Categories are
+// matched by name ("&" and "och"/"and" are treated as equal, case-insensitive).
+// Categories not listed here are shown after these, alphabetically.
+const CATEGORY_ORDER = {
+  sv: [
+    "Nyheter",
+    "Kontor & arbetsplats",
+    "Hotell",
+    "Restaurang",
+    "Café",
+    "Bageri & konditori",
+    "Livsmedelsindustri",
+  ],
+};
+
+function normalizeCategoryName(name) {
+  return decodeHtml(name || "")
+    .toLowerCase()
+    .replace(/&|\boch\b|\band\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function sortCategories(categories, lang) {
+  const order = (CATEGORY_ORDER[lang] || []).map(normalizeCategoryName);
+  const rank = (category) => {
+    const index = order.indexOf(normalizeCategoryName(category.name));
+    return index === -1 ? order.length : index;
+  };
+
+  return [...categories].sort(
+    (a, b) =>
+      rank(a) - rank(b) ||
+      decodeHtml(a.name).localeCompare(decodeHtml(b.name), lang)
+  );
+}
 
 function getPostImage(post) {
   return post?._embedded?.["wp:featuredmedia"]?.[0]?.source_url || "";
@@ -82,9 +121,7 @@ export default function ArticleArchivePosts({
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const labels = LABELS[lang] || LABELS.en;
-  const sortedCategories = [...categories].sort((a, b) =>
-    decodeHtml(a.name).localeCompare(decodeHtml(b.name), lang)
-  );
+  const sortedCategories = sortCategories(categories, lang);
   const filteredPosts = [...posts]
     .filter((post) =>
       selectedCategory === "all"
@@ -129,7 +166,16 @@ export default function ArticleArchivePosts({
       <div className="web-width-sm mx-auto px-6">
         {sortedCategories.length > 0 && (
           <div className="mb-10 md:mb-12">
-            <div className="-mx-6 flex gap-3 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-5">
+            <motion.h2
+              className="section-heading h2 mx-auto mb-8 max-w-[920px] text-center text-2xl font-regular leading-[1.3] text-(--color-body) md:mb-12 md:text-3xl lg:text-[36px]"
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              {labels.filterHeading}
+            </motion.h2>
+            <div className="-mx-6 flex gap-3 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
               <button
                 type="button"
                 onClick={() => selectCategory("all")}
@@ -207,7 +253,7 @@ export default function ArticleArchivePosts({
 
                   <div className="absolute inset-x-0 bottom-0 border-t border-white/15 bg-black/35 text-white shadow-[0_-12px_36px_rgba(0,0,0,0.3)] backdrop-blur-md">
                     <div className="px-4 pt-4 pb-5 sm:min-h-[100px] sm:px-6 sm:pt-6 sm:pb-8">
-                      <h3 className="break-words text-[17px] leading-[1.3] sm:min-h-[54px] sm:text-[18px] xl:text-[20px]">
+                      <h3 className="line-clamp-3 min-h-[3.9em] break-words text-[17px] leading-[1.3] sm:text-[18px] xl:text-[20px]">
                         {title}
                       </h3>
                     </div>

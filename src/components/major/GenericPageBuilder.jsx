@@ -100,6 +100,7 @@ export default async function GenericPageBuilder({
   sections,
   lang = DEFAULT_LANG,
   imageCtaContainerWidthClass,
+  businessTabsCtaVariant,
 }) {
   if (!sections) return null;
 
@@ -218,6 +219,7 @@ export default async function GenericPageBuilder({
                 data={block}
                 lang={lang}
                 prefetchedBusinessAreas={prefetchedBusinessAreas}
+                ctaVariant={businessTabsCtaVariant}
               />
             );
 

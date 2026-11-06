@@ -168,7 +168,7 @@ export default async function CaseStudiesArchivePage({
         <CaseHero
           data={heroData}
           lang={lang}
-          pageTitle={lang === "sv" ? "Våra Case" : "Our Case Studies"}
+          pageTitle={lang === "sv" ? "Våra case" : "Our case studies"}
           scrollTargetId="case-archive-grid"
           showCurrentTitleInBreadcrumb={false}
           showBreadcrumb={false}

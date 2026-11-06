@@ -19,6 +19,12 @@ const CTA_LABELS = {
   sv: "Utforska lösningar",
 };
 
+// Used on the home and about pages (ctaVariant="segment").
+const SEGMENT_CTA_LABELS = {
+  en: "Explore segment",
+  sv: "Utforska bransch",
+};
+
 function getImageUrl(item) {
   return (
     item?._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
@@ -126,7 +132,12 @@ function ExploreIcon() {
   );
 }
 
-export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusinessAreas }) {
+export default function BusinessTabs({
+  data,
+  lang = DEFAULT_LANG,
+  prefetchedBusinessAreas,
+  ctaVariant,
+}) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -140,7 +151,8 @@ export default function BusinessTabs({ data, lang = DEFAULT_LANG, prefetchedBusi
   const activeDescription = activeItem.description;
   const activeHref = activeItem.slug ? langHref(`/${activeItem.slug}`, lang) : "";
   const webshopButton = getWebshopButton(activeItem);
-  const ctaLabel = CTA_LABELS[lang] || CTA_LABELS.en;
+  const ctaLabels = ctaVariant === "segment" ? SEGMENT_CTA_LABELS : CTA_LABELS;
+  const ctaLabel = ctaLabels[lang] || ctaLabels.en;
 
   useEffect(() => {
     if (!tabItems.length || isPaused || tabItems.length <= 1) return undefined;

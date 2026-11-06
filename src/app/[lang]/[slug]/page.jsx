@@ -974,6 +974,7 @@ export default async function SinglePage({ params }) {
   const slug = parsed?.slug;
   const isWebshopSlug =
     slug === "webshop" || (lang === "sv" && slug === "webbshop");
+  const isAboutPage = ["om-oss", "about-us", "about"].includes(slug);
 
   if (!slug) notFound();
 
@@ -1133,9 +1134,17 @@ export default async function SinglePage({ params }) {
             processSteps={themeOptions?.process_steps}
           />
         ) : Array.isArray(acf.generic_page_builder) ? (
-          <GenericPageBuilder sections={genericSections} lang={lang} />
+          <GenericPageBuilder
+            sections={genericSections}
+            lang={lang}
+            businessTabsCtaVariant={isAboutPage ? "segment" : undefined}
+          />
         ) : (
-          <PageBuilder sections={acf.page_builder} lang={lang} />
+          <PageBuilder
+            sections={acf.page_builder}
+            lang={lang}
+            businessTabsCtaVariant={isAboutPage ? "segment" : undefined}
+          />
         )}
       </main>
       <Footer lang={lang} currentSlug={slug} />
