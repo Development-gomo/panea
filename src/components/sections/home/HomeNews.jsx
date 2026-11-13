@@ -177,7 +177,7 @@ export default function HomeNews({
 
                   <div className="absolute inset-x-0 bottom-0 border-t border-white/15 bg-black/35 text-white shadow-[0_-12px_36px_rgba(0,0,0,0.3)] backdrop-blur-md">
                     <div className="pt-6 px-6 pb-10 min-h-[150px]">
-                      <h3 className="min-h-[54px] text-[18px] leading-[1.35] md:text-[20px]">
+                      <h3 className="line-clamp-3 min-h-[4.05em] text-[18px] leading-[1.35] md:text-[20px]">
                         {titleText}
                       </h3>
                     </div>

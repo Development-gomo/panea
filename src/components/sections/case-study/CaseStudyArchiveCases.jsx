@@ -11,6 +11,51 @@ import { decodeHtml, stripHtml } from "@/lib/htmlText";
 
 const CASES_PER_PAGE = 12;
 
+// Display order of the case study category filter, per language. Categories
+// are matched by name or slug (case-, accent- and "&"/"och"/"and"-insensitive).
+// Categories not listed are shown after these, in their original order.
+const CATEGORY_ORDER = {
+  sv: [
+    "Kontor & arbetsplats",
+    "Hotell",
+    "Restaurang",
+    "Café",
+    "Bageri & konditori",
+    "Livsmedelsindustri",
+  ],
+  en: [
+    "Office & workplace",
+    "Hotel",
+    "Restaurant",
+    "Café",
+    "Bakery & confectionery",
+    "Food industry",
+  ],
+};
+
+function normalizeCategoryKey(value) {
+  return decodeHtml(value || "")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/&|\boch\b|\band\b|-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function sortCaseCategories(categories = [], lang) {
+  const orderKeys = (CATEGORY_ORDER[lang] || CATEGORY_ORDER.en).map(
+    normalizeCategoryKey
+  );
+  const rank = (category) => {
+    const keys = [category?.name, category?.slug].map(normalizeCategoryKey);
+    const index = orderKeys.findIndex((key) => keys.includes(key));
+    return index === -1 ? orderKeys.length : index;
+  };
+
+  return [...categories].sort((a, b) => rank(a) - rank(b));
+}
+
 const LABELS = {
   en: {
     readMore: "View case",
@@ -146,21 +191,7 @@ export default function CaseStudyArchiveCases({
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedType, setSelectedType] = useState("all");
   const labels = LABELS[lang] || LABELS.en;
-  const preferredCategoryOrder = [
-    "cafe-restaurang",
-    "bageri",
-    "hotell",
-    "kontor-offentlig-miljo",
-  ];
-  const categories = [...caseStudyTypes].sort((a, b) => {
-    const aIndex = preferredCategoryOrder.indexOf(a.slug);
-    const bIndex = preferredCategoryOrder.indexOf(b.slug);
-
-    if (aIndex === -1 && bIndex === -1) return 0;
-    if (aIndex === -1) return 1;
-    if (bIndex === -1) return -1;
-    return aIndex - bIndex;
-  });
+  const categories = sortCaseCategories(caseStudyTypes, lang);
   const selectedCases =
     selectedType === "all"
       ? prefetchedCases || []
@@ -217,7 +248,7 @@ export default function CaseStudyArchiveCases({
       <div className="web-width-sm mx-auto px-6">
         {categories.length > 0 && (
           <div className="mb-10 md:mb-12">
-            <div className="-mx-6 flex gap-3 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-5">
+            <div className="-mx-6 flex gap-3 overflow-x-auto px-6 pb-2 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-4">
               <button
                 type="button"
                 onClick={() => selectCategory("all")}

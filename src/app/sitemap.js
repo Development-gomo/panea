@@ -86,7 +86,7 @@ export default async function sitemap() {
     for (const category of categories) {
       if (!category.slug) continue;
       entries.push({
-        url: url(lang, `/product-category/${category.slug}`),
+        url: url(lang, `${lang === DEFAULT_LANG ? "/produktkategori" : "/product-category"}/${category.slug}`),
         lastModified: new Date(),
         changeFrequency: "weekly",
         priority: 0.7,

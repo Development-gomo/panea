@@ -39,7 +39,11 @@ export default async function LangHomePage({ params }) {
         logoUrl={themeOptions?.header?.logo_light?.url || ""}
       />
       <main id="home">
-        <PageBuilder sections={page?.acf?.page_builder} lang={lang} />
+        <PageBuilder
+          sections={page?.acf?.page_builder}
+          lang={lang}
+          businessTabsCtaVariant="segment"
+        />
       </main>
       <Footer lang={lang} />
     </>
