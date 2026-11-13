@@ -1,5 +1,5 @@
 import { getProductCategories } from "@/lib/api";
-import { DEFAULT_LANG } from "@/config";
+import { DEFAULT_LANG, langHref } from "@/config";
 import { permanentRedirect } from "next/navigation";
 
 export const revalidate = 3600;
@@ -24,5 +24,5 @@ export async function generateMetadata({ params }) {
 
 export default async function WebshopCategoryRoute({ params }) {
   const resolved = await params;
-  permanentRedirect(`/product-category/${resolved.category}/`);
+  permanentRedirect(langHref(`/product-category/${resolved.category}/`, DEFAULT_LANG));
 }

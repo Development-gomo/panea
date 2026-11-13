@@ -111,6 +111,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/product-category/:path*",
+        destination: "/produktkategori/:path*",
+        permanent: true,
+      },
+      {
         source: "/product/:slug",
         destination: "/:slug/",
         permanent: true,
@@ -127,6 +132,7 @@ const nextConfig = {
     return [
       { source: "/karriar", destination: "/career" },
       { source: "/webbshop", destination: "/webshop" },
+      { source: "/produktkategori/:path*", destination: "/product-category/:path*" },
       { source: "/artiklar/:slug", destination: `/${DEFAULT_LANG}/post/:slug` },
       { source: "/en/article/:slug", destination: "/en/post/:slug" },
       // Pass-throughs for each non-default language (prevents catch-all rewrite below from grabbing them)

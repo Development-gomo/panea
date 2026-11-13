@@ -12,6 +12,7 @@ export const LOCALE_MAP = { en: "en_US", sv: "sv_SE" };
 const LOCALIZED_PATHS = {
   sv: {
     "/webshop": "/webbshop",
+    "/product-category": "/produktkategori",
   },
 };
 
