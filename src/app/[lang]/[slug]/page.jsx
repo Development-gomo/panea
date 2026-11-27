@@ -21,6 +21,7 @@ import {
   getRelatedProducts,
   getTestimonialsByIds,
   getMediaById,
+  getAltLangUrl,
 } from "@/lib/api";
 import { decodeHtml, stripHtml } from "@/lib/htmlText";
 import { resolveParams } from "@/lib/params";
@@ -37,7 +38,15 @@ import HomeNews from "@/components/sections/home/HomeNews";
 import ImageCtaBanner from "@/components/sections/home/ImageCtaBanner";
 import Header from "@/components/major/Header";
 import Footer from "@/components/major/Footer";
-import { buildMetadataFromYoast } from "@/lib/seo";
+import {
+  buildFaqSchema,
+  buildMetadataFromYoast,
+  buildProductSchema,
+  buildSchemaFromYoast,
+  localizedPath,
+  rewriteBackendLinks,
+} from "@/lib/seo";
+import JsonLd from "@/components/seo/JsonLd";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -130,7 +139,7 @@ function InsightPostBody({ post }) {
     return (
       <div
         className={insightContentClassName}
-        dangerouslySetInnerHTML={{ __html: contentHtml }}
+        dangerouslySetInnerHTML={{ __html: rewriteBackendLinks(contentHtml) }}
       />
     );
   }
@@ -1005,6 +1014,18 @@ export default async function SinglePage({ params }) {
     !data && !businessArea && !caseStudy && !solution && !!product;
   const isPost =
     !data && !businessArea && !caseStudy && !solution && !product && !!post;
+  const headerEntryType = isProduct
+    ? "product"
+    : isCaseStudy
+      ? "case_study"
+      : isSolution
+        ? "solutions"
+        : isPost
+          ? "posts"
+          : isBusinessArea
+            ? "business_areas"
+            : "pages";
+  const altLangUrl = await getAltLangUrl(entry?.id, headerEntryType, lang);
   const acf = entry?.acf || {};
   const businessAreaSections = isBusinessArea ? getBusinessAreaSections(acf) : null;
   const genericSections = Array.isArray(acf.generic_page_builder)
@@ -1030,7 +1051,13 @@ export default async function SinglePage({ params }) {
         "select_team_members"
       )
     : [];
-  const [relatedProducts, prefetchedTestimonials, prefetchedProductTeamMembers] =
+  const [
+    relatedProducts,
+    prefetchedTestimonials,
+    prefetchedProductTeamMembers,
+    schemaBrands,
+    schemaCategories,
+  ] =
     isProduct
       ? await Promise.all([
           getRelatedProducts(product, lang),
@@ -1040,8 +1067,10 @@ export default async function SinglePage({ params }) {
           productTeamMemberIds.length
             ? getTeamMembersByIds(productTeamMemberIds, lang)
             : [],
+          getProductBrands(lang),
+          getProductCategories(lang, { includeChildren: true }),
         ])
-      : [[], [], []];
+      : [[], [], [], [], []];
   const postFeaturedImage = isPost && post?.featured_media
     ? await getMediaById(post.featured_media)
     : null;
@@ -1060,26 +1089,27 @@ export default async function SinglePage({ params }) {
   const latestPostNews = isPost ? await getAllPosts(lang) : [];
   const latestNewsDetails = isPost ? getLatestNewsDetails(themeOptions) : null;
   const imageCtaBanner = isPost ? getSinglePostImageCtaBanner(themeOptions) : null;
+  const pagePath = localizedPath(lang, slug);
 
   return (
     <>
+      <JsonLd data={buildSchemaFromYoast(entry, { path: pagePath })} />
+      {isProduct && (
+        <JsonLd
+          data={buildProductSchema(product, {
+            path: pagePath,
+            brands: schemaBrands,
+            categories: schemaCategories,
+          })}
+        />
+      )}
+      <JsonLd data={buildFaqSchema(entry, { path: pagePath, lang })} />
       <Header
         lang={lang}
         currentSlug={slug}
-        entryType={
-          isProduct
-            ? "product"
-            : isCaseStudy
-            ? "case_study"
-            : isSolution
-              ? "solutions"
-              : isPost
-                ? "posts"
-                : isBusinessArea
-                  ? "business_areas"
-                  : "pages"
-        }
+        entryType={headerEntryType}
         entryId={entry?.id}
+        initialAltLangUrl={altLangUrl}
         prefetchedMenu={menu}
         prefetchedOptions={themeOptions?.header || {}}
         logoUrl={themeOptions?.header?.logo_light?.url || ""}
@@ -1170,8 +1200,27 @@ export async function generateMetadata({ params }) {
     ? null
     : await getPostBySlug(slug, lang);
 
-  return buildMetadataFromYoast(data || businessArea || caseStudy || solution || product || post, {
-    fallbackTitle: slug ? `${slug} | panea` : "panea",
+  const entry = data || businessArea || caseStudy || solution || product || post;
+  const entryType = data
+    ? "pages"
+    : businessArea
+      ? "business_areas"
+      : caseStudy
+        ? "case_study"
+        : solution
+          ? "solutions"
+          : product
+            ? "product"
+            : "posts";
+
+  const path = slug ? localizedPath(lang, slug) : null;
+  const altLang = SUPPORTED_LANGS.find((l) => l !== lang);
+  const altPath = entry ? await getAltLangUrl(entry.id, entryType, lang) : null;
+
+  return buildMetadataFromYoast(entry, {
+    fallbackTitle: slug ? `${slug} | Panea` : "Panea",
     lang,
+    path,
+    alternatePaths: path && altPath && altLang ? { [lang]: path, [altLang]: altPath } : null,
   });
 }

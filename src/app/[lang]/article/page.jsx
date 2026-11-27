@@ -3,7 +3,13 @@ import ArticleArchivePage, {
 } from "@/components/major/ArticleArchivePage";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 import { resolveParams } from "@/lib/params";
-import { buildMetadataFromYoast } from "@/lib/seo";
+import {
+  archiveSeoOptions,
+  buildFaqSchema,
+  buildMetadataFromYoast,
+  buildSchemaFromYoast,
+} from "@/lib/seo";
+import JsonLd from "@/components/seo/JsonLd";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -24,7 +30,16 @@ async function getLanguage(params) {
 
 export default async function LocalizedArticlesPage({ params }) {
   const lang = await getLanguage(params);
-  return <ArticleArchivePage lang={lang} />;
+  const page = await getArticleArchivePage(lang);
+  const { path } = archiveSeoOptions("articles", lang);
+
+  return (
+    <>
+      <JsonLd data={buildSchemaFromYoast(page, { path })} />
+      <JsonLd data={buildFaqSchema(page, { path, lang: lang })} />
+      <ArticleArchivePage lang={lang} />
+    </>
+  );
 }
 
 export async function generateMetadata({ params }) {
@@ -32,7 +47,8 @@ export async function generateMetadata({ params }) {
   const page = await getArticleArchivePage(lang);
 
   return buildMetadataFromYoast(page, {
-    fallbackTitle: "Articles | panea",
+    fallbackTitle: "Articles - Panea",
     lang,
+    ...archiveSeoOptions("articles", lang),
   });
 }

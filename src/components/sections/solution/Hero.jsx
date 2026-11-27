@@ -28,8 +28,8 @@ export default function SolutionHero({ data }) {
 
         <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center">
           {title && (
-            <motion.div
-              className="text-[32px] leading-[1.2] md:text-[40px]"
+            <motion.h1
+              className="text-[32px] leading-[1.2] md:text-[40px] [&_*]:text-[inherit] [&_*]:font-[inherit] [&_*]:leading-[inherit] [&_p]:mb-0"
               dangerouslySetInnerHTML={{ __html: title }}
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}

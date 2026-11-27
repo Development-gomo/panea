@@ -3,7 +3,13 @@ import CaseStudiesArchivePage, {
 } from "@/components/major/CaseStudiesArchivePage";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 import { resolveParams } from "@/lib/params";
-import { buildMetadataFromYoast } from "@/lib/seo";
+import {
+  archiveSeoOptions,
+  buildFaqSchema,
+  buildMetadataFromYoast,
+  buildSchemaFromYoast,
+} from "@/lib/seo";
+import JsonLd from "@/components/seo/JsonLd";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -22,7 +28,16 @@ async function getLanguage(params) {
 
 export default async function LocalizedCasesPage({ params }) {
   const lang = await getLanguage(params);
-  return <CaseStudiesArchivePage lang={lang} />;
+  const page = await getCaseStudiesArchivePage(lang);
+  const { path } = archiveSeoOptions("cases", lang);
+
+  return (
+    <>
+      <JsonLd data={buildSchemaFromYoast(page, { path })} />
+      <JsonLd data={buildFaqSchema(page, { path, lang: lang })} />
+      <CaseStudiesArchivePage lang={lang} />
+    </>
+  );
 }
 
 export async function generateMetadata({ params }) {
@@ -30,7 +45,8 @@ export async function generateMetadata({ params }) {
   const page = await getCaseStudiesArchivePage(lang);
 
   return buildMetadataFromYoast(page, {
-    fallbackTitle: "Case studies | panea",
+    fallbackTitle: "Case studies - Panea",
     lang,
+    ...archiveSeoOptions("cases", lang),
   });
 }

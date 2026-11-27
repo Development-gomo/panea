@@ -60,16 +60,14 @@ const nextConfig = {
         destination: lang === DEFAULT_LANG ? "/" : `/${lang}`,
         permanent: true,
       })),
-      {
-        source: "/post/:slug",
-        destination: "/artiklar/:slug",
-        permanent: true,
-      },
-      {
-        source: "/en/post/:slug",
-        destination: "/en/article/:slug",
-        permanent: true,
-      },
+      // Articles are served at /:slug. Old article URLs (/artiklar/x, /post/x)
+      // and old service URLs from the previous site redirect there.
+      { source: "/post/:slug", destination: "/:slug", permanent: true },
+      { source: "/en/post/:slug", destination: "/en/:slug", permanent: true },
+      { source: "/artiklar/:slug", destination: "/:slug", permanent: true },
+      { source: "/en/article/:slug", destination: "/en/:slug", permanent: true },
+      { source: "/vara-tjanster/:slug", destination: "/:slug", permanent: true },
+      { source: "/en/our-services/:slug", destination: "/en/:slug", permanent: true },
       {
         source: "/solutions/:slug",
         destination: "/:slug",
@@ -117,12 +115,12 @@ const nextConfig = {
       },
       {
         source: "/product/:slug",
-        destination: "/:slug/",
+        destination: "/:slug",
         permanent: true,
       },
       {
         source: "/en/product/:slug",
-        destination: "/en/:slug/",
+        destination: "/en/:slug",
         permanent: true,
       },
     ];
@@ -133,8 +131,6 @@ const nextConfig = {
       { source: "/karriar", destination: "/career" },
       { source: "/webbshop", destination: "/webshop" },
       { source: "/produktkategori/:path*", destination: "/product-category/:path*" },
-      { source: "/artiklar/:slug", destination: `/${DEFAULT_LANG}/post/:slug` },
-      { source: "/en/article/:slug", destination: "/en/post/:slug" },
       // Pass-throughs for each non-default language (prevents catch-all rewrite below from grabbing them)
       ...nonDefaultLangs.flatMap((lang) => [
         { source: `/${lang}`, destination: `/${lang}` },

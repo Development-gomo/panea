@@ -10,7 +10,7 @@ import DownSvg from "../../../public/down-arrow.svg";
 import ArrowSvgB from "../../../public/right-arrow-black.png";
 import CartSvg from "../../../public/cart_icon-new.svg";
 import MegaMenu from "./MegaMenu";
-import { getMenu, getThemeOptions, getEntryTranslations } from "@/lib/api";
+import { getMenu, getThemeOptions, getTranslatedSlug } from "@/lib/api";
 import { DEFAULT_LANG, SUPPORTED_LANGS, langHref, langHome } from "@/config";
 
 const QUOTE_CART_STORAGE_KEY = "panea_quote_cart";
@@ -226,11 +226,20 @@ export default function Header({
   prefetchedMenu = null,
   prefetchedOptions = null,
   logoUrl = "",
+  initialAltLangUrl = null,
 }) {
   const [menu, setMenu] = useState(prefetchedMenu);
   const [options, setOptions] = useState(prefetchedOptions);
   const [socialMedia, setSocialMedia] = useState([]);
-  const [altLangUrl, setAltLangUrl] = useState(langHome(SUPPORTED_LANGS.filter((l) => l !== lang)[0]));
+  const [clientAltLangUrl, setAltLangUrl] = useState(
+    langHome(SUPPORTED_LANGS.filter((l) => l !== lang)[0])
+  );
+  // Prefer fixed utility routes, then the server-resolved translation URL,
+  // and only fall back to the client-side lookup when neither is available.
+  const altLangUrl =
+    getFixedLocalizedRoute(currentSlug, SUPPORTED_LANGS.filter((l) => l !== lang)[0]) ||
+    initialAltLangUrl ||
+    clientAltLangUrl;
   const [scrolled, setScrolled] = useState(false);
   const [quoteCartCount, setQuoteCartCount] = useState(0);
   const [quoteCartItems, setQuoteCartItems] = useState([]);
@@ -410,10 +419,9 @@ export default function Header({
 
         // Use entryId for dynamic translation lookup if available
         if (entryId && !fixedRoute) {
-          const translations = await getEntryTranslations(entryId, entryType, lang);
+          const translatedSlug = await getTranslatedSlug(entryId, entryType, lang, altLang);
 
-          if (translations && translations[altLang]?.slug) {
-            const translatedSlug = translations[altLang].slug;
+          if (translatedSlug) {
             // "frontpage" is the WP homepage slug — map it to the lang root
             if (translatedSlug === "frontpage") {
               setAltLangUrl(langHome(altLang));
@@ -440,10 +448,13 @@ export default function Header({
       }
     }
 
+    // Server already resolved the translated URL — no client lookup needed.
+    if (initialAltLangUrl) return;
+
     if (entryId || (currentSlug && currentSlug !== "/")) {
       fetchAltLangUrl();
     }
-  }, [lang, currentSlug, entryType, pathPrefix, entryId]);
+  }, [lang, currentSlug, entryType, pathPrefix, entryId, initialAltLangUrl]);
 
   return (
     <header className={headerClasses}>
