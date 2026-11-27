@@ -11,7 +11,13 @@ import {
   getThemeOptions,
 } from "@/lib/api";
 import { DEFAULT_LANG } from "@/config";
-import { buildMetadataFromYoast } from "@/lib/seo";
+import {
+  archiveSeoOptions,
+  buildFaqSchema,
+  buildMetadataFromYoast,
+  buildSchemaFromYoast,
+} from "@/lib/seo";
+import JsonLd from "@/components/seo/JsonLd";
 
 export const revalidate = 3600;
 
@@ -56,8 +62,12 @@ export default async function WebshopRoute() {
     ? await getTeamMembersByIds(teamMemberIds, lang)
     : [];
 
+  const { path } = archiveSeoOptions("webshop", lang);
+
   return (
     <>
+      <JsonLd data={buildSchemaFromYoast(page, { path })} />
+      <JsonLd data={buildFaqSchema(page, { path, lang })} />
       <Header
         lang={lang}
         currentSlug="webshop"
@@ -86,7 +96,8 @@ export async function generateMetadata() {
   const page = await getWebshopPage(DEFAULT_LANG);
 
   return buildMetadataFromYoast(page, {
-    fallbackTitle: "Webshop | panea",
+    fallbackTitle: "Webshop - Panea",
     lang: DEFAULT_LANG,
+    ...archiveSeoOptions("webshop", DEFAULT_LANG),
   });
 }

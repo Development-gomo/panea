@@ -4,7 +4,14 @@ import Header from "@/components/major/Header";
 import PageBuilder from "@/components/major/PageBuilder";
 import Footer from "@/components/major/Footer";
 import { getPageBySlug, getMenu, getThemeOptions } from "@/lib/api";
-import { buildMetadataFromYoast } from "@/lib/seo";
+import {
+  buildFaqSchema,
+  buildMetadataFromYoast,
+  buildOrganizationSchema,
+  buildSchemaFromYoast,
+  localizedPath,
+} from "@/lib/seo";
+import JsonLd from "@/components/seo/JsonLd";
 import { resolveParams } from "@/lib/params";
 import { notFound } from "next/navigation";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
@@ -30,6 +37,13 @@ export default async function LangHomePage({ params }) {
 
   return (
     <>
+      <JsonLd
+        data={buildSchemaFromYoast(page, {
+          path: localizedPath(lang),
+          organization: buildOrganizationSchema(themeOptions),
+        })}
+      />
+      <JsonLd data={buildFaqSchema(page, { path: localizedPath(lang), lang })} />
       <Header
         lang={lang}
         entryType="pages"
@@ -52,6 +66,12 @@ export default async function LangHomePage({ params }) {
 
 export async function generateMetadata({ params }) {
   const resolvedParams = resolveParams(await params);
-  const page = await getPageBySlug("frontpage", resolvedParams.lang);
-  return buildMetadataFromYoast(page, { lang: resolvedParams.lang });
+  const lang = resolvedParams.lang || DEFAULT_LANG;
+  // The WP homepage is the "hem" page (same one rendered above).
+  const page = await getPageBySlug("hem", lang);
+  return buildMetadataFromYoast(page, {
+    lang,
+    path: localizedPath(lang),
+    alternatePaths: Object.fromEntries(SUPPORTED_LANGS.map((l) => [l, localizedPath(l)])),
+  });
 }

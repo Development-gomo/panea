@@ -1,7 +1,7 @@
 "use client";
 
 import { DEFAULT_LANG } from "@/config";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
@@ -139,7 +139,27 @@ function getFileRules(field) {
   return { extensions, maxBytes, limitLabel: rawLimit };
 }
 
-function Field({ field, value, setValue, error, variant = "default", lang = DEFAULT_LANG }) {
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Browser autofill hints, guessed from the CF7 field type and name.
+function getAutoComplete(field) {
+  const key = String(field?.key || "").toLowerCase();
+  if (field?.type === "email") return "email";
+  if (field?.type === "tel") return "tel";
+  if (key.includes("company")) return "organization";
+  if (key.includes("name")) return "name";
+  return undefined;
+}
+
+function Field({
+  field,
+  value,
+  setValue,
+  error,
+  variant = "default",
+  lang = DEFAULT_LANG,
+  idPrefix = "cf7",
+}) {
   const isSolution = variant === "solution";
   const common = isSolution
     ? "w-full border-0 border-b bg-transparent px-0 py-3 text-sm text-white outline-none placeholder:text-white/55 " +
@@ -154,20 +174,35 @@ function Field({ field, value, setValue, error, variant = "default", lang = DEFA
   const label = field.label || field.key;
   const hasPlaceholder = Boolean(field.placeholder);
   const visibleLabelClass = hasPlaceholder ? "sr-only" : labelClass;
+  const inputId = `${idPrefix}-${field.key}`;
+  const errorId = `${inputId}-error`;
+  const a11yProps = {
+    id: inputId,
+    name: field.key,
+    "aria-required": field.required || undefined,
+    "aria-invalid": error ? true : undefined,
+    "aria-describedby": error ? errorId : undefined,
+  };
+  const errorNode = error ? (
+    <p id={errorId} className={errorClass}>
+      {error}
+    </p>
+  ) : null;
 
   if (field.type === "textarea") {
     return (
       <div className="space-y-2">
-        <label className={visibleLabelClass}>
+        <label htmlFor={inputId} className={visibleLabelClass}>
           {label} {field.required ? "*" : ""}
         </label>
         <textarea
+          {...a11yProps}
           className={common + " min-h-[90px]"}
           value={value || ""}
           placeholder={field.placeholder || ""}
           onChange={(e) => setValue(field.key, e.target.value)}
         />
-        {error ? <p className={errorClass}>{error}</p> : null}
+        {errorNode}
       </div>
     );
   }
@@ -175,11 +210,12 @@ function Field({ field, value, setValue, error, variant = "default", lang = DEFA
   if (field.type === "select") {
     return (
       <div className="space-y-2">
-        <label className={`block ${visibleLabelClass}`}>
+        <label htmlFor={inputId} className={`block ${visibleLabelClass}`}>
           {label} {field.required ? "*" : ""}
         </label>
         {/* Select and file rows share a fixed height so their underlines line up. */}
         <select
+          {...a11yProps}
           className={
             common +
             " h-12 py-0" +
@@ -205,14 +241,13 @@ function Field({ field, value, setValue, error, variant = "default", lang = DEFA
             );
           })}
         </select>
-        {error ? <p className={errorClass}>{error}</p> : null}
+        {errorNode}
       </div>
     );
   }
 
   if (isFileField(field)) {
     const { extensions } = getFileRules(field);
-    const inputId = `cf7-file-${field.key}`;
     const isSv = lang === "sv";
 
     // The native file input's button and "No file chosen" text follow the
@@ -238,14 +273,13 @@ function Field({ field, value, setValue, error, variant = "default", lang = DEFA
           </span>
         </label>
         <input
-          id={inputId}
+          {...a11yProps}
           className="sr-only"
           type="file"
-          name={field.key}
           accept={extensions.map((ext) => `.${ext}`).join(",") || undefined}
           onChange={(e) => setValue(field.key, e.target.files?.[0] || null)}
         />
-        {error ? <p className={errorClass}>{error}</p> : null}
+        {errorNode}
       </div>
     );
   }
@@ -257,17 +291,19 @@ function Field({ field, value, setValue, error, variant = "default", lang = DEFA
 
   return (
     <div className="space-y-2">
-      <label className={visibleLabelClass}>
+      <label htmlFor={inputId} className={visibleLabelClass}>
         {label} {field.required ? "*" : ""}
       </label>
       <input
+        {...a11yProps}
         className={common}
         type={type}
+        autoComplete={getAutoComplete(field)}
         value={value || ""}
         placeholder={field.placeholder || ""}
         onChange={(e) => setValue(field.key, e.target.value)}
       />
-      {error ? <p className={errorClass}>{error}</p> : null}
+      {errorNode}
     </div>
   );
 }
@@ -279,8 +315,22 @@ export default function ContactForm({
   className = "",
   showTitle = false,
   formTitle = "",
-  submitLabel = "Send Message",
+  submitLabel,
 }) {
+  const isSv = lang === "sv";
+  const t = {
+    submit: isSv ? "Skicka meddelande" : "Send message",
+    sending: isSv ? "Skickar…" : "Sending…",
+    loading: isSv ? "Laddar formulär…" : "Loading form…",
+    sent: isSv ? "Tack! Ditt meddelande har skickats." : "Thank you! Your message has been sent.",
+    sendFailed: isSv
+      ? "Det gick inte att skicka. Försök igen."
+      : "Failed to send. Please try again.",
+    required: isSv ? "Detta fält är obligatoriskt" : "This field is required",
+    invalidEmail: isSv ? "Ange en giltig e-postadress" : "Please enter a valid email address",
+  };
+  // Unique per form instance, so two forms on one page never share input ids.
+  const idPrefix = `cf7-${useId().replace(/:/g, "")}`;
   const [schema, setSchema] = useState(null);
   const [values, setValues] = useState({});
   const [errors, setErrors] = useState({});
@@ -344,11 +394,15 @@ export default function ContactForm({
 
         setState({ loading: false, submitting: false, ok: false, msg: "" });
       } catch (e) {
+        if (!alive) return;
         setState({
           loading: false,
           submitting: false,
           ok: false,
-          msg: "Failed to load form.",
+          msg:
+            lang === "sv"
+              ? "Formuläret kunde inte laddas."
+              : "Failed to load form.",
         });
       }
     })();
@@ -372,10 +426,7 @@ export default function ContactForm({
       if (isFileField(f)) {
         const file = values[f.key];
         if (!file) {
-          if (f.required) {
-            next[f.key] =
-              lang === "sv" ? "Detta fält är obligatoriskt" : "This field is required";
-          }
+          if (f.required) next[f.key] = t.required;
           continue;
         }
 
@@ -395,11 +446,15 @@ export default function ContactForm({
         continue;
       }
 
-      if (!f.required) continue;
       const v = (values[f.key] || "").toString().trim();
       if (!v) {
-        next[f.key] =
-          lang === "sv" ? "Detta fält är obligatoriskt" : "This field is required";
+        if (f.required) next[f.key] = t.required;
+        continue;
+      }
+      // The form uses noValidate, so check e-mail format here instead of
+      // leaving it to the browser's own (untranslated) popup.
+      if (f.type === "email" && !EMAIL_RE.test(v)) {
+        next[f.key] = t.invalidEmail;
       }
     }
     setErrors(next);
@@ -415,10 +470,9 @@ export default function ContactForm({
         ...s,
         submitting: false,
         ok: false,
-        msg:
-          lang === "sv"
-            ? "Vänligen fyll i de obligatoriska fälten."
-            : "Please fill required fields.",
+        msg: isSv
+          ? "Vänligen kontrollera de markerade fälten."
+          : "Please check the highlighted fields.",
       }));
       return;
     }
@@ -469,7 +523,7 @@ export default function ContactForm({
         res?.message ||
         res?.cf7?.message ||
         schema?.settings?.successMessage ||
-        "Sent!";
+        t.sent;
 
       setState({
         loading: false,
@@ -486,22 +540,34 @@ export default function ContactForm({
     } catch (err) {
       // If CF7 validation errors come back, map them
       const cf7 = err?.cf7;
+      // Errors for fields that aren't on screen (e.g. the hidden
+      // business_area select) are added to the main message instead.
+      const hiddenErrors = [];
       if (
         cf7?.status === "validation_failed" &&
         Array.isArray(cf7?.invalid_fields)
       ) {
+        const visibleKeys = new Set(
+          fields.filter((f) => !isBusinessAreaField(f)).map((f) => f.key),
+        );
         const next = {};
         cf7.invalid_fields.forEach((f) => {
-          if (f?.field) next[f.field] = f?.message || "Invalid";
+          if (!f?.field) return;
+          const message = f?.message || "Invalid";
+          if (visibleKeys.has(f.field)) next[f.field] = message;
+          else hiddenErrors.push(message);
         });
         setErrors(next);
       }
 
+      const baseMsg = err?.message || err?.error || t.sendFailed;
       setState({
         loading: false,
         submitting: false,
         ok: false,
-        msg: err?.message || err?.error || "Failed to send. Please try again.",
+        msg: hiddenErrors.length
+          ? `${baseMsg} ${hiddenErrors.join(" ")}`
+          : baseMsg,
       });
     }
   }
@@ -514,7 +580,7 @@ export default function ContactForm({
         }`}
       >
         <span className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-[var(--color-brand)]" />
-        Loading form…
+        {t.loading}
       </div>
     );
 
@@ -580,6 +646,7 @@ export default function ContactForm({
   return (
     <form
       onSubmit={onSubmit}
+      noValidate
       className={`${variant === "solution" ? "space-y-8" : "space-y-5"} ${className}`}
     >
       {showTitle && (formTitle || schema?.title) ? (
@@ -607,10 +674,23 @@ export default function ContactForm({
               error={errors[f.key]}
               variant={variant}
               lang={lang}
+              idPrefix={idPrefix}
             />
           </div>
         ))}
       </div>
+
+      {/* Per-form text: the <p class="form-privacy"> written in the CF7
+          template, sent by the panea/v1/cf7-form endpoint as privacyHtml
+          (already passed through wp_kses_post there). */}
+      {schema?.privacyHtml ? (
+        <div
+          className={`form-privacy text-sm [&_a]:underline ${
+            variant === "solution" ? "text-white/60" : "text-black/60"
+          }`}
+          dangerouslySetInnerHTML={{ __html: schema.privacyHtml }}
+        />
+      ) : null}
 
       <button
         type="submit"
@@ -623,7 +703,7 @@ export default function ContactForm({
                     disabled:opacity-50 disabled:cursor-not-allowed
                     ${
                       variant === "solution"
-                        ? "mt-4 w-[164px] rounded-[50px] bg-white text-(--color-body)"
+                        ? "w-[164px] rounded-[50px] bg-white text-(--color-body)"
                         : "w-[170px] rounded-sm bg-(--color-brand) text-white"
                     }`}
       >
@@ -632,13 +712,23 @@ export default function ContactForm({
                       text-[16px] leading-none
                       whitespace-nowrap"
         >
-          {state.submitting ? "Sending..." : submitLabel}
+          {state.submitting ? t.sending : submitLabel || t.submit}
         </span>
       </button>
 
       {state.msg ? (
         <p
-          className={`text-sm ${state.ok ? "text-green-700" : "text-red-700"}`}
+          role="status"
+          aria-live="polite"
+          className={`text-sm ${
+            variant === "solution"
+              ? state.ok
+                ? "text-[#B8D1D1]"
+                : "text-red-300"
+              : state.ok
+                ? "text-green-700"
+                : "text-red-700"
+          }`}
         >
           {state.msg}
         </p>

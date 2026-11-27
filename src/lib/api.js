@@ -1,4 +1,4 @@
-import { DEFAULT_LANG } from "@/config";
+import { DEFAULT_LANG, SUPPORTED_LANGS, langHome, langHref } from "@/config";
 import { WP_BASE } from "@/config";
 import { cache } from "react";
 
@@ -637,6 +637,101 @@ export async function getEntryTranslations(entryId, entryType = "pages", lang = 
   // Fallback: get the entry and extract translations
   const entry = await fetchWP(`/wp/v2/${entryType}/${entryId}`);
   return entry?.translations || entry?.wpml_translations || entry?.icl_translations || null;
+}
+
+const TRANSLATION_REST_ENDPOINTS = {
+  page: "pages",
+  pages: "pages",
+  post: "posts",
+  posts: "posts",
+  solution: "solutions",
+  solutions: "solutions",
+  business_area: "business_areas",
+  business_areas: "business_areas",
+  case_study: "case_study",
+  product: "product",
+};
+
+// Translation maps come in several shapes depending on the source:
+//   custom endpoint: { en: { slug, id } }
+//   Polylang REST:   { en: 24637 }
+//   WPML REST:       [{ locale: "en_US", id: 24637, href }]
+function pickTranslation(translations, targetLang) {
+  if (!translations || typeof translations !== "object") return null;
+
+  if (Array.isArray(translations)) {
+    return (
+      translations.find((t) =>
+        [t?.lang, t?.language_code, t?.code, String(t?.locale || "").slice(0, 2)].includes(
+          targetLang
+        )
+      ) || null
+    );
+  }
+
+  return translations[targetLang] ?? null;
+}
+
+// Resolve the slug of an entry's translation in targetLang (null if none).
+export async function getTranslatedSlug(entryId, entryType, lang, targetLang) {
+  if (!entryId) return null;
+  const endpoint = TRANSLATION_REST_ENDPOINTS[entryType] || entryType;
+
+  const sources = [
+    () => fetchWP(`/myroutes/v1/translations/${entryId}?lang=${lang}`),
+    async () => {
+      const entry = await fetchWP(`/wp/v2/${endpoint}/${entryId}`);
+      return entry?.translations || entry?.wpml_translations || entry?.icl_translations;
+    },
+  ];
+
+  for (const load of sources) {
+    const translation = pickTranslation(await load(), targetLang);
+    if (!translation) continue;
+
+    if (typeof translation === "object") {
+      if (translation.slug) return translation.slug;
+      if (translation.href) {
+        const lastSegment = String(translation.href).split("?")[0].split("/").filter(Boolean).pop();
+        if (lastSegment) return lastSegment;
+      }
+    }
+
+    const translatedId =
+      typeof translation === "object"
+        ? translation.id ?? translation.element_id ?? translation.ID
+        : translation;
+    if (!translatedId || String(translatedId) === String(entryId)) continue;
+
+    const translatedEntry = await fetchWP(
+      `/wp/v2/${endpoint}/${translatedId}?lang=${targetLang}&_fields=slug`
+    );
+    if (translatedEntry?.slug) return translatedEntry.slug;
+  }
+
+  return null;
+}
+
+// Build the language-switcher URL for an entry (null if no translation found).
+// Called server-side so the switcher link is correct in the initial HTML,
+// rather than pointing at the homepage until a client fetch finishes.
+export async function getAltLangUrl(entryId, entryType, lang, pathPrefix = "") {
+  const altLang = SUPPORTED_LANGS.find((l) => l !== lang);
+  if (!entryId || !altLang) return null;
+
+  try {
+    const translatedSlug = await getTranslatedSlug(entryId, entryType, lang, altLang);
+    if (!translatedSlug) return null;
+    if (translatedSlug === "frontpage") return langHome(altLang);
+
+    const resolvedPrefix =
+      typeof pathPrefix === "object" ? pathPrefix?.[altLang] || "" : pathPrefix;
+    const prefix = resolvedPrefix ? `/${resolvedPrefix}` : "";
+    // langHref adds the language prefix and applies localized paths (e.g. /webshop → /webbshop).
+    return langHref(`${prefix}/${translatedSlug}`, altLang);
+  } catch {
+    return null;
+  }
 }
 
 // Get translations for a page - try custom endpoint first, then fallback

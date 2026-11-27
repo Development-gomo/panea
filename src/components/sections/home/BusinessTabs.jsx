@@ -21,8 +21,8 @@ const CTA_LABELS = {
 
 // Used on the home and about pages (ctaVariant="segment").
 const SEGMENT_CTA_LABELS = {
-  en: "Explore segment",
-  sv: "Utforska bransch",
+  en: "Learn more",
+  sv: "Läs mer",
 };
 
 function getImageUrl(item) {

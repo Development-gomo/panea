@@ -3,7 +3,13 @@ import CareerPage, {
 } from "@/components/major/CareerPage";
 import { DEFAULT_LANG, SUPPORTED_LANGS } from "@/config";
 import { resolveParams } from "@/lib/params";
-import { buildMetadataFromYoast } from "@/lib/seo";
+import {
+  archiveSeoOptions,
+  buildFaqSchema,
+  buildMetadataFromYoast,
+  buildSchemaFromYoast,
+} from "@/lib/seo";
+import JsonLd from "@/components/seo/JsonLd";
 import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
@@ -24,7 +30,16 @@ async function getLanguage(params) {
 
 export default async function LocalizedCareerPage({ params }) {
   const lang = await getLanguage(params);
-  return <CareerPage lang={lang} />;
+  const page = await getCareerPage(lang);
+  const { path } = archiveSeoOptions("career", lang);
+
+  return (
+    <>
+      <JsonLd data={buildSchemaFromYoast(page, { path })} />
+      <JsonLd data={buildFaqSchema(page, { path, lang: lang })} />
+      <CareerPage lang={lang} />
+    </>
+  );
 }
 
 export async function generateMetadata({ params }) {
@@ -32,7 +47,8 @@ export async function generateMetadata({ params }) {
   const page = await getCareerPage(lang);
 
   return buildMetadataFromYoast(page, {
-    fallbackTitle: "Career | panea",
+    fallbackTitle: "Career - Panea",
     lang,
+    ...archiveSeoOptions("career", lang),
   });
 }
